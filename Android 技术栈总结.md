@@ -4,7 +4,7 @@
   * [IDE](#ide)
     + [AndroidStudio](#androidstudio)
   * [编译工具](#编译工具)
-  * [jcenter & maven](#jcenter & maven)
+  * [jcenter & maven](#jcenter--maven)
 - [Structure](#structure)
   * [App Resource](#app-resource)
   * [Application](#application)
