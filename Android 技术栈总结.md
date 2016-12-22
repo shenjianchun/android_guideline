@@ -77,6 +77,7 @@
 
 #### ScrollView
 * [[CodePath] Working with the ScrollView](http://guides.codepath.com/android/Working-with-the-ScrollView)
+* [[CodePath] Implementing a Heterogenous ListView ScrollView](http://guides.http://guides.codepath.com/android/Implementing-a-Heterogenous-ListView.com/android/Working-with-the-ScrollView)
 
 #### Soft Keyboard
 * [[CodePath] Working with the Soft Keyboard](http://guides.codepath.com/android/Working-with-the-Soft-Keyboard)
