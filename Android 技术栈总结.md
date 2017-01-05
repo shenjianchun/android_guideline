@@ -225,6 +225,7 @@
 * [个人总结 - Fragment](http://blog.csdn.net/siobhan/article/details/51179833)
 
 ### [Content Providers](https://developer.android.com/guide/topics/providers/content-providers.html)
+* [Android数据库升级攻略](http://blog.csdn.net/s003603u/article/details/53942411)
 
 ### Permissions
 * [[CodePath] Understanding App Permissions](http://guides.codepath.com/android/Understanding-App-Permissions)
@@ -353,6 +354,7 @@
 * [26款优秀的Android逆向工程工具](http://www.freebuf.com/sectool/111532.html)
 * [那些值得你试试的Android竞品分析工具](http://www.jianshu.com/p/ba2d9eca47a2)
 
+* [Windows Git Tip: Hide ^M (Carriage Return) in Diff](https://lostechies.com/keithdahlby/2011/04/06/windows-git-tip-hide-carriage-return-in-diff/)
 ---------
 
 
