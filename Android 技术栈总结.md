@@ -118,7 +118,10 @@
 
 
 #### 重复周期任务
-* [[CodePath] Repeating Periodic Tasks (Handler, ScheduledThreadPoolExecutor)](https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents)
+* [[CodePath] Repeating Periodic Tasks (Handler, ScheduledThreadPoolExecutor)](http://guides.codepath.com/android/Repeating-Periodic-Tasks)
+* [using-with-alarmmanager-for-periodic-tasks](http://guides.codepath.com/android/Starting-Background-Services#using-with-alarmmanager-for-periodic-tasks)
+* [Scheduling Repeating Alarms](https://developer.android.com/training/scheduling/alarms.html)
+* [关于使用AlarmManager的注意事项](http://yuqirong.me/2017/01/21/%E5%85%B3%E4%BA%8E%E4%BD%BF%E7%94%A8AlarmManager%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/)
 * [ThreadPoolExecutor 官方使用说明](http://blog.csdn.net/siobhan/article/details/51282570)
 
 ### AdapterViews
