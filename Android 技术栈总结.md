@@ -415,6 +415,7 @@ Extends or augments the Java Collections Framework.
 
 * [Android DiskLruCache完全解析，硬盘缓存的最佳方案](http://blog.csdn.net/guolin_blog/article/details/28863651)
 * [安卓面试题 5 – 关于内存泄漏](http://www.iwfu.me/2016/08/02/%E5%AE%89%E5%8D%93%E9%9D%A2%E8%AF%95%E9%A2%98-5-%E5%85%B3%E4%BA%8E%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/)
+* [从OnTrimMemory角度谈Android代码内存优化](http://www.codeceo.com/article/android-ontrimmemory-mem.html)
 
 #### 网络优化
 * [APP弱网络条件下，体验优化之道](http://www.codexiu.cn/android/blog/27323/)
