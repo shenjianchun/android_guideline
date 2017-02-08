@@ -327,7 +327,7 @@
 
 ------------
 
-## Libraries
+## Libraries (开源库)
 ### 自己使用
 * [ButterKnife](http://jakewharton.github.io/butterknife/)
 	* [[CodePath] Reducing View Boilerplate with Butterknife (View Annotations)](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife)
@@ -336,8 +336,7 @@
 ### 汇总
 * [[CodePath] Must Have Libraries (Networking, Persistence, Compatibility, Convenience, etc)](http://guides.codepath.com/android/Must-Have-Libraries)
 * [[CodePath] Popular External Tools (Analytics, Crash Reporting)](http://guides.codepath.com/android/Popular-External-Tools)
-
-
+* [awesome-android](https://github.com/snowdream/awesome-android)
 
 ---------
 
@@ -358,6 +357,7 @@
 * [那些值得你试试的Android竞品分析工具](http://www.jianshu.com/p/ba2d9eca47a2)
 
 * [Windows Git Tip: Hide ^M (Carriage Return) in Diff](https://lostechies.com/keithdahlby/2011/04/06/windows-git-tip-hide-carriage-return-in-diff/)
+
 ---------
 
 
