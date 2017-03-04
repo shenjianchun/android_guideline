@@ -190,14 +190,17 @@
  * [[CodePath] Animations (Animating views, layouts, activities and more)](http://guides.codepath.com/android/Animations)
  * [[CodePath] Ripple Animation (Android 5.0)](http://guides.codepath.com/android/Ripple-Animation)
  * [[CodePath] Circular Reveal Animation (Android 5.0)](http://guides.codepath.com/android/Circular-Reveal-Animation)
- * [Android自绘动画实现与优化实战——以Tencent OS录音机波形动画为实例](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577211&idx=1&sn=2619c7df79f675e45e87891b7eb17669&scene=1&srcid=0617qaWHXlvtrbom7Lq0z9pe#rd)
+ 
  * Activity 动画
 	 * [酷炫的Activity切换动画，打造更好的用户体验](http://blog.csdn.net/huachao1001/article/details/51659963)
 	 * [实现Activity跳转动画的五种方式](http://blog.csdn.net/qq_23547831/article/details/51821159)
  * Transition 动画
  	 * [Getting Started with Activity & Fragment Transitions](http://www.androiddesignpatterns.com/2014/12/activity-fragment-transitions-in-android-lollipop-part1.html)
 	 * [[CodePath] Shared Element Activity Transition (Android 5.0)](http://guides.codepath.com/android/Shared-Element-Activity-Transition)
- 
+ * 自定义动画
+ 	 * [Android自绘动画实现与优化实战——以Tencent OS录音机波形动画为实例](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577211&idx=1&sn=2619c7df79f675e45e87891b7eb17669&scene=1&srcid=0617qaWHXlvtrbom7Lq0z9pe#rd)
+ * 其他
+ 	 * [开发者选项中动画时长原理分析(Android M)](http://blog.csdn.net/guoqifa29/article/details/50458101)
  
 
 ### Custom Views 自定义控件
