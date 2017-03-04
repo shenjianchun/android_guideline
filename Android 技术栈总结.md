@@ -199,11 +199,13 @@
 	 * [[CodePath] Shared Element Activity Transition (Android 5.0)](http://guides.codepath.com/android/Shared-Element-Activity-Transition)
  * 自定义动画
  	 * [Android自绘动画实现与优化实战——以Tencent OS录音机波形动画为实例](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577211&idx=1&sn=2619c7df79f675e45e87891b7eb17669&scene=1&srcid=0617qaWHXlvtrbom7Lq0z9pe#rd)
+ * Interpolator 动画插值器
+ 	 * [PathInterpolator简介 , 贝塞尔曲线](https://github.com/kenaiX/snowball/tree/master/PathInterpolator%E7%AE%80%E4%BB%8B)
  * 其他
  	 * [开发者选项中动画时长原理分析(Android M)](http://blog.csdn.net/guoqifa29/article/details/50458101)
  
 
-### Custom Views 自定义控件
+### Custom Views 自定义控件 自定义View
 * [[CodePath] Defining Custom Views (Needs Attention)](http://guides.codepath.com/android/Defining-Custom-Views)
 * [[CodePath] Extending SurfaceView (Needs Attention)](http://guides.codepath.com/android/Extending-SurfaceView)
 * [自定义View系列教程](http://blog.csdn.net/lfdfhl/article/details/51671038)
@@ -343,6 +345,9 @@
 * [[CodePath] Must Have Libraries (Networking, Persistence, Compatibility, Convenience, etc)](http://guides.codepath.com/android/Must-Have-Libraries)
 * [[CodePath] Popular External Tools (Analytics, Crash Reporting)](http://guides.codepath.com/android/Popular-External-Tools)
 * [awesome-android](https://github.com/snowdream/awesome-android)
+
+### 动画相关
+* [Transitions-Everywhere](https://github.com/andkulikov/Transitions-Everywhere) Material Design 中 Transition动画，向后兼容	
 
 ---------
 
