@@ -204,7 +204,7 @@
 	 * [Android 自带Interpolator（插值器）讲解](http://blog.csdn.net/lgaojiantong/article/details/39451243)
  * 其他
  	 * [开发者选项中动画时长原理分析(Android M)](http://blog.csdn.net/guoqifa29/article/details/50458101)
- 
+	 * [Android动画FillEnabled、FillBefore、FillAfter理解](http://blog.csdn.net/wiker_yong/article/details/40424667)
 
 ### Custom Views 自定义控件 自定义View
 * [[CodePath] Defining Custom Views (Needs Attention)](http://guides.codepath.com/android/Defining-Custom-Views)
