@@ -349,6 +349,7 @@
 
 ### 动画相关
 * [Transitions-Everywhere](https://github.com/andkulikov/Transitions-Everywhere) Material Design 中 Transition动画，向后兼容	
+* [AndroidViewAnimations](https://github.com/daimajia/AndroidViewAnimations) Android Property Animation, Animator
 
 ---------
 
