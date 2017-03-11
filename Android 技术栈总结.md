@@ -5,15 +5,11 @@
 #### AndroidStudio
 * [Android Studio使用总结](https://app.yinxiang.com/shard/s40/nl/1899256871/58e0fe36-5a72-4a51-911f-9c90e4e86b5e/)
 
-* [[Google] Improve Your Code with Lint](https://developer.android.com/studio/write/lint.html)
-* [[Google] Improve Code Inspection with Annotations](https://developer.android.com/studio/write/annotations.html)
-* [提高代码质量－工具篇](http://www.jianshu.com/p/d728b25777d4)
-
 * [神奇的Android Studio Template](http://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650820341&idx=1&sn=fa0b3094e1970989ffdff05c878ba53d&scene=0#wechat_redirect)
 * [让你变懒的 Android Studio Live Templates](http://mp.weixin.qq.com/s?__biz=MzA4NTQwNDcyMA==&mid=2650662184&idx=1&sn=5fc27594b4e13a74cde76ed8678a20f1#rd)
 * [你真的了解Instant Run吗？](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650236001&idx=1&sn=f2ac9a45ebe0d59fa11d9599ad7cca50&scene=1&srcid=0601G8zFa5hASpJPVrwUaWWh#rd)
 
-### 编译工具
+### 编译工具 & 反编译 & 安全
 * [官方：Configure your build](https://developer.android.com/studio/build/index.html)
 * [GRADLE构建最佳实践](http://www.figotan.org/2016/04/01/gradle-on-android-best-practise/)
 * [Gradle 完整指南（Android）](http://www.jianshu.com/p/9df3c3b6067a)
@@ -28,6 +24,13 @@
 
 
 ----------
+
+## Java 代码质量  CodeReview
+* [让 CodeReview 这股清流再飞一会儿](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653578349&idx=1&sn=b428eaf77619d3c06598d881de18e0a2&chksm=84b3b66ab3c43f7ceeb79d2345e3c40db0d9b6f62f9e13c8b89721d87b961d08e43b3caa7123&mpshare=1&scene=1&srcid=1208mDpNPvf5iDks8VMwhuWv#rd)
+* [使用Lint 和 Annotations来提升代码质量](http://www.jianshu.com/p/561998f9c3f0)
+* [[Google] Improve Your Code with Lint](https://developer.android.com/studio/write/lint.html)
+* [[Google] Improve Code Inspection with Annotations](https://developer.android.com/studio/write/annotations.html)
+* [提高代码质量－工具篇](http://www.jianshu.com/p/d728b25777d4)
 
 ## Structure
 ### App Resource
@@ -56,6 +59,7 @@
 
 #### TextView
 * [[CodePath] Working with the TextView (Properties, Drawables, Custom Fonts)](http://guides.codepath.com/android/Working-with-the-TextView)
+* [强大的SpannableStringBuilder](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650238087&idx=1&sn=330b55daf3a81ccce5fc75de1cd27e1e&chksm=88639de8bf1414fefc9f07f48fb89a75a76ce4b967731181ea1660861d1f9d3da4ad7a73c6b9&mpshare=1&scene=1&srcid=1219KiI1vtDskGwyTbWdIRZL#rd)
 
 #### ImageView & Bitmap
 * [[CodePath] Working with the ImageView (Drawables, Size and Scale, Density, Raw Bitmaps) ](https://github.com/codepath/android_guides/wiki/Working-with-the-ImageView)
@@ -125,6 +129,10 @@
 * [ThreadPoolExecutor 官方使用说明](http://blog.csdn.net/siobhan/article/details/51282570)
 
 ### AdapterViews
+
+#### ListView
+* [Android之ListView的getItemViewType和getViewTypeCount](http://www.cnblogs.com/RGogoing/p/5872217.html)
+
 #### RecyclerView
 * 基础和使用
 	* [[CodePath](Using the RecyclerView (Android 5.0))](http://guides.codepath.com/android/Using-the-RecyclerView)
@@ -171,7 +179,7 @@
 
 * [LoadingDrawable源码分析](http://www.jianshu.com/p/1c3c6fc1b7ff)
 
-#### Styles and Themes
+#### Styles and Themes 样式  主题
 * [[CodePath] Styles and Themes (Consolidating view styles)](http://guides.codepath.com/android/Styles-and-Themes)
 * [[CodePath] Developing Custom Themes (Integrating drawables, styles and themes)](http://guides.codepath.com/android/Developing-Custom-Themes)
 * [Attr、Style和Theme详解](http://www.jianshu.com/p/dd79220b47dd)
@@ -209,9 +217,11 @@
 ### Custom Views 自定义控件 自定义View
 * [[CodePath] Defining Custom Views (Needs Attention)](http://guides.codepath.com/android/Defining-Custom-Views)
 * [[CodePath] Extending SurfaceView (Needs Attention)](http://guides.codepath.com/android/Extending-SurfaceView)
+* [Android SurfaceView 源码分析及使用](http://tech.youzan.com/surfaceview-sourcecode/)
 * [自定义View系列教程](http://blog.csdn.net/lfdfhl/article/details/51671038)
 * [自己总结：带有一键清空功能的EditText](http://blog.csdn.net/siobhan/article/details/51880433)
 * [浅谈Android自定义锁屏页的发车姿势](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577446&idx=2&sn=940cfe45f8da91277d1046d90368d440&scene=4#wechat_redirect)
+* [实现类似新浪微博帖子显示(2)——话题、@好友、表情解析工具类](http://blog.csdn.net/u011102153/article/details/52487049)
 
 
 -----------------
@@ -238,11 +248,12 @@
 
 ### [Content Providers](https://developer.android.com/guide/topics/providers/content-providers.html)
 * [Android数据库升级攻略](http://blog.csdn.net/s003603u/article/details/53942411)
+* [ContentProvider 的批处理操作](http://www.jianshu.com/p/aea405da3a97)
 
-### Permissions
+### Permissions 权限
 * [[CodePath] Understanding App Permissions](http://guides.codepath.com/android/Understanding-App-Permissions)
 * [[CodePath] Managing Runtime Permissions with PermissionsDispatcher](https://github.com/codepath/android_guides/wiki/Managing-Runtime-Permissions-with-PermissionsDispatcher)
-
+* [聊一聊Android 6.0的运行时权限](http://droidyue.com/blog/2016/01/17/understanding-marshmallow-runtime-permission/index.html)
 
 --------------
 
@@ -288,7 +299,7 @@
 #### Fresco
 * [Displaying Images with the Fresco Library](https://github.com/codepath/android_guides/wiki/Displaying-Images-with-the-Fresco-Library)
 
-### FileTransfer
+### FileTransfer  文件下载
 * [Android快速实现文件下载（只有4行代码）](http://www.jianshu.com/p/46fd1c253701)
 * [多线程断点下载](http://godcoder.me/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8B%E8%BD%BD/)
 
@@ -366,6 +377,8 @@
 * [android actionBar searchview 默认展开，并且放大镜图标在编辑框内。](http://www.aiuxian.com/article/p-1646546.html)
 * [Android实现点击AlertDialog上按钮时不关闭对话框的方法](http://www.w2bc.com/Article/23094)
 
+* [Splash实践](http://xesam.github.io/android/2016/09/30/Android-Splash%E5%AE%9E%E8%B7%B5.html)  ,  启动页、开屏页、广告页
+
 * [26款优秀的Android逆向工程工具](http://www.freebuf.com/sectool/111532.html)
 * [那些值得你试试的Android竞品分析工具](http://www.jianshu.com/p/ba2d9eca47a2)
 
@@ -378,6 +391,7 @@
 ### Android 相关
 * [AndroidUtils 自己总结](https://github.com/shenjianchun/AndroidUtils)
 * [Google Samples](https://github.com/googlesamples)
+* [Android开发人员不得不收集的代码](https://github.com/Blankj/AndroidUtilCode)
 * [project_and_code_guidelines](https://github.com/ribot/android-guidelines/blob/master/project_and_code_guidelines.md)
 
 ### 第三方扩展库
@@ -402,6 +416,7 @@ Extends or augments the Java Collections Framework.
 * [[CodePath] Architecture of Android Apps (Understanding how apps should be structured)](http://guides.codepath.com/android/Architecture-of-Android-Apps)
 * [最全的安卓架构合集](https://github.com/CameloeAnthony/AndroidArchitectureCollection)
 * [Google MVP Examples](https://github.com/googlesamples/android-architecture)
+* [Android架构思考：模块化、多进程](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650238737&idx=1&sn=e28e0ca6a112c730f157483dd6d83a41&chksm=88639e7ebf14176875438d6351e5936d762c46f38d8a292d4ab3817f5ba7ed7a58280009314e&mpshare=1&scene=1&srcid=0303ZcRlveSCrgaoFrkINDGf#rd)
 
 ### 响应式编程
 #### Rx*
@@ -417,18 +432,22 @@ Extends or augments the Java Collections Framework.
 
 ### Hybrid APP
 
-### 性能
+### 性能优化
 * [[Google] Best Practices for Performance](https://developer.android.com/training/best-performance.html)
-* [Android 性能优化系列](http://hukai.me/blog/categories/android-performance/)
+* [Android 性能优化典范系列](http://hukai.me/blog/categories/android-performance/)
 * [Android客户端性能优化（魅族资深工程师毫无保留奉献）](http://blog.tingyun.com/web/article/detail/155)
 
 #### UI 优化
+* [ Android性能优化-过度绘制解决方案](http://blog.csdn.net/a740169405/article/details/53896497)
+* [Android UI性能优化 检测应用中的UI卡顿](http://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650822205&idx=1&sn=6b8e78bc1d71eb79a199667cf132acf7&chksm=80b782a3b7c00bb5c12437556fca68136c75409855e9252e395b545621319edf23959942b67c&mpshare=1&scene=1&srcid=0301onUuDDCzkDFzqJ7xyf6K#rd)
+* 
 
 #### 内存优化
 
 * [Android DiskLruCache完全解析，硬盘缓存的最佳方案](http://blog.csdn.net/guolin_blog/article/details/28863651)
 * [安卓面试题 5 – 关于内存泄漏](http://www.iwfu.me/2016/08/02/%E5%AE%89%E5%8D%93%E9%9D%A2%E8%AF%95%E9%A2%98-5-%E5%85%B3%E4%BA%8E%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/)
 * [从OnTrimMemory角度谈Android代码内存优化](http://www.codeceo.com/article/android-ontrimmemory-mem.html)
+* [说一说Android Studio和IDEA中一个很有用的内存调试插件](https://muyinchen.github.io/2017/02/05/Android%20Studio%E5%92%8CIDEA%E4%B8%AD%E4%B8%80%E4%B8%AA%E5%BE%88%E6%9C%89%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98%E8%B0%83%E8%AF%95%E6%8F%92%E4%BB%B6/index.html)
 
 #### 网络优化
 * [APP弱网络条件下，体验优化之道](http://www.codexiu.cn/android/blog/27323/)
