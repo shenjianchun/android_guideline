@@ -1,5 +1,4 @@
 
-
 ## 开发工具
 ### IDE
 #### AndroidStudio
@@ -81,7 +80,6 @@
 
 #### ScrollView
 * [[CodePath] Working with the ScrollView](http://guides.codepath.com/android/Working-with-the-ScrollView)
-* [[CodePath] Implementing a Heterogenous ListView ScrollView](https://github.com/codepath/android_guides/wiki/Implementing-a-Heterogenous-ListView)
 
 #### Soft Keyboard
 * [[CodePath] Working with the Soft Keyboard](http://guides.codepath.com/android/Working-with-the-Soft-Keyboard)
@@ -127,10 +125,12 @@
 * [Scheduling Repeating Alarms](https://developer.android.com/training/scheduling/alarms.html)
 * [关于使用AlarmManager的注意事项](http://yuqirong.me/2017/01/21/%E5%85%B3%E4%BA%8E%E4%BD%BF%E7%94%A8AlarmManager%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/)
 * [ThreadPoolExecutor 官方使用说明](http://blog.csdn.net/siobhan/article/details/51282570)
+* [Android 倒计时的五种实现方式](https://juejin.im/post/58bead54ac502e006b2fe6e0)
 
 ### AdapterViews
 
 #### ListView
+* [[CodePath] Implementing a Heterogenous ListView (不同的Item)](https://guides.codepath.com/android/Implementing-a-Heterogenous-ListView)
 * [Android之ListView的getItemViewType和getViewTypeCount](http://www.cnblogs.com/RGogoing/p/5872217.html)
 
 #### RecyclerView
@@ -222,15 +222,19 @@
 * [自己总结：带有一键清空功能的EditText](http://blog.csdn.net/siobhan/article/details/51880433)
 * [浅谈Android自定义锁屏页的发车姿势](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577446&idx=2&sn=940cfe45f8da91277d1046d90368d440&scene=4#wechat_redirect)
 * [实现类似新浪微博帖子显示(2)——话题、@好友、表情解析工具类](http://blog.csdn.net/u011102153/article/details/52487049)
-
+* [NumberRunningTextView(数字会滚动的TextView) 数字滚动 金额](http://blog.csdn.net/chay_chan/article/details/70196478)
+* [高仿哔哩哔哩客户端的SearchView](http://www.jianshu.com/u/35e3fd5d8158)
+* [可展开和收起的LinearLayout](http://blog.csdn.net/chay_chan/article/details/72810770)
 
 -----------------
 
 ## Component
 ### Activity
+* [Android Activity / Fragment lifecycle](https://github.com/xxv/android-lifecycle) Activity生命周期 
 * [Activity 任务、返回栈、保存Activity的状态](http://blog.csdn.net/siobhan/article/details/51480368)
 * [ 彻底弄懂Activity四大启动模式](http://blog.csdn.net/mynameishuangshuai/article/details/51491074)
 * [[CodePath] Navigation and Task Stacks (Controlling the behavior of the task stack)](https://github.com/codepath/android_guides/wiki/Navigation-and-Task-Stacks)
+* [Activity启动模式二 - 四种标志位](http://ltlovezh.com/2016/09/03/Activity%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F%E4%BA%8C/)
 
 ### Broadcast
 * [BroadcastReceiver的注册和使用](http://blog.csdn.net/siobhan/article/details/51353980)
@@ -362,9 +366,15 @@
 * [Transitions-Everywhere](https://github.com/andkulikov/Transitions-Everywhere) Material Design 中 Transition动画，向后兼容	
 * [AndroidViewAnimations](https://github.com/daimajia/AndroidViewAnimations) Android Property Animation, Animator
 
+
+### Status Layout
+[progress-activity](https://github.com/vlonjatg/progress-activity)
+[StatefulLayout](https://github.com/chenpengfei88/StatusLayout)
+
 ---------
 
 ## TroubleShooting
+* [Application和四大组件启动时的方法顺序和相关注意事项](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650239403&idx=1&sn=8ead4afb522fb015055f42cd7a98d57e&chksm=886380c4bf1409d27832d477f5623ad92e3c91f387b5ad6952eaa3a63402b8ade09a8aed6fe5&mpshare=1&scene=1&srcid=0427qMjBLoUwTo0WlP8fVkNE#rd)
 * [Android进程保活招式大全](http://dev.qq.com/topic/57ac4a0ea374c75371c08ce8)
 * [Android-完全退出当前应用程序-新公司学习到的细节](http://gold.xitu.io/entry/57b599da79bc44005e120e67/view)
 * [Android子线程中更新UI的3种方法](http://gqdy365.iteye.com/blog/2112471)
@@ -417,6 +427,7 @@ Extends or augments the Java Collections Framework.
 * [最全的安卓架构合集](https://github.com/CameloeAnthony/AndroidArchitectureCollection)
 * [Google MVP Examples](https://github.com/googlesamples/android-architecture)
 * [Android架构思考：模块化、多进程](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650238737&idx=1&sn=e28e0ca6a112c730f157483dd6d83a41&chksm=88639e7ebf14176875438d6351e5936d762c46f38d8a292d4ab3817f5ba7ed7a58280009314e&mpshare=1&scene=1&srcid=0303ZcRlveSCrgaoFrkINDGf#rd)
+* [Android 项目最新架构 Googl提供](https://juejin.im/post/59526e18f265da6c3d6c0ac9)
 
 ### 响应式编程
 #### Rx*
@@ -447,6 +458,10 @@ Extends or augments the Java Collections Framework.
 * [Android DiskLruCache完全解析，硬盘缓存的最佳方案](http://blog.csdn.net/guolin_blog/article/details/28863651)
 * [安卓面试题 5 – 关于内存泄漏](http://www.iwfu.me/2016/08/02/%E5%AE%89%E5%8D%93%E9%9D%A2%E8%AF%95%E9%A2%98-5-%E5%85%B3%E4%BA%8E%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/)
 * [从OnTrimMemory角度谈Android代码内存优化](http://www.codeceo.com/article/android-ontrimmemory-mem.html)
+* [Android性能优化-内存泄漏的8个Case](http://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650822597&idx=1&sn=462b116f97623f239ecf667d3bdef446&chksm=80b7835bb7c00a4d4cbc9f7e19829d9a99f3cf58c1bc43dace16ffec58c98668927c9fa8dcda&mpshare=1&scene=1&srcid=0413ns2ttYv8gcH9gMKcYEBw#rd)
+* [Android 内存优化总结&实践](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653578816&idx=1&sn=20b6160e92167dde676561f3a43d0860&chksm=84b3b447b3c43d51c8042b58fef7dcb2755bdb4ceffaf8244b1e88acc6231411e3e9a5f0368f&mpshare=1&scene=1&srcid=0323oyuZJD6ttZteZXScZmcE#rd)
+* [Android 内存泄漏分析心得](http://mp.weixin.qq.com/s?__biz=MzAxMzYyNDkyNA==&mid=2651332688&idx=1&sn=88a3177af7431a4437171658ee1f61ce&chksm=80633363b714ba75f42a99351516c672d9d14c21773fb988f278252dc0ae569d585ffa74cae6&mpshare=1&scene=1&srcid=0223zb6WqIs56SEM4uobcCpv#rd)
+* [内存泄漏全解析](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650238704&idx=1&sn=ad334840afdc2d9bdb8215e9f942e54e&chksm=88639f9fbf1416898edfc3615a7ea25f6798e3bb6f3089ca720e18b92ce67328c623561cf35e&mpshare=1&scene=1&srcid=0228uEO5HKI2GAOlHPMhjmRO#rd)
 * [说一说Android Studio和IDEA中一个很有用的内存调试插件](https://muyinchen.github.io/2017/02/05/Android%20Studio%E5%92%8CIDEA%E4%B8%AD%E4%B8%80%E4%B8%AA%E5%BE%88%E6%9C%89%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98%E8%B0%83%E8%AF%95%E6%8F%92%E4%BB%B6/index.html)
 
 #### 网络优化
@@ -460,6 +475,7 @@ Extends or augments the Java Collections Framework.
 
 ### System
 * [详解 Android 是如何启动的](http://www.woaitqs.cc/android/2016/06/15/how-android-launch-itself.html)
+* [Android系统启动源码分析](http://blog.csdn.net/ynztlxdeai/article/details/69675754)
 
 ### AMS
 * [[译]Android Application启动流程分析](http://www.jianshu.com/p/a5532ecc8377)
@@ -470,7 +486,7 @@ Extends or augments the Java Collections Framework.
 
 ### InputSystem
 * [ Android 5.0(Lollipop)事件输入系统(Input System)](http://blog.csdn.net/jinzhuojun/article/details/41909159)
-* TouchEvent
+* TouchEvent & KeyEvent
 	* [可能是讲解 Android 事件分发最好的文章](http://www.jianshu.com/p/2be492c1df96)
 	* [ 那些你应该知道却不一定知道的——View坐标分析汇总](http://blog.csdn.net/mr_immortalz/article/details/51168278)
 
