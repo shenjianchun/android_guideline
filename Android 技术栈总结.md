@@ -463,6 +463,7 @@ Extends or augments the Java Collections Framework.
 * [Android 内存泄漏分析心得](http://mp.weixin.qq.com/s?__biz=MzAxMzYyNDkyNA==&mid=2651332688&idx=1&sn=88a3177af7431a4437171658ee1f61ce&chksm=80633363b714ba75f42a99351516c672d9d14c21773fb988f278252dc0ae569d585ffa74cae6&mpshare=1&scene=1&srcid=0223zb6WqIs56SEM4uobcCpv#rd)
 * [内存泄漏全解析](http://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650238704&idx=1&sn=ad334840afdc2d9bdb8215e9f942e54e&chksm=88639f9fbf1416898edfc3615a7ea25f6798e3bb6f3089ca720e18b92ce67328c623561cf35e&mpshare=1&scene=1&srcid=0228uEO5HKI2GAOlHPMhjmRO#rd)
 * [说一说Android Studio和IDEA中一个很有用的内存调试插件](https://muyinchen.github.io/2017/02/05/Android%20Studio%E5%92%8CIDEA%E4%B8%AD%E4%B8%80%E4%B8%AA%E5%BE%88%E6%9C%89%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98%E8%B0%83%E8%AF%95%E6%8F%92%E4%BB%B6/index.html)
+* [Process Stats:了解你的APP如何使用内存](http://blog.csdn.net/yingfengzhaozhan/article/details/50759809###;)
 
 #### 网络优化
 * [APP弱网络条件下，体验优化之道](http://www.codexiu.cn/android/blog/27323/)
