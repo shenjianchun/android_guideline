@@ -193,12 +193,12 @@
 
 #### Design Support Library
 * [[CodePath] Design Support Library (Material Design Library)](http://guides.codepath.com/android/Design-Support-Library)
- 
+
 #### Animation 动画
  * [[CodePath] Animations (Animating views, layouts, activities and more)](http://guides.codepath.com/android/Animations)
  * [[CodePath] Ripple Animation (Android 5.0)](http://guides.codepath.com/android/Ripple-Animation)
  * [[CodePath] Circular Reveal Animation (Android 5.0)](http://guides.codepath.com/android/Circular-Reveal-Animation)
- 
+
  * Activity 动画
 	 * [酷炫的Activity切换动画，打造更好的用户体验](http://blog.csdn.net/huachao1001/article/details/51659963)
 	 * [实现Activity跳转动画的五种方式](http://blog.csdn.net/qq_23547831/article/details/51821159)
@@ -407,6 +407,7 @@
 ### 第三方扩展库
 * [guava](https://github.com/google/guava) 
 The Guava project contains several of Google's core libraries that we rely on in our Java-based projects:   collections, caching, primitives support, concurrency libraries, common annotations, string processing, I/O, and so forth.
+	
 	> [Google Guava官方教程（中文版）](http://ifeve.com/google-guava/)
 	
 * [joda-time](https://github.com/JodaOrg/joda-time)
