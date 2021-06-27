@@ -69,6 +69,20 @@
 
 
 
+### 编译&打包
+
+* 知识点
+  * Gradle
+  * 编译
+  * 混淆
+  * 签名
+* 参考资料
+  * [浅谈Android打包流程](https://juejin.cn/post/6844903850453762055)
+  * [Android APK打包流程](https://juejin.cn/post/6844903838894260238)
+  * [配置构建 - Android官网](https://developer.android.google.cn/studio/build/)
+
+
+
 ## APP组件知识
 
 ### Activity
@@ -144,6 +158,7 @@
 
 * 知识点
   * Adapter、ViewHolder、LayoutManager
+  * 局部刷新
   * ItemDecoration
   * 动效|ItemAnimator 
   * 点击&长按
@@ -153,7 +168,7 @@
     	LinearSnapHelper
     	PagerSnapHelper
   * 进阶
-    	三级缓存
+    	四级缓存
 * 参考资料
   * [RecyclerView - Android官网文档](https://developer.android.com/guide/topics/ui/layout/recyclerview?hl=zh_cn)
   * [深入理解 RecyclerView 的缓存机制](https://juejin.cn/post/6844904146684870669)
@@ -181,6 +196,23 @@
   * [Working with the ImageView](https://github.com/codepath/android_guides/wiki/Working-with-the-ImageView)
 
 
+
+### Bitmap
+
+* 知识点
+  * Bitmap 与 density、dpi直接的关系
+  * Bitmap内存占用
+  * Bitmap加载、拉伸裁剪、保存
+  * Bitmap大图加载-BitmapRegionDecoder
+  * ThumbnailUtils类
+  * 图片加载的缓存策略：LRUCache
+  * 图片加载框架：Glide、Fresco
+* 参考资料
+  * 《Android开发艺术探索》
+  * [Android Bitmap 面面观](https://juejin.cn/post/6844903433313452040)
+  * [Android 开发绕不过的坑：你的 Bitmap 究竟占多大内存？](https://www.cnblogs.com/krislight1105/p/5203277.html)
+  * [Android Bitmap变迁与原理解析（4.x-8.x）](https://juejin.cn/post/6844903608887017485)
+  * [Android 高清加载巨图方案 拒绝压缩图片](https://blog.csdn.net/lmj623565791/article/details/49300989)
 
 ### Drawable
 
@@ -236,11 +268,111 @@
 
 ## APP架构
 
+### 综合知识
+
+* 参考资料
+  * [彻底理解Android架构](https://zhuanlan.zhihu.com/p/23772285)
+  * [官网 Android架构组件](https://developer.android.com/topic/libraries/architecture)
+
+
+
+### MVVM
+
+* 知识点
+* 参考资料
+  *  [如何构建Android MVVM 应用框架](https://tech.meituan.com/2016/11/11/android-mvvm.html)
+
+
+
+### 组件化
+
+* 知识点
+  * 组件化方案
+  * 页面路由
+* 参考资料
+  * [“终于懂了” 系列：Android组件化，全面掌握！](https://mp.weixin.qq.com/s/WSzpJXXocajJjmWgYem3fA)
+  * [阿里 ARouter 全面解析，总有你没了解的](https://mp.weixin.qq.com/s/LaEbPaIKu0TNR0ygI-yOSQ)
+
+
+
+### 插件化
+
+* 知识点
+  * class、dex基础知识
+  * ClassLoader原理
+    	如何hook Activity启动流程
+    	双亲委派
+  * 插件化原理
+  * 插件化框架学习
+* 参考资料
+  * [Android解析ClassLoader（一）Java中的ClassLoader](https://juejin.cn/post/6844903498291625992)
+  * [Android解析ClassLoader（二）Android中的ClassLoader](http://liuwangshu.cn/application/classloader/2-android-classloader.html)
+
+
+
+### 热修复
+
+
+
+
+
+## APP性能优化
+
+
+
+### 综合知识
+
+* 参考资料
+
+
+
+### 内存优化
+
+* 知识点
+  * 内存优化基础
+    	为什么要做内存优化
+    	什么是Dalvik和ART
+    	什么是低杀
+    	图片对内存有什么影响
+    	什么是内存泄露
+    	什么是内存抖动
+  * 内存优化方法
+    	Memory profile
+    	MAT
+    	LeakCanary
+    	怎么监听和获取系统内容
+* 参考资料
+  * [探索 Android 内存优化方法](https://juejin.cn/post/6844903897958449166)
+  * [Android 强、软、弱、虚引用 区别和使用场景](https://mp.weixin.qq.com/s/h5MzWRsfRTrrH4z3QIrSzQ)
+
+
+
+## Android安全
+
 
 
 
 
 ## Andorid系统源码分析
+
+### Android 系统启动
+
+
+
+### Android 消息机制
+
+* 知识点
+
+  * ThreadLocal
+  * 消息队列MessageQueue的工作原理
+  * Looper的工作原理
+  * Handler的工作原理
+
+* 参考资料
+
+  * 《Android开发艺术探索》
+
+  
 
 ### Android Input输入系统
 
@@ -251,10 +383,78 @@
   * [Android输入系统（二）IMS的启动过程和输入事件的处理](https://juejin.cn/post/6844903717574017038)
   * [Android输入系统（三）InputReader的加工类型和InputDispatcher的分发过程](http://liuwangshu.cn/framework/ims/3-inputdispatcher.html)
   * [Android输入系统（四）输入事件是如何分发到Window的？](https://juejin.cn/post/6844903761131880455)
-  * [Android4.1 InputManagerService 流程](https://blog.csdn.net/Siobhan/article/details/8014246)
+  * [Android4.1 InputManagerService 流程 - 自己总结](https://blog.csdn.net/Siobhan/article/details/8014246)
 
 
+
+### Android AMS系统分析
+
+* 知识点
+  * Application 应用启动流程
+* 参考资料
+  * [[译]Android Application启动流程分析](https://www.jianshu.com/p/a5532ecc8377)
+
+
+
+### Android WMS系统分析
+
+* 知识点
+* 参考资料
 
 
 
 ## Android 三方开源库
+
+### EventBus 事件总线
+
+* 知识点
+  * 使用
+  * 5种线程模型、3种事件类型
+  * 观察者模式解耦
+* 参考资料
+  * [EventBus源码解析](https://juejin.cn/post/6844904007199113229)
+
+
+
+### RxJava 
+
+* 知识点
+  * 常用操作符
+  * 线程调度
+  * 异常处理
+  * Flowable背压
+* 参考资料
+  * [RxJava2 只看这一篇文章就够了](https://juejin.cn/post/6844903617124630535#heading-211)
+  * [给初学者的RxJava2.0教程](https://www.jianshu.com/p/8818b98c44e2)
+  * [史上最简单的 RxJava 源码分析](https://zhuanlan.zhihu.com/p/129889972)
+
+### okhttp 
+
+* 知识点
+  * 拦截器（责任链模式）
+  * 超时重传&重定向
+  * Http缓存
+  * Socket连接池复用
+* 参考资料
+  * [Android开源框架源码鉴赏：Okhttp](https://juejin.cn/post/6844903557632622605)
+
+
+
+### Retrofit
+
+
+
+
+
+### Glide
+
+* 知识点
+  * 生命周期控制
+  * 异步加载、线程切换
+  * 缓存机制（四级缓存）
+  * 防止OOM
+  * 列表中加载图片如何设计？setTag、防止重复加载
+  * BitmapPool复用
+* 参考资料
+  * [面试官：简历上最好不要写Glide，不是问源码那么简单](https://juejin.cn/post/6844903986412126216)
+  * [Android 【手撕Glide】--Glide缓存机制](https://www.jianshu.com/p/b85f89fce019)
