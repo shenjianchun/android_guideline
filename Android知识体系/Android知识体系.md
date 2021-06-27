@@ -26,7 +26,7 @@
 
 ### Configuration
 * 知识点
-* Configuration Changed
+  * Configuration Changed
 * 参考资料
   * [官网 - 处理配置变更](https://developer.android.google.cn/guide/topics/resources/runtime-changes)
 
@@ -57,6 +57,15 @@
   * 《Android开发艺术探索》
   * [进程和应用生命周期](https://developer.android.google.cn/guide/components/activities/process-lifecycle)
   * [Android AIDL参数中in、out、inout、oneway含义及区别](http://nicethemes.cn/news/txtlist_i6454v.html)
+
+
+
+### 主题样式
+
+* 知识点
+  * <font color='red'> TODO</font>
+* 参考资料
+  * [Styles and Themes - code path - 使用](https://guides.codepath.com/android/Styles-and-Themes)
 
 
 
@@ -126,9 +135,90 @@
 
 
 
+### ConstraintLayout
+
+* 知识点
+* 参考资料
+
+### RecyclerView
+
+* 知识点
+  * Adapter、ViewHolder、LayoutManager
+  * ItemDecoration
+  * 动效|ItemAnimator 
+  * 点击&长按
+  * 下拉刷新 & 加载更多
+  * Header & Footer 
+  * SnapHelper
+    	LinearSnapHelper
+    	PagerSnapHelper
+  * 进阶
+    	三级缓存
+* 参考资料
+  * [RecyclerView - Android官网文档](https://developer.android.com/guide/topics/ui/layout/recyclerview?hl=zh_cn)
+  * [深入理解 RecyclerView 的缓存机制](https://juejin.cn/post/6844904146684870669)
+
+
+
+
+
+### WebView
+
+
+
+
+
+
+
+### ImageView
+
+* 知识点
+  * 使用、属性
+  * Scale Types
+  * ImageView和Bitmap
+  * SVG图片
+* 参考资料
+  * [Working with the ImageView](https://github.com/codepath/android_guides/wiki/Working-with-the-ImageView)
+
+
+
+### Drawable
+
+* 知识点
+  * ShapeDrawable
+  * StateListDrawable
+  * LayerListDrawable
+  * NinePatchDrawable
+  * VectorDrawable
+* 参考资料
+  * [Drawables - code path](https://guides.codepath.com/android/Drawables)
+  * 《Android开发艺术探索》
+
+
+
+## 动画
+
+* 知识点
+  * 动画类型（PropertyAnimation、Layout、Drawable、Fragment、Activity（overridePendingTransition、Transitions）
+  * 动画监听
+  * 插值器与估值器		
+* 参考资料
+  * [Animations - code path](https://guides.codepath.com/android/Animations)
+  * 《Android开发艺术探索》
+
+
+
 ## APP 后台任务
 
-
+* 知识点
+  * 决策树
+    	![此决策树可帮助您确定哪个类别最适合您的后台任务](https://developer.android.google.cn/images/guide/background/task-category-tree.png)
+  * 概括一下：**及时任务** 使用 Kotlin 协程、线程池、RxJava等，**延期任务**使用 WorkManager、JobSchedule，**精确任务** 使用 AlarmManager。
+    ![image-20210627182233527](C:\Users\shenj\AppData\Roaming\Typora\typora-user-images\image-20210627182233527.png)
+* 参考资料
+  * [官网文档 - 后台任务](https://developer.android.com/guide/background)
+  * [Notifications (Persistent Notices on the Dashboard) - code path](https://github.com/codepath/android_guides/wiki/Notifications)
+  * [Notification 使用](http://blog.csdn.net/siobhan/article/details/50856433)
 
 
 
@@ -151,6 +241,17 @@
 
 
 ## Andorid系统源码分析
+
+### Android Input输入系统
+
+* 知识点
+  * 
+* 参考资料
+  * [Android输入系统（一）输入事件传递流程和InputManagerService的诞生](https://juejin.cn/post/6844903703200137223)
+  * [Android输入系统（二）IMS的启动过程和输入事件的处理](https://juejin.cn/post/6844903717574017038)
+  * [Android输入系统（三）InputReader的加工类型和InputDispatcher的分发过程](http://liuwangshu.cn/framework/ims/3-inputdispatcher.html)
+  * [Android输入系统（四）输入事件是如何分发到Window的？](https://juejin.cn/post/6844903761131880455)
+  * [Android4.1 InputManagerService 流程](https://blog.csdn.net/Siobhan/article/details/8014246)
 
 
 
