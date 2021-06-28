@@ -65,7 +65,7 @@
 * 知识点
   * <font color='red'> TODO</font>
 * 参考资料
-  * [Styles and Themes - code path - 使用](https://guides.codepath.com/android/Styles-and-Themes)
+  * [Styles and Themes -  CodePath - 使用篇](https://guides.codepath.com/android/Styles-and-Themes)
 
 
 
@@ -119,7 +119,7 @@
   * 发送、接收广播如何限制
   * 注意事项（安全权限、生命周期、性能效率）
 * 参考资料
-  * [官网文档](https://developer.android.com/guide/components/broadcasts) 
+  * [Broadcast - 官网文档](https://developer.android.com/guide/components/broadcasts) 
 
 
 
@@ -131,7 +131,7 @@
   * 绑定服务（会抛异常）
   * AIDL
 * 参考资料
-  * [官网文档](https://developer.android.com/guide/components/services) 
+  * [Service - 官网文档](https://developer.android.com/guide/components/services) 
   * [Service自己的总结]( https://blog.csdn.net/Siobhan/article/details/51315974)  
 
 
@@ -223,7 +223,7 @@
   * NinePatchDrawable
   * VectorDrawable
 * 参考资料
-  * [Drawables - code path](https://guides.codepath.com/android/Drawables)
+  * [Drawables -  CodePath - 使用篇](https://guides.codepath.com/android/Drawables)
   * 《Android开发艺术探索》
 
 
@@ -235,7 +235,7 @@
   * 动画监听
   * 插值器与估值器		
 * 参考资料
-  * [Animations - code path](https://guides.codepath.com/android/Animations)
+  * [Animations -  CodePath - 使用篇](https://guides.codepath.com/android/Animations)
   * 《Android开发艺术探索》
 
 
@@ -249,7 +249,7 @@
     ![image-20210627182233527](C:\Users\shenj\AppData\Roaming\Typora\typora-user-images\image-20210627182233527.png)
 * 参考资料
   * [官网文档 - 后台任务](https://developer.android.com/guide/background)
-  * [Notifications (Persistent Notices on the Dashboard) - code path](https://github.com/codepath/android_guides/wiki/Notifications)
+  * [Notifications (Persistent Notices on the Dashboard) -  CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Notifications)
   * [Notification 使用](http://blog.csdn.net/siobhan/article/details/50856433)
 
 
@@ -262,7 +262,43 @@
 
 ## APP 网络操作
 
+### 网络基础
 
+* 知识点
+  * 
+* 参考资料
+  * [HTTPS 理论详解与实践](https://segmentfault.com/a/1190000004985253)
+  * [详解Https是如何确保安全的？](http://www.codeceo.com/article/https-make-safe.html)
+
+
+
+### Android原生网络API
+
+* 知识点
+* 参考资料
+  * [ Sending and Managing Network Requests (API Calls, Image Downloading) - CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Sending-and-Managing-Network-Requests)
+
+
+
+### 文件下载
+
+* 参考资料
+  * [多线程断点下载](http://godcoder.me/tags/多线程下载/)
+  * [Android快速实现文件下载（只有4行代码）](http://www.jianshu.com/p/46fd1c253701)
+
+
+
+### Socket
+
+* 参考资料
+  * [Sending and Receiving Data with Sockets - CodePath - 使用篇](http://guides.codepath.com/android/Sending-and-Receiving-Data-with-Sockets)
+
+
+
+### 网络框架
+
+* [Retrofit](#Retrofit)
+* [okhttp](#okhttp)
 
 
 
@@ -316,17 +352,19 @@
 
 
 
-## APP性能优化
+## APP性能优化 & 稳定性
 
 
 
 ### 综合知识
 
 * 参考资料
+  * [分享一波 Android 性能优化的总结！](https://mp.weixin.qq.com/s/MfIT_sV0xwt1UnGQWXCJIA)
+  * [性能与功耗 - Android官网](https://developer.android.com/topic/performance)
 
 
 
-### 内存优化
+### 内存知识与优化
 
 * 知识点
   * 内存优化基础
@@ -343,7 +381,36 @@
     	怎么监听和获取系统内容
 * 参考资料
   * [探索 Android 内存优化方法](https://juejin.cn/post/6844903897958449166)
+  * [Android内存管理知识百科](https://mp.weixin.qq.com/s/LCN3ACxbvtGLiahqokYxTw)
   * [Android 强、软、弱、虚引用 区别和使用场景](https://mp.weixin.qq.com/s/h5MzWRsfRTrrH4z3QIrSzQ)
+  * [看完这篇 LeakCanary 原理分析，又可以虐面试官了！](https://mp.weixin.qq.com/s/1jFY_22hoWgCw3CDo2rpOA)
+
+
+
+### 流畅性优化|卡顿优化
+
+* 知识点
+  * 
+* 参考资料
+  * [《广研Android卡顿监控系统》](https://mp.weixin.qq.com/s/MthGj4AwFPL2JrZ0x1i4fw)
+
+
+
+### 体积优化
+
+* 知识点
+* 参考资料
+  * [深入探索 Android 包体积优化（匠心制作-上）](https://juejin.cn/post/6844904103131234311)
+
+
+
+### 稳定性知识与优化
+
+* 知识点
+  * 
+* 参考资料
+  * [深入探索Android稳定性优化](https://juejin.cn/post/6844903972587716621)
+  * [卡顿、ANR、死锁监控方案](https://mp.weixin.qq.com/s/EzIbxeWexQv7ENDugT-UFg)
 
 
 
@@ -391,8 +458,10 @@
 
 * 知识点
   * Application 应用启动流程
+  * Activity扮演的角色（作用）
 * 参考资料
   * [[译]Android Application启动流程分析](https://www.jianshu.com/p/a5532ecc8377)
+  * [不怕面试再问 Activity，一次彻底地梳理清楚！](https://mp.weixin.qq.com/s/FdfBfyePoX2BI5OkXtmICA)
 
 
 
@@ -428,7 +497,9 @@
   * [给初学者的RxJava2.0教程](https://www.jianshu.com/p/8818b98c44e2)
   * [史上最简单的 RxJava 源码分析](https://zhuanlan.zhihu.com/p/129889972)
 
-### okhttp 
+
+
+### <span id="okhttp">okhttp</span>
 
 * 知识点
   * 拦截器（责任链模式）
@@ -436,13 +507,18 @@
   * Http缓存
   * Socket连接池复用
 * 参考资料
+  * [Networking with the OkHttp Library - CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Using-OkHttp)
   * [Android开源框架源码鉴赏：Okhttp](https://juejin.cn/post/6844903557632622605)
 
 
 
-### Retrofit
+### <span id="Retrofit">Retrofit</span>
 
-
+* 知识点
+  * 
+* 参考资料
+  * [深入浅出 Retrofit，这么牛逼的框架你们还不来看看？](https://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577186&idx=1&sn=1a5f6369faeb22b4b68ea39f25020d28&scene=1&srcid=06039K4A2eGkHPxLbKED09Mk)
+  * [Consuming APIs with Retrofit -  CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Consuming-APIs-with-Retrofit)
 
 
 
@@ -458,3 +534,11 @@
 * 参考资料
   * [面试官：简历上最好不要写Glide，不是问源码那么简单](https://juejin.cn/post/6844903986412126216)
   * [Android 【手撕Glide】--Glide缓存机制](https://www.jianshu.com/p/b85f89fce019)
+
+
+
+### LeakCanary
+
+* 知识点
+* 参考资料
+  * [看完这篇 LeakCanary 原理分析，又可以虐面试官了！](https://mp.weixin.qq.com/s/1jFY_22hoWgCw3CDo2rpOA)
