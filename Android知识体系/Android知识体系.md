@@ -1,5 +1,28 @@
 # Android知识体系
 
+
+
+## 公约与规划
+
+### 代码规范
+
+* 参考资料
+  * [Android 你不能忽略的代码命名规范](https://mp.weixin.qq.com/s?__biz=MzAxMTI4MTkwNQ==&mid=2650826155&idx=1&sn=57e9cd17654ea8edf4a729fe4330a6c2&chksm=80b7b135b7c03823b6231e745bf6df60457d400c5a67c8dbe0f0fda4992305b57664d5bee77d&scene=0&ascene=7&devicetype=android-27&version=26070238&nettype=no&abtest_cookie=BAABAAoACwASABMABAAjlx4AU5keAFqZHgBgmR4AAAA%3D&lang=zh_CN&pass_ticket=iU4M%2BzJqW87FwaIAGHydZcm4AObeVMCMpO2j8AzL7zI%3D&wx_header=1)
+  * [project_and_code_guidelines](https://github.com/ribot/android-guidelines/blob/master/project_and_code_guidelines.md)
+
+
+
+### 代码质量工具
+
+* 参考资料
+  * [让 CodeReview 这股清流再飞一会儿](http://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653578349&idx=1&sn=b428eaf77619d3c06598d881de18e0a2&chksm=84b3b66ab3c43f7ceeb79d2345e3c40db0d9b6f62f9e13c8b89721d87b961d08e43b3caa7123&mpshare=1&scene=1&srcid=1208mDpNPvf5iDks8VMwhuWv#rd)
+  * [使用Lint 和 Annotations来提升代码质量](http://www.jianshu.com/p/561998f9c3f0)
+  * [[Google\] Improve Your Code with Lint](https://developer.android.com/studio/write/lint.html)
+  * [[Google\] Improve Code Inspection with Annotations](https://developer.android.com/studio/write/annotations.html)
+  * [提高代码质量－工具篇](http://www.jianshu.com/p/d728b25777d4)
+
+
+
 ## 1. APP 结构
 
 ### Context 
@@ -149,10 +172,28 @@
 
 
 
+### include merge ViewStub
+
+* 知识点
+  * 
+* 参考资料
+  * [Android抽象布局——include、merge 、ViewStub](http://blog.csdn.net/xyz_lmn/article/details/14524567)
+
+
+
+### ViewSwitcher、TextSwitcher、ImageSwitcher
+
+* 知识点
+* 参考资料
+  * [ViewSwitcher、TextSwitcher、ImageSwitcher 使用方法](http://blog.csdn.net/siobhan/article/details/51166380)
+
+
+
 ### ConstraintLayout
 
 * 知识点
 * 参考资料
+  * [史上最全ConstraintLayout使用详解](https://mp.weixin.qq.com/s/V-jH0rlIUxgkjSbTV2WjrA)
 
 ### RecyclerView
 
@@ -179,7 +220,10 @@
 
 ### WebView
 
-
+* 知识点
+* 参考资料
+  * [Working with the WebView - CodePath - 使用篇](http://guides.codepath.com/android/Working-with-the-WebView) 
+  * [WebView你真的熟悉吗？看了才知道](http://www.jianshu.com/p/d2f5ae6b4927)
 
 
 
@@ -228,6 +272,14 @@
 
 
 
+### 窗口 window 
+
+* 知识点
+* 参考资料
+  * [像360悬浮窗那样，用WindowManager实现炫酷的悬浮迷你音乐盒（上）](http://www.jianshu.com/p/95ceb0a2ed27)
+
+
+
 ## 动画
 
 * 知识点
@@ -255,6 +307,58 @@
 
 
 ## APP 存储&持久化
+
+### 应用数据和文件
+
+* 参考资料
+  * [官网文档 - 应用数据存储](https://developer.android.google.cn/training/data-storage) 
+
+
+
+### Preferences
+
+
+
+
+
+### Provider
+
+* 知识点
+  * 权限
+  * 创建CP
+  * 读取或操作CP数据
+  * 创建和使用FileProvider
+
+* 参考资料
+  * [ContentProvider 的批处理操作](https://blog.csdn.net/siobhan/article/details/54983233)
+
+
+
+### Files
+
+* 知识点
+* 参考资料
+  * [数据和文件存储概览-Android官网](https://developer.android.google.cn/training/data-storage)
+  * [Android总结 - 保存数据](https://blog.csdn.net/siobhan/article/details/51145498)
+
+
+
+### SQLite
+
+* 知识点
+
+  * SQLiteOpenHelper （创建、CRUD）
+  * 批量操作（bultInsert、ContentProviderOperation）
+  * 升级、降级（逐版本升级）
+  * ORMs(数据库框架)
+
+* 参考资料
+
+  * [Local Databases with SQLiteOpenHelper - CodePath - 使用篇](https://guides.codepath.com/android/Local-Databases-with-SQLiteOpenHelper)
+
+  * [绝对值得一看的Android数据库升级攻略](https://blog.csdn.net/s003603u/article/details/53942411)
+
+    
 
 
 
@@ -427,11 +531,30 @@
 
 
 
+* 参考资料
+  * [那些值得你试试的Android竞品分析工具](http://www.jianshu.com/p/ba2d9eca47a2)
+  * [使用“aapt dump”查看APK内容](http://blog.sina.com.cn/s/blog_6294abe70101bkef.html)
+  * [Android 反编译初探 应用是如何被注入广告的](https://blog.csdn.net/lmj623565791/article/details/53370414)
+
+
+
+## Android JNI
+
+* 知识点
+* 参考资料
+  * [为何大厂APP如微信、支付宝、淘宝、手Q等只适配了armeabi-v7a/armeabi？](https://juejin.im/post/5eae6f86e51d454ddb0b3dc6)
+  * [关于Android的.so文件你所需要知道的](http://www.jianshu.com/p/cb05698a1968ß)
+  * [Android深入理解JNI - 刘望舒](http://liuwangshu.cn/framework/jni/2-signature-jnienv.html)
+
 
 
 ## Andorid系统源码分析
 
 ### Android 系统启动
+
+* 参考资料
+  * [详解 Android 是如何启动的](http://www.woaitqs.cc/android/2016/06/15/how-android-launch-itself.html)
+  * [Android系统启动源码分析](http://blog.csdn.net/ynztlxdeai/article/details/69675754)
 
 
 
@@ -478,6 +601,16 @@
 
 * 知识点
 * 参考资料
+  * [Android解析WindowManager - 刘望舒](http://liuwangshu.cn/framework/wm/3-add-window.html)
+  * [Android解析WindowManagerService - 刘望舒](http://liuwangshu.cn/framework/wms/1-wms-produce.html)
+
+
+
+### Android 显示系统
+
+* 知识点
+* 参考资料
+  * [Android UI 渲染机制的演进，你需要了解什么？](https://mp.weixin.qq.com/s/psrDADxwl782Fbs_vzxnQg)
 
 
 
