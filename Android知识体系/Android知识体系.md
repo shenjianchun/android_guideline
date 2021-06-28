@@ -246,7 +246,7 @@
   * 决策树
     	![此决策树可帮助您确定哪个类别最适合您的后台任务](https://developer.android.google.cn/images/guide/background/task-category-tree.png)
   * 概括一下：**及时任务** 使用 Kotlin 协程、线程池、RxJava等，**延期任务**使用 WorkManager、JobSchedule，**精确任务** 使用 AlarmManager。
-    ![image-20210627182233527](C:\Users\shenj\AppData\Roaming\Typora\typora-user-images\image-20210627182233527.png)
+    ![后台任务推荐方案](IMG\后台任务推荐方案.png)
 * 参考资料
   * [官网文档 - 后台任务](https://developer.android.com/guide/background)
   * [Notifications (Persistent Notices on the Dashboard) -  CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Notifications)
@@ -265,12 +265,21 @@
 ### 网络基础
 
 * 知识点
-  * 
+
+  * http & https的区别 
+
+    1、https协议需要到ca申请证书，一般免费证书较少，因而需要一定费用。
+    2、http是超文本传输协议，信息是明文传输，https则是具有安全性的ssl加密传输协议。
+    3、http和https使用的是完全不同的连接方式，用的端口也不一样，前者是80，后者是443。
+    4、http的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，比http协议安全。
+
+    
+
 * 参考资料
+
   * [HTTPS 理论详解与实践](https://segmentfault.com/a/1190000004985253)
   * [详解Https是如何确保安全的？](http://www.codeceo.com/article/https-make-safe.html)
-
-
+  * [请简述 Http 与 Https 的区别？](https://github.com/Moosphan/Android-Daily-Interview/issues/71)
 
 ### Android原生网络API
 
