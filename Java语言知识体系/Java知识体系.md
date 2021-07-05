@@ -132,7 +132,12 @@
 ### 线程
 
 * 知识点
-  * 使用线程，
+  * 使用线程
+    * sleep()
+    * yield()
+    * 中断
+  * 互斥同步
+    * synchronized：同步代码块，使用对象和类
   * 线程池
     * ThreadPoolExecutor的参数说明
 * 参考资料
@@ -165,29 +170,49 @@
 * 参考资料
   * [大白话带你认识JVM](https://juejin.cn/post/6844904048013869064#heading-28)
   * [JVM之内存结构图文详解](https://www.huaweicloud.com/articles/4799df506d5b9ae8bd0a5cb5247723b5.html)
+  * [Java虚拟机](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20%E8%99%9A%E6%8B%9F%E6%9C%BA.md)
 
 
 
-### 垃圾回收
+### 垃圾收集
 
-
+* 知识点
+  * 判断一个对象是否可被回收
+    * 引用计数算法
+    * 可达性分析算法
+    * 方法区的回收
+    * finalize
+  * 引用类型（强引用、软引用、弱引用、虚引用）
+  * 垃圾收集算法
+* 参考资料
+  * [Java虚拟机](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20%E8%99%9A%E6%8B%9F%E6%9C%BA.md)
 
 
 
 ### 内存分配和回收策略
 
-
-
-
+* 知识点
+  * Minor GC 和 Full GC
+  * 内存分配策略
+  * Full GC 的触发条件
+* 参考资料
+  * [Java虚拟机](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20%E8%99%9A%E6%8B%9F%E6%9C%BA.md)
 
 ### 类加载机制
 
 * 知识点
+  * 类的生命周期
+  * 类加载过程
+  * 类初始化时机
+  * 类与类加载器
+  * 类加载器分类
+  * 双亲委派模型
 * 参考资料
+  * [Java虚拟机](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20%E8%99%9A%E6%8B%9F%E6%9C%BA.md)
 
 
 
 ## 学习资料
 
-* [GitHub 星标 115k+的 Java 教程，超级硬核！](https://mp.weixin.qq.com/s/d7Z0QoChNuP9bTwAGh2QCw)
+* [GitHub 星标 115k+的 Java 教程，超级硬核！](https://github.com/CyC2018/CS-Notes)
 * 
