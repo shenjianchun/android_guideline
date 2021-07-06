@@ -216,7 +216,7 @@
   * [对比](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#对比)
 
 * 参考资料
-  * [Java IO使用总结](https://blog.csdn.net/Siobhan/article/details/51306200)
+  * [JDK10都发布了，nio你了解多少？](https://juejin.cn/post/6844903605669986317#heading-0)
 
 
 
