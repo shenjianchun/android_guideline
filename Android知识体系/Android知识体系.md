@@ -1,5 +1,7 @@
 # Android知识体系
 
+ 
+
 
 
 ## 公约与规划
@@ -103,6 +105,7 @@
   * [浅谈Android打包流程](https://juejin.cn/post/6844903850453762055)
   * [Android APK打包流程](https://juejin.cn/post/6844903838894260238)
   * [配置构建 - Android官网](https://developer.android.google.cn/studio/build/)
+  * [Android 代码混淆，到底做了什么？](https://mp.weixin.qq.com/s/zi3K7lXfSodHj6tUTLKxgg)
 
 
 
@@ -163,8 +166,6 @@
 
 * 知识点
 * 参考资料
-
-
 
 
 
