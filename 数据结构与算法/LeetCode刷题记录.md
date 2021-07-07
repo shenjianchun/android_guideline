@@ -3,10 +3,9 @@
 ### [LeetCode top 100](https://leetcode-cn.com/problemset/all/) 
 
 1. Two Sum [数组] [2021/7/7] - https://leetcode.com/problems/two-sum/ 
-
 2. add-two-numbers [列表] [2021/7/7] - https://leetcode-cn.com/problems/add-two-numbers/
-
-7. reverse-integer（整数反转） - https://leetcode-cn.com/problems/reverse-integer/
+7. 无重复字符的最长子串 [字符串|集合] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
+4. reverse-integer（整数反转）[2021/7/7] - https://leetcode-cn.com/problems/reverse-integer/
 
 
 
