@@ -176,9 +176,14 @@
 
 
 
-## Java IO
+## Java IO / NIO / NIO.2
+
+### Java IO
 
 * 知识点
+  
+  ![分类帮助记忆](https://user-gold-cdn.xitu.io/2018/5/14/1635daccc4d2bce3?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+  
   * [一、概览](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#一概览)
   * [二、磁盘操作](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#二磁盘操作)
   * 三、字节操作
@@ -198,12 +203,14 @@
     - [URL](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#url)
     - [Sockets](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#sockets)
     - [Datagram](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#datagram)
+  
 * 参考资料
+  
   * [Java IO使用总结](https://blog.csdn.net/Siobhan/article/details/51306200)
 
 
 
-## Java NIO
+### Java NIO
 
 * 知识点
   * [流与块](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#流与块)
@@ -217,6 +224,13 @@
 
 * 参考资料
   * [JDK10都发布了，nio你了解多少？](https://juejin.cn/post/6844903605669986317#heading-0)
+
+
+
+### Java 文件 I/O(采用 NIO.2)
+
+* 参考资料
+  * [文件 I/O(采用 NIO.2) - Java Tutorials 中文版](https://pingfangx.github.io/java-tutorials/essential/io/fileio.html)
 
 
 
