@@ -281,6 +281,32 @@
 
 
 
+### Android View事件体系
+
+* 知识点
+
+  * View坐标系 与 对象方法
+
+  * 
+
+    
+
+* 参考资料
+
+  * [那些你应该知道却不一定知道的——View坐标分析汇总](https://blog.csdn.net/mr_immortalz/article/details/51168278)
+
+  * [安卓自定义View进阶-多点触控详解](http://www.gcssloop.com/customview/multi-touch.html)
+
+    
+
+### Android 自定义View
+
+* 知识点
+* 参考资料
+  * [Android自定义View教程目录](http://www.gcssloop.com/category/customview.html)
+
+
+
 ## 动画
 
 * 知识点
@@ -572,18 +598,21 @@
 
   * 《Android开发艺术探索》
 
-  
+
+
 
 ### Android Input输入系统
 
 * 知识点
-  * 
+  * Input输入系统
+  * View的事件体系
 * 参考资料
   * [Android输入系统（一）输入事件传递流程和InputManagerService的诞生](https://juejin.cn/post/6844903703200137223)
   * [Android输入系统（二）IMS的启动过程和输入事件的处理](https://juejin.cn/post/6844903717574017038)
   * [Android输入系统（三）InputReader的加工类型和InputDispatcher的分发过程](http://liuwangshu.cn/framework/ims/3-inputdispatcher.html)
   * [Android输入系统（四）输入事件是如何分发到Window的？](https://juejin.cn/post/6844903761131880455)
   * [Android4.1 InputManagerService 流程 - 自己总结](https://blog.csdn.net/Siobhan/article/details/8014246)
+  * [可能是讲解Android事件分发最好的文章](https://cloud.tencent.com/developer/article/1179381)
 
 
 
