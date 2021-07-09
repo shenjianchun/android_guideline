@@ -6,7 +6,8 @@
 2. 2.add-two-numbers [列表] [2021/7/7] - https://leetcode-cn.com/problems/add-two-numbers/
 3. 3.无重复字符的最长子串 [字符串|集合] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
 4. 5.最长回文子串 [字符串]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
-5. 136.只出现一次的数字 - https://leetcode-cn.com/problems/single-number/
+5. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
+6. 15. 三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
 
 
 
