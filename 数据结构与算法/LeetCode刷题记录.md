@@ -7,7 +7,8 @@
 3. 3.无重复字符的最长子串 [字符串|集合] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
 4. 5.最长回文子串 [字符串]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
 5. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
-6. 15. 三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
+6. 15.三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
+7. 19.删除链表的倒数第 N 个结点 [链表] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
 
 
 
