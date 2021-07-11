@@ -5,13 +5,15 @@
 1. 1.Two Sum [数组] [2021/7/7] - https://leetcode.com/problems/two-sum/ 
 2. 2.add-two-numbers [列表] [2021/7/7] - https://leetcode-cn.com/problems/add-two-numbers/
 3. 3.无重复字符的最长子串 [字符串|集合] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
-4. 5.最长回文子串 [字符串]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
-5. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
-6. 15.三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
-7. 19.删除链表的倒数第 N 个结点 [链表] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
-8.  101.对称二叉树 [二叉树] [2021/7/10] -  https://leetcode-cn.com/problems/symmetric-tree/
-9.  141.环形链表 [链表] [2021/7/11]  -  https://leetcode-cn.com/problems/linked-list-cycle/
-10.  6.Z 字形变换 [字符串] [2021]
+4. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
+5. 15.三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
+6. 19.删除链表的倒数第 N 个结点 [链表] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
+7.  101.对称二叉树 [二叉树] [2021/7/10] -  https://leetcode-cn.com/problems/symmetric-tree/
+8.  141.环形链表 [链表] [2021/7/11]  -  https://leetcode-cn.com/problems/linked-list-cycle/
+9.  6.Z 字形变换 [字符串] [2021/7/11]  -  https://leetcode-cn.com/problems/zigzag-conversion/
+10.  160.相交链表 [链表] [2021/7/11] - https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
+11.  283.移动零 [数组] [2021/7/11]  -  https://leetcode-cn.com/problems/move-zeroes/
+12. 5.最长回文子串 [字符串]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
 
  
 
@@ -38,9 +40,7 @@
 
 # 二、刷题方法
 
-* 
 * [耗时3个月，近10W字的刷题笔记，多语言通吃，秒杀 80% Leetcode 题目！](https://juejin.cn/post/6962491739500183588?share_token=e44595f9-2f92-4f1c-b08b-0c72cd5360c4)
-
 * [LeetCode-Top100 - liuchuo](https://github.com/liuchuo/LeetCode-Top100)
-
 * [LeetCode Cook Book](https://books.halfrost.com/leetcode/)
+* [剑指Offer（java版）](https://github.com/todorex/Coding-Interviews)
