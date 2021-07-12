@@ -4,7 +4,7 @@
 
 
 
-## 公约与规划
+## 公约与规范
 
 ### 代码规范
 
@@ -222,6 +222,9 @@
 ### WebView
 
 * 知识点
+  * 在WebView中使用JavaScript，默认是关闭的；JS和Android之间相互调用，WebView使用`addJavascriptInterface()` 来给JS添加接口；但是出于安全原因，除非全部的代码都是自己所写，不然建议使用默认的浏览器。
+  * 网页导航
+    * 如果想要在应用中打开链接调整，则需要给WebView设置一个WebViewClient，使用WebViewClient中的` shouldOverrideUrlLoading` 可以响应网页中的超链接，可以对请求进行拦截。使用`goBack()` 和`goForward()`可以向后或向前浏览历史记录。
 * 参考资料
   * [Working with the WebView - CodePath - 使用篇](http://guides.codepath.com/android/Working-with-the-WebView) 
   * [WebView你真的熟悉吗？看了才知道](http://www.jianshu.com/p/d2f5ae6b4927)

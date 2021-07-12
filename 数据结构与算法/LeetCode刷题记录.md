@@ -13,7 +13,8 @@
 9.  6.Z 字形变换 [字符串] [2021/7/11]  -  https://leetcode-cn.com/problems/zigzag-conversion/
 10.  160.相交链表 [链表] [2021/7/11] - https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
 11.  283.移动零 [数组] [2021/7/11]  -  https://leetcode-cn.com/problems/move-zeroes/
-12. 5.最长回文子串 [字符串]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
+12.  20.有效的括号 [数组] [栈] [2021/7/12]  -  https://leetcode-cn.com/problems/valid-parentheses/
+13. 5.最长回文子串 [字符串] [动态规划] [中心扩散] [2021/7/12]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
 
  
 
