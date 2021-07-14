@@ -20,6 +20,7 @@
 16.  206.反转链表 [链表] [解决方法：迭代 | 递归] [2021/7/14]  -  https://leetcode-cn.com/problems/reverse-linked-list/
 17.  53.最大子序和 [数组] [解决方法：动态规划] [2021/7/14]  -  https://leetcode-cn.com/problems/maximum-subarray/
 18.  146.LRU 缓存机制 [解决方法：哈希 和 双向链表] [2021/7/14]  -  https://leetcode-cn.com/problems/lru-cache/
+19.  102.二叉树的层序遍历 [二叉树] [BFS | 队列] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))
 
 
 
