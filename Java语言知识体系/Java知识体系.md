@@ -149,7 +149,7 @@
   * LinkedList 
     	有使用过 LinkedList 吗？说一下它的底层实现 ？
 
-    ​	LinkedList 实现 栈、列表 
+    ​	LinkedList 实现 栈、列表 ，参考 [LinkedList实现栈、队列或者双端队列分析](https://blog.csdn.net/huangfan322/article/details/52756441)
 
   * CopyOnWriteArrayList 
     	如何实现线程安全的
