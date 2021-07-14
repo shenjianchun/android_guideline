@@ -31,8 +31,8 @@
 
 * 知识点
   * Context的使用
-  * Context的继承关系
-  * Context功能
+  * Context的继承关系（Context -> ContextImpl ; Context -> ContextWrapper -> Application、Activity、Service）
+  * Context功能（不同的Context类型都是调用ContextImpl的方法，但是有一些细微的差别，比如启动Activity、弹窗还是需要用Activity）
   * Context的数量	
 * 参考资料
   * [Android中Context的详细介绍](https://juejin.cn/post/6844903533989347336)
@@ -493,6 +493,12 @@
 
 
 
+### ASM 技术
+
+* 概念：ASM是一种通用Java字节码操作和分析框架。它可以用于修改现有的class文件或动态生成class文件。
+
+
+
 
 
 ## APP性能优化 & 稳定性
@@ -533,9 +539,41 @@
 ### 流畅性优化|卡顿优化
 
 * 知识点
-  * 
+
+  * 为什么会卡顿？
+
+  * 如何监控卡顿？
+
+    * 方案一：Looper#loop方法中的 logging.println，需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
+    * 方案二：通过Gradle Plugin+ASM，编译期在每个方法开始和结束位置分别插入一行代码，统计方法耗时。字节码插桩技术，适合线上。微信Matrix 。
+
+  * ANR的原理
+
+    * 哪些场景会造成ANR？
+
+      **Service Timeout**:比如前台服务在20s内未执行完成，后台服务是10s。
+
+      **BroadcastQueue Timeout**：比如前台广播在10s内未执行完成，后台60s。
+
+      **ContentProvider Timeout**：内容提供者,在publish过超时10s。
+
+      **InputDispatching Timeout**: 输入事件分发超时5s，包括按键和触摸事件。
+
+    * 在AMS中埋炸弹和拆炸弹（非输入事件）
+
+    * 引爆炸弹（非输入事件）
+
+      ##### **AppErrors #appNotResponding** 
+
+  * ANR分析法
+
+    * “/data/anr/tarce.txt” 文件
+    * 先查看主线程的状态，搜索“main”关键字
 * 参考资料
+  
+  * [卡顿、ANR、死锁，线上如何监控？](https://juejin.cn/post/6973564044351373326)
   * [《广研Android卡顿监控系统》](https://mp.weixin.qq.com/s/MthGj4AwFPL2JrZ0x1i4fw)
+  * [彻底理解安卓应用无响应机制](http://gityuan.com/2019/04/06/android-anr/)
 
 
 
@@ -642,6 +680,7 @@
 ### Android 显示系统
 
 * 知识点
+  * 渲染流程 vsync -> Choreographer.doFrame ->  Choreographer.doCallbacks -> ViewRootImpl.mTraversalRunnable.run -> ViewRootImpl.doTraversal() , removeSyncBarrier -> ViewRootImpl.performTraversals()
 * 参考资料
   * [Android UI 渲染机制的演进，你需要了解什么？](https://mp.weixin.qq.com/s/psrDADxwl782Fbs_vzxnQg)
 

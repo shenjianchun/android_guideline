@@ -145,11 +145,16 @@
     	如何自动增长的？
     	add和remove的流程是怎么样的？
     	ArrayList 在多线程使用应该注意什么?
+    
   * LinkedList 
     	有使用过 LinkedList 吗？说一下它的底层实现 ？
+
+    ​	LinkedList 实现 栈、列表 
+
   * CopyOnWriteArrayList 
     	如何实现线程安全的
     	add和remove的安全实现方式
+    
   * 对比
     	你在工作中对 ArrayList 和 LinkedList 是怎么选型的？
 * 参考资料

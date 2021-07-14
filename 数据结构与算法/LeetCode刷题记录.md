@@ -15,8 +15,10 @@
 11.  283.移动零 [数组] [2021/7/11]  -  https://leetcode-cn.com/problems/move-zeroes/
 12.  20.有效的括号 [数组] [栈] [2021/7/12]  -  https://leetcode-cn.com/problems/valid-parentheses/
 13. 5.最长回文子串 [字符串] [动态规划] [中心扩散] [2021/7/12]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
-
- 
+14.  560.和为K的子数组[数组] [解决方法：枚举|前缀和+哈希表优化] [2021/7/13] - https://leetcode-cn.com/problems/subarray-sum-equals-k/
+15. 78.子集 [数组] [二进制 迭代法 | 递归枚举] [2021/7/13]  -  https://leetcode-cn.com/problems/subsets/    （重点参考：https://leetcode-cn.com/problems/subsets/solution/er-jin-zhi-wei-zhu-ge-mei-ju-dfssan-chong-si-lu-9c/） 太难了
+16.  206.反转链表 [链表] [迭代 | 递归] [2021/7/14]  -  https://leetcode-cn.com/problems/reverse-linked-list/
+17. 
 
 
 
@@ -45,3 +47,4 @@
 * [LeetCode-Top100 - liuchuo](https://github.com/liuchuo/LeetCode-Top100)
 * [LeetCode Cook Book](https://books.halfrost.com/leetcode/)
 * [剑指Offer（java版）](https://github.com/todorex/Coding-Interviews)
+* [别人总结的字节跳动高频算法题 - 客户端](https://github.com/afatcoder/LeetcodeTop/blob/master/bytedance/client.md)
