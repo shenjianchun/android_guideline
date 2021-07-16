@@ -22,7 +22,10 @@
 18. 146.LRU 缓存机制 [解决方法：哈希 和 双向链表] [2021/7/14]  -  https://leetcode-cn.com/problems/lru-cache/
 19. 102.二叉树的层序遍历 [二叉树] [解决方法：BFS | 队列] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))
 20.  94.二叉树的中序遍历 [二叉树] [解决方法：递归 | 迭代+栈] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
-21. 
+21.  121.买卖股票的最佳时机 [数组] [2021/7/16]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
+22.  104.二叉树的最大深度 [二叉树] [解决方法：DFS | BFS] [2021/7/16]  -  https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+23.  236.二叉树的最近公共祖先 [二叉树] [解决方法：递归 | 存储父节点 + 哈希] [2021/7/16]  -  https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+24. 
 
 
 
@@ -33,6 +36,7 @@
 3.  21.合并两个有序链表 (链表) [2021/7/8] - https://leetcode-cn.com/problems/merge-two-sorted-lists/
 4. 35.搜索插入位置（数组） [2021/7/8]  -  https://leetcode-cn.com/problems/search-insert-position/ 
 5.  144.二叉树的前序遍历 [二叉树] [2021/7/15] - https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
+6.  145.二叉树的后序遍历 [二叉树] [2021/7/16]  -  https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
 
 
 
