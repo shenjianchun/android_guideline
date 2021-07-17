@@ -25,7 +25,7 @@
 21.  121.买卖股票的最佳时机 [数组] [2021/7/16]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
 22.  104.二叉树的最大深度 [二叉树] [解决方法：DFS | BFS] [2021/7/16]  -  https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
 23.  236.二叉树的最近公共祖先 [二叉树] [解决方法：递归 | 存储父节点 + 哈希] [2021/7/16]  -  https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
-24. 
+24.  4.寻找两个正序数组的中位数 [数组] [解决方法：暴力数组合并 | 二分法] [2021/7/17]   -  https://leetcode-cn.com/problems/median-of-two-sorted-arrays/
 
 
 
