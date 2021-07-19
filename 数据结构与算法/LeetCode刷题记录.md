@@ -3,35 +3,39 @@
 ### [LeetCode top 100](https://leetcode-cn.com/problem-list/2cktkvj/) 
 
 1. 1.Two Sum [数组] [2021/7/7] - https://leetcode.com/problems/two-sum/ 
-2. 2.add-two-numbers [列表] [2021/7/7] - https://leetcode-cn.com/problems/add-two-numbers/
-3. 3.无重复字符的最长子串 [字符串|集合] [解决方法：滑动窗口] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
-4. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
-5. 15.三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
-6. 19.删除链表的倒数第 N 个结点 [链表] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
-7. 101.对称二叉树 [二叉树] [2021/7/10] -  https://leetcode-cn.com/problems/symmetric-tree/
-8. 141.环形链表 [链表] [2021/7/11]  -  https://leetcode-cn.com/problems/linked-list-cycle/
-9. 6.Z 字形变换 [字符串] [2021/7/11]  -  https://leetcode-cn.com/problems/zigzag-conversion/
-10. 160.相交链表 [链表] [2021/7/11] - https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
-11. 283.移动零 [数组] [2021/7/11]  -  https://leetcode-cn.com/problems/move-zeroes/
-12. 20.有效的括号 [数组] [栈] [2021/7/12]  -  https://leetcode-cn.com/problems/valid-parentheses/
-13. 5.最长回文子串 [字符串] [动态规划] [中心扩散] [2021/7/12]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
-14. 560.和为K的子数组[数组] [解决方法：枚举|前缀和+哈希表优化] [2021/7/13] - https://leetcode-cn.com/problems/subarray-sum-equals-k/
-15. 78.子集 [数组] [二进制 迭代法 | 递归枚举] [2021/7/13]  -  https://leetcode-cn.com/problems/subsets/    （重点参考：https://leetcode-cn.com/problems/subsets/solution/er-jin-zhi-wei-zhu-ge-mei-ju-dfssan-chong-si-lu-9c/） 太难了
-16. 206.反转链表 [链表] [解决方法：迭代 | 递归] [2021/7/14]  -  https://leetcode-cn.com/problems/reverse-linked-list/
-17. 53.最大子序和 [数组] [解决方法：动态规划] [2021/7/14]  -  https://leetcode-cn.com/problems/maximum-subarray/
-18. 146.LRU 缓存机制 [解决方法：哈希 和 双向链表] [2021/7/14]  -  https://leetcode-cn.com/problems/lru-cache/
-19. 102.二叉树的层序遍历 [二叉树] [解决方法：BFS | 队列] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))
-20. 94.二叉树的中序遍历 [二叉树] [解决方法：递归 | 迭代+栈] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
-21. 121.买卖股票的最佳时机 [数组] [2021/7/16]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
-22. 104.二叉树的最大深度 [二叉树] [解决方法：DFS | BFS] [2021/7/16]  -  https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
-23. 236.二叉树的最近公共祖先 [二叉树] [解决方法：递归 | 存储父节点 + 哈希] [2021/7/16]  -  https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
-24. 4.寻找两个正序数组的中位数 [数组] [解决方法：暴力数组合并 | 二分法] [2021/7/17]   -  https://leetcode-cn.com/problems/median-of-two-sorted-arrays/
-25.  70.爬楼梯  [解决方案：动态规划] [2021/7/17]  -  https://leetcode-cn.com/problems/climbing-stairs/
-26.  56.合并区间 [二维数组] [解决方案：先排序后比较] [2021/7/18] -  https://leetcode-cn.com/problems/merge-intervals/
-27.  215.数组中的第K个最大元素 [数组] [解决方案：基于快速排序的选择方法] [2021/7/19]  -  https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
-28.  34.在排序数组中查找元素的第一个和最后一个位置 [数组] [解决方案：二分法查找] [2021/7/19]  -  https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
-29.  200.岛屿数量 [][][数组]  [解决方案：深度优先搜索 | 广度优先搜索] [2021/7/19]  -  https://leetcode-cn.com/problems/number-of-islands/
-30.  300.最长递增子序列 [数组] [解决方案：动态规划] [2021/7/19]  -  https://leetcode-cn.com/problems/longest-increasing-subsequence/
+2. 2.add-two-numbers [链表] [2021/7/7] - https://leetcode-cn.com/problems/add-two-numbers/
+3. 21.合并两个有序链表 [链表]  [2021/7/8] - https://leetcode-cn.com/problems/merge-two-sorted-lists/
+4. 3.无重复字符的最长子串 [字符串|集合] [解决方法：滑动窗口] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
+5. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
+6. 15.三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
+7. 19.删除链表的倒数第 N 个结点 [链表] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
+8. 101.对称二叉树 [二叉树] [2021/7/10] -  https://leetcode-cn.com/problems/symmetric-tree/
+9. 141.环形链表 [链表] [2021/7/11]  -  https://leetcode-cn.com/problems/linked-list-cycle/
+10. 6.Z 字形变换 [字符串] [2021/7/11]  -  https://leetcode-cn.com/problems/zigzag-conversion/
+11. 160.相交链表 [链表] [2021/7/11] - https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
+12. 283.移动零 [数组] [2021/7/11]  -  https://leetcode-cn.com/problems/move-zeroes/
+13. 20.有效的括号 [数组] [栈] [2021/7/12]  -  https://leetcode-cn.com/problems/valid-parentheses/
+14. 5.最长回文子串 [字符串] [动态规划] [中心扩散] [2021/7/12]  -  https://leetcode-cn.com/problems/longest-palindromic-substring/
+15. 560.和为K的子数组[数组] [解决方法：枚举|前缀和+哈希表优化] [2021/7/13] - https://leetcode-cn.com/problems/subarray-sum-equals-k/
+16. 78.子集 [数组] [二进制 迭代法 | 递归枚举] [2021/7/13]  -  https://leetcode-cn.com/problems/subsets/    （重点参考：https://leetcode-cn.com/problems/subsets/solution/er-jin-zhi-wei-zhu-ge-mei-ju-dfssan-chong-si-lu-9c/） 太难了
+17. 206.反转链表 [链表] [解决方法：迭代 | 递归] [2021/7/14]  -  https://leetcode-cn.com/problems/reverse-linked-list/
+18. 53.最大子序和 [数组] [解决方法：动态规划] [2021/7/14]  -  https://leetcode-cn.com/problems/maximum-subarray/
+19. 146.LRU 缓存机制 [解决方法：哈希 和 双向链表] [2021/7/14]  -  https://leetcode-cn.com/problems/lru-cache/
+20. 102.二叉树的层序遍历 [二叉树] [解决方法：BFS | 队列] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))
+21. 94.二叉树的中序遍历 [二叉树] [解决方法：递归 | 迭代+栈] [2021/7/15]  -  https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+22. 121.买卖股票的最佳时机 [数组] [2021/7/16]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
+23. 104.二叉树的最大深度 [二叉树] [解决方法：DFS | BFS] [2021/7/16]  -  https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+24. 236.二叉树的最近公共祖先 [二叉树] [解决方法：递归 | 存储父节点 + 哈希] [2021/7/16]  -  https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+25. 4.寻找两个正序数组的中位数 [数组] [解决方法：暴力数组合并 | 二分法] [2021/7/17]   -  https://leetcode-cn.com/problems/median-of-two-sorted-arrays/
+26. 70.爬楼梯  [解决方案：动态规划] [2021/7/17]  -  https://leetcode-cn.com/problems/climbing-stairs/
+27. 56.合并区间 [二维数组] [解决方案：先排序后比较] [2021/7/18] -  https://leetcode-cn.com/problems/merge-intervals/
+28. 215.数组中的第K个最大元素 [数组] [解决方案：基于快速排序的选择方法] [2021/7/19]  -  https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
+29. 34.在排序数组中查找元素的第一个和最后一个位置 [数组] [解决方案：二分法查找] [2021/7/19]  -  https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+30. 200.岛屿数量 [][][数组]  [解决方案：深度优先搜索 | 广度优先搜索] [2021/7/19]  -  https://leetcode-cn.com/problems/number-of-islands/
+31. 300.最长递增子序列 [数组] [解决方案：动态规划] [2021/7/19]  -  https://leetcode-cn.com/problems/longest-increasing-subsequence/
+32.  394.字符串解码 [字符串] [解决方案：辅助栈，注意数字大于10的情况] [2021/7/19]  -  https://leetcode-cn.com/problems/decode-string/
+33.  48.旋转图像 [数组] [解决方案：方案三：数组翻转，先上下再对线] [2021/7/19]  -  https://leetcode-cn.com/problems/rotate-image/
+34.  42.接雨水 [] [] []  -  https://leetcode-cn.com/problems/trapping-rain-water/
 
 
 
@@ -45,7 +49,6 @@
 
 1. reverse-integer（整数反转）[2021/7/7] - https://leetcode-cn.com/problems/reverse-integer/
 2. 9.回文数 （整数）[2021/7/8] - https://leetcode-cn.com/problems/palindrome-number/
-3.  21.合并两个有序链表 (链表) [2021/7/8] - https://leetcode-cn.com/problems/merge-two-sorted-lists/
 4. 35.搜索插入位置（数组） [2021/7/8]  -  https://leetcode-cn.com/problems/search-insert-position/ 
 5.  144.二叉树的前序遍历 [二叉树] [2021/7/15] - https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
 6.  145.二叉树的后序遍历 [二叉树] [2021/7/16]  -  https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
