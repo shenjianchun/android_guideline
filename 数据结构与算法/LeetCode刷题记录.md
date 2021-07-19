@@ -28,7 +28,16 @@
 24. 4.寻找两个正序数组的中位数 [数组] [解决方法：暴力数组合并 | 二分法] [2021/7/17]   -  https://leetcode-cn.com/problems/median-of-two-sorted-arrays/
 25.  70.爬楼梯  [解决方案：动态规划] [2021/7/17]  -  https://leetcode-cn.com/problems/climbing-stairs/
 26.  56.合并区间 [二维数组] [解决方案：先排序后比较] [2021/7/18] -  https://leetcode-cn.com/problems/merge-intervals/
-27.  215.数组中的第K个最大元素 [] [] []  -  https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
+27.  215.数组中的第K个最大元素 [数组] [解决方案：基于快速排序的选择方法] [2021/7/19]  -  https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
+28.  34.在排序数组中查找元素的第一个和最后一个位置 [数组] [解决方案：二分法查找] [2021/7/19]  -  https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+29.  200.岛屿数量 [][][数组]  [解决方案：深度优先搜索 | 广度优先搜索] [2021/7/19]  -  https://leetcode-cn.com/problems/number-of-islands/
+30.  300.最长递增子序列 [数组] [解决方案：动态规划] [2021/7/19]  -  https://leetcode-cn.com/problems/longest-increasing-subsequence/
+
+
+
+
+
+
 
 
 
