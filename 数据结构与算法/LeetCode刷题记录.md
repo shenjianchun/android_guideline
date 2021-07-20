@@ -8,7 +8,7 @@
 4. 3.无重复字符的最长子串 [字符串|集合] [解决方法：滑动窗口] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
 5. 136.只出现一次的数字[数组] [2021/7/9] - https://leetcode-cn.com/problems/single-number/
 6. 15.三数之和 [数组] [2021/7/9] - https://leetcode-cn.com/problems/3sum/
-7. 19.删除链表的倒数第 N 个结点 [链表] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
+7. 19.删除链表的倒数第 N 个结点 [链表] [解决方案：] [2021/7/10] - https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
 8. 101.对称二叉树 [二叉树] [2021/7/10] -  https://leetcode-cn.com/problems/symmetric-tree/
 9. 141.环形链表 [链表] [2021/7/11]  -  https://leetcode-cn.com/problems/linked-list-cycle/
 10. 6.Z 字形变换 [字符串] [2021/7/11]  -  https://leetcode-cn.com/problems/zigzag-conversion/
@@ -35,7 +35,12 @@
 31. 300.最长递增子序列 [数组] [解决方案：动态规划] [2021/7/19]  -  https://leetcode-cn.com/problems/longest-increasing-subsequence/
 32.  394.字符串解码 [字符串] [解决方案：辅助栈，注意数字大于10的情况] [2021/7/19]  -  https://leetcode-cn.com/problems/decode-string/
 33.  48.旋转图像 [数组] [解决方案：方案三：数组翻转，先上下再对线] [2021/7/19]  -  https://leetcode-cn.com/problems/rotate-image/
-34.  42.接雨水 [] [] []  -  https://leetcode-cn.com/problems/trapping-rain-water/
+34.  42.接雨水 [数组] [解决方案：方案一，动态规划，空间换时间。还有两种方法没有实践] [2021/7/20]  -  https://leetcode-cn.com/problems/trapping-rain-water/
+35.  46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20]  -  https://leetcode-cn.com/problems/permutations/  （重点参考：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/）
+36.  62.不同路径 [] [] []  -  https://leetcode-cn.com/problems/unique-paths/
+37.  23.合并K个升序链表  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
+38.  739.每日温度  -   https://leetcode-cn.com/problems/daily-temperatures/
+39.  75.颜色分类  -  https://leetcode-cn.com/problems/sort-colors/
 
 
 
