@@ -40,7 +40,16 @@
 36.  62.不同路径 [数组] [解决方案：动态规划（f(i)(j) = f(i-1) (j)+ f(i)(j-1)）] [2021/7/21]  -  https://leetcode-cn.com/problems/unique-paths/
 37.  23.合并K个升序链表 [链表] [解决方案：顺序合并 | 分治合并] [2021/7/21]  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
 38.  739.每日温度 [数组] [解决方案：暴力 | 动态规划] [2021/7/21]  -   https://leetcode-cn.com/problems/daily-temperatures/
-39.  75.颜色分类  -  https://leetcode-cn.com/problems/sort-colors/
+39.   617.合并二叉树 [二叉树] [解决方案：深度优先搜索 | 广度优先搜索 ] [2021/7/22]  -  https://leetcode-cn.com/problems/merge-two-binary-trees/
+40. 75.颜色分类  [数组] [解决方案：双指针，类似快速排序 | API | 新建一个数组] [2021/7/22]  -  https://leetcode-cn.com/problems/sort-colors/
+41.  128.最长连续序列 [数组] [解决方案：排序后遍历 | 哈希表] [2021/7/22] -  https://leetcode-cn.com/problems/longest-consecutive-sequence/
+42.  142.环形链表 II [链表] [解决方案：哈希表 | 快慢指针，计算公式] [2021/7/22]  -  https://leetcode-cn.com/problems/linked-list-cycle-ii/
+43.  155.最小栈 [] [] [] -  https://leetcode-cn.com/problems/min-stack/
+44.  148.排序链表 [] [] []  -  https://leetcode-cn.com/problems/sort-list/
+45.  98.验证二叉搜索树 [] [] []  - https://leetcode-cn.com/problems/validate-binary-search-tree/
+46.  39.组合总和  [] [] []   -  https://leetcode-cn.com/problems/combination-sum/
+47.  448.找到所有数组中消失的数字  [] [] []  -  https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/
+48. 
 
 
 
