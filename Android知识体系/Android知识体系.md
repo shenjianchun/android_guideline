@@ -52,6 +52,8 @@
 ### Configuration
 * 知识点
   * Configuration Changed
+    * 在配置变更期间保留对象（onSaveInstanceState()、ViewModel 和持久存储）
+    * 自行处理配置变更
 * 参考资料
   * [官网 - 处理配置变更](https://developer.android.google.cn/guide/topics/resources/runtime-changes)
 
