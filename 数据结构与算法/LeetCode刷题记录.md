@@ -44,7 +44,7 @@
 40. 75.颜色分类  [数组] [解决方案：双指针，类似快速排序 | API | 新建一个数组] [2021/7/22]  -  https://leetcode-cn.com/problems/sort-colors/
 41.  128.最长连续序列 [数组] [解决方案：排序后遍历 | 哈希表] [2021/7/22] -  https://leetcode-cn.com/problems/longest-consecutive-sequence/
 42.  142.环形链表 II [链表] [解决方案：哈希表 | 快慢指针，计算公式] [2021/7/22]  -  https://leetcode-cn.com/problems/linked-list-cycle-ii/
-43.  155.最小栈 [] [] [] -  https://leetcode-cn.com/problems/min-stack/
+43.  155.最小栈 [栈] [解决方案：使用辅助栈保存最小值] [2021/7/23] -  https://leetcode-cn.com/problems/min-stack/
 44.  148.排序链表 [] [] []  -  https://leetcode-cn.com/problems/sort-list/
 45.  98.验证二叉搜索树 [] [] []  - https://leetcode-cn.com/problems/validate-binary-search-tree/
 46.  39.组合总和  [] [] []   -  https://leetcode-cn.com/problems/combination-sum/

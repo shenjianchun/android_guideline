@@ -54,7 +54,7 @@
   * Configuration Changed
     * 在配置变更期间保留对象（可以通过三种方式：onSaveInstanceState()、ViewModel 和持久存储）。 
     
-      [Bundle](https://developer.android.google.cn/reference/android/os/Bundle) 对象并不适合保留大量数据，因为它需要在主线程上进行序列化处理并占用系统进程内存。如需保存大量数据，您应组合使用持久性本地存储、[onSaveInstanceState()](https://developer.android.google.cn/reference/android/app/Activity#onSaveInstanceState(android.os.Bundle)) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 对象并不适合保留大量数据，因为它需要在主线程上进行序列化处理并占用系统进程内存。如需保存大量数据，您应组合使用持久性本地存储、[onSaveInstanceState()](https://developer.android.google.cn/reference/android/app/Activity#onSaveInstanceState(android.os.Bundle)) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 类来保存数据，正如[保存界面状态](https://developer.android.google.cn/topic/libraries/architecture/saving-states)中所述。
+      [Bundle](https://developer.android.google.cn/reference/android/os/Bundle) 对象并不适合保留大量数据，因为它需要在主线程上进行序列化处理并占用系统进程内存。如需保存大量数据，您应组合使用持久性本地存储、[onSaveInstanceState()](https://developer.android.google.cn/reference/android/app/Activity#onSaveInstanceState(android.os.Bundle)) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 类来保存数据，正如[保存界面状态](https://developer.android.google.cn/topic/libraries/architecture/saving-states)中所述。
     
       > **注意**：为了使 Android 系统恢复 Activity 中视图的状态，每个视图必须具有 `android:id` 属性提供的唯一 ID。
     
