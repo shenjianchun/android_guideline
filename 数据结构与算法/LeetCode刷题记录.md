@@ -33,23 +33,27 @@
 29. 34.在排序数组中查找元素的第一个和最后一个位置 [数组] [解决方案：二分法查找] [2021/7/19]  -  https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 30. 200.岛屿数量 [][][数组]  [解决方案：深度优先搜索 | 广度优先搜索] [2021/7/19]  -  https://leetcode-cn.com/problems/number-of-islands/
 31. 300.最长递增子序列 [数组] [解决方案：动态规划] [2021/7/19]  -  https://leetcode-cn.com/problems/longest-increasing-subsequence/
-32.  394.字符串解码 [字符串] [解决方案：辅助栈，注意数字大于10的情况] [2021/7/19]  -  https://leetcode-cn.com/problems/decode-string/
-33.  48.旋转图像 [数组] [解决方案：方案三：数组翻转，先上下再对线] [2021/7/19]  -  https://leetcode-cn.com/problems/rotate-image/
-34.  42.接雨水 [数组] [解决方案：方案一，动态规划，空间换时间。还有两种方法没有实践] [2021/7/20]  -  https://leetcode-cn.com/problems/trapping-rain-water/
-35.  46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20]  -  https://leetcode-cn.com/problems/permutations/  （重点参考：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/）
-36.  62.不同路径 [数组] [解决方案：动态规划（f(i)(j) = f(i-1) (j)+ f(i)(j-1)）] [2021/7/21]  -  https://leetcode-cn.com/problems/unique-paths/
-37.  23.合并K个升序链表 [链表] [解决方案：顺序合并 | 分治合并] [2021/7/21]  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
-38.  739.每日温度 [数组] [解决方案：暴力 | 动态规划] [2021/7/21]  -   https://leetcode-cn.com/problems/daily-temperatures/
-39.   617.合并二叉树 [二叉树] [解决方案：深度优先搜索 | 广度优先搜索 ] [2021/7/22]  -  https://leetcode-cn.com/problems/merge-two-binary-trees/
+32. 394.字符串解码 [字符串] [解决方案：辅助栈，注意数字大于10的情况] [2021/7/19]  -  https://leetcode-cn.com/problems/decode-string/
+33. 48.旋转图像 [数组] [解决方案：方案三：数组翻转，先上下再对线] [2021/7/19]  -  https://leetcode-cn.com/problems/rotate-image/
+34. 42.接雨水 [数组] [解决方案：方案一，动态规划，空间换时间。还有两种方法没有实践] [2021/7/20]  -  https://leetcode-cn.com/problems/trapping-rain-water/
+35. 46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20]  -  https://leetcode-cn.com/problems/permutations/  （重点参考：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/）
+36. 62.不同路径 [数组] [解决方案：动态规划（f(i)(j) = f(i-1) (j)+ f(i)(j-1)）] [2021/7/21]  -  https://leetcode-cn.com/problems/unique-paths/
+37. 23.合并K个升序链表 [链表] [解决方案：顺序合并 | 分治合并] [2021/7/21]  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
+38. 739.每日温度 [数组] [解决方案：暴力 | 动态规划] [2021/7/21]  -   https://leetcode-cn.com/problems/daily-temperatures/
+39. 617.合并二叉树 [二叉树] [解决方案：深度优先搜索 | 广度优先搜索 ] [2021/7/22]  -  https://leetcode-cn.com/problems/merge-two-binary-trees/
 40. 75.颜色分类  [数组] [解决方案：双指针，类似快速排序 | API | 新建一个数组] [2021/7/22]  -  https://leetcode-cn.com/problems/sort-colors/
-41.  128.最长连续序列 [数组] [解决方案：排序后遍历 | 哈希表] [2021/7/22] -  https://leetcode-cn.com/problems/longest-consecutive-sequence/
-42.  142.环形链表 II [链表] [解决方案：哈希表 | 快慢指针，计算公式] [2021/7/22]  -  https://leetcode-cn.com/problems/linked-list-cycle-ii/
-43.  155.最小栈 [栈] [解决方案：使用辅助栈保存最小值] [2021/7/23] -  https://leetcode-cn.com/problems/min-stack/
-44.  148.排序链表 [链表 | 排序] [解决方案：自顶向下归并排序  |  自底向上归并排序] [2021/7/23]  -  https://leetcode-cn.com/problems/sort-list/
-45.  98.验证二叉搜索树 [二叉树] [解决方案：递归，左小右大 | 中序遍历 + 栈] [2021/7/23]  - https://leetcode-cn.com/problems/validate-binary-search-tree/
-46.  39.组合总和  [] [] []   -  https://leetcode-cn.com/problems/combination-sum/
-47.  448.找到所有数组中消失的数字  [] [] []  -  https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/
-48. 
+41. 128.最长连续序列 [数组] [解决方案：排序后遍历 | 哈希表] [2021/7/22] -  https://leetcode-cn.com/problems/longest-consecutive-sequence/
+42. 142.环形链表 II [链表] [解决方案：哈希表 | 快慢指针，计算公式] [2021/7/22]  -  https://leetcode-cn.com/problems/linked-list-cycle-ii/
+43. 155.最小栈 [栈] [解决方案：使用辅助栈保存最小值] [2021/7/23] -  https://leetcode-cn.com/problems/min-stack/
+44. 148.排序链表 [链表 | 排序] [解决方案：自顶向下归并排序  |  自底向上归并排序] [2021/7/23]  -  https://leetcode-cn.com/problems/sort-list/
+45. 98.验证二叉搜索树 [二叉树] [解决方案：递归，左小右大 | 中序遍历 + 栈] [2021/7/23]  - https://leetcode-cn.com/problems/validate-binary-search-tree/
+46.  448.找到所有数组中消失的数字  [数组] [解决方案：哈希 | 原地修改] [2021/7/23]  -  https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/
+47. 39.组合总和  [] [] []   -  https://leetcode-cn.com/problems/combination-sum/
+48.  322.零钱兑换 [] [] []  -  https://leetcode-cn.com/problems/coin-change/
+49.  438.找到字符串中所有字母异位词 [] [] []  -  https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/ 
+50.  534.二叉树的直径  [] [] [] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
+51.  85.最大矩形 []  []  []   -   https://leetcode-cn.com/problems/maximal-rectangle/
+52.  [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [] [] []  -  https://leetcode-cn.com/problems/path-sum-iii/
 
 
 
@@ -73,9 +77,11 @@
 
 ### [LeetCode - 剑指 Offer（第 2 版）](https://leetcode-cn.com/problem-list/xb9nqhhg/)
 
+1. 剑指 Offer 09. 用两个栈实现队列  [] [] []  -  https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/
+2. 剑指 Offer 36. 二叉搜索树与双向链表  [] [] []  -  https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
+3. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [] [] []   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
 
-
-
+ 
 
 # 二、刷题方法
 
