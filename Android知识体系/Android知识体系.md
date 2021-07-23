@@ -58,8 +58,9 @@
     
       > **注意**：为了使 Android 系统恢复 Activity 中视图的状态，每个视图必须具有 `android:id` 属性提供的唯一 ID。
     
-    * 自行处理配置变更，在Manifest的Activity tag中添加 [android:configChanges](https://developer.android.google.cn/guide/topics/manifest/activity-element#config)  ，复写Activity的 [onConfigurationChanged()](https://developer.android.google.cn/reference/android/app/Activity#onconfigurationchanged) 函数，当调用 onConfigurationChanged 的时候，Activity的Resource对象响应的会进行更新
+    * 自行处理配置变更，在Manifest的Activity tag中添加 [android:configChanges](https://developer.android.google.cn/guide/topics/manifest/activity-element#config)  ，复写Activity的 [onConfigurationChanged()](https://developer.android.google.cn/reference/android/app/Activity#onconfigurationchanged) 函数，当调用 onConfigurationChanged 的时候，Activity的Resource对象响应的会进行更新。
 * 参考资料
+  
   * [官网 - 处理配置变更](https://developer.android.google.cn/guide/topics/resources/runtime-changes)
 
 
