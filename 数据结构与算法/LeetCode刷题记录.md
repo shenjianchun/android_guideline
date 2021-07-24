@@ -78,8 +78,9 @@
 ### [LeetCode - 剑指 Offer（第 2 版）](https://leetcode-cn.com/problem-list/xb9nqhhg/)
 
 1. 剑指 Offer 09. 用两个栈实现队列  [栈、队列] [解决方案：双栈] [2021/7/24]  -  https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/
-2. 剑指 Offer 36. 二叉搜索树与双向链表  [] [] []  -  https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
-3. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [] [] []   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
+2. 剑指 Offer 27. 二叉树的镜像 [二叉树] [解决方案：递归或迭代，层序遍历] [2021/7/24]  -  https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/
+3. 剑指 Offer 36. 二叉搜索树与双向链表  [] [] []  -  https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
+4. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [] [] []   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
 
  
 

@@ -68,23 +68,50 @@
 ### 进程和IPC
 
 * 知识点
-  * 进程的优先级（前台进程、可见进程、服务进程、缓存进程）
+  * 进程的优先级
+
+    * 前台进程 （有一个Activity在前台操作 或  BroadcastReceiver正在运行 或  Service正在执行某个回调）
+    * 可见进程 （有Activity在前台但不可操作 或 有前台服务  或 系统正在使用其托管的某个服务）
+    * 服务进程 （包含一个使用startService方法启动的Service）
+    * 缓存进程 （暂时不需要用的进程）
+
+    > 进程的优先级也可能因从属于进程的其他依赖项而提升。例如，如果进程 A 已通过 Context.BIND_AUTO_CREATE 标记绑定到 Service，或在使用进程 B 中的 ContentProvider，则进程 B 的分类始终至少和进程 A 一样重要。
+
   * APP多进程实现
     * 如何开启多进程？如何实现私有进程？
+    
+      四大组件的申明的时候加上 `android:process=`标签，process名字如果直接写成“ :remote” 则说明是此前应用的子进程，其他应用的组件不可以和它跑在同一个进程中。而process名字不以“：” 开头的，则表示为全局进程，其他应用可以通过SharedUID方式和它跑在同一个进程中。
+    
     * 多进程引发的问题
-  * 进程保活
-    * lowmemorykiller   、 oom_adj 
-    * 提高进程优先级
-    * 杀死之后再次拉起
+    
+      1. 静态成员和单例模式失效
+      2. 线程同步机制失效
+      3. SharedPreferences的可靠性下降
+      4. Application会多次创建
+    
+    * ShareUID
+    
+      两个应用通过ShareUID跑在同一个进程中是有要求的，需要这两个应用有相同的ShareUID并且签名相同才可以。
+    
   * 进程间通信方式
     * 使用Bundle
     * 使用文件共享
     * 使用Socket
     * 使用Binder（使用AIDL、使用Messenger、使用ContentProvider、Binder线程池）
-  * IPC通信Binder
+    
+  * IPC通信
+    * Binder
     * AIDL（如何实现、参数 in、out、inout、参数oneway）
     * 序列化
     * 匿名共享内存
+    
+  * 进程保活
+
+    * lowmemorykiller   、 oom_adj 
+    * 提高进程优先级
+    * 杀死之后再次拉起
+
+  * 进程启动/APP启动
 
 * 参考资料
   * 《Android开发艺术探索》
