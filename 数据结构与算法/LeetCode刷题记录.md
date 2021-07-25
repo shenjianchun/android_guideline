@@ -49,15 +49,17 @@
 45. 98.验证二叉搜索树 [二叉树] [解决方案：递归，左小右大 | 中序遍历 + 栈] [2021/7/23]  - https://leetcode-cn.com/problems/validate-binary-search-tree/
 46.  448.找到所有数组中消失的数字  [数组] [解决方案：哈希 | 原地修改] [2021/7/23]  -  https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/
 47. 39.组合总和  [数组] [解决方案：搜索回溯] [2021/7/24]   -  https://leetcode-cn.com/problems/combination-sum/
-48.  322.零钱兑换 [] [] []  -  https://leetcode-cn.com/problems/coin-change/
-49.  438.找到字符串中所有字母异位词 [字符串] [解决方案：滑动窗口 + 双指针] [2021/7/24]  -  https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/ 
-50.  534.二叉树的直径  [] [] [] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
+48.  322.零钱兑换 [数组] [解决方案：记忆搜索（递归）  |  动态规划，自下而上] [2021/7/25] [中等]  -  https://leetcode-cn.com/problems/coin-change/
+49.  438.找到字符串中所有字母异位词 [字符串] [解决方案：滑动窗口 + 双指针] [2021/7/24]  [中等] -  https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/ 
+50.  534.二叉树的直径  [二叉树] [解决方案：深度优先搜索（路径长度 = 路径经过节点数 - 1）] [2021/7/25] [简单] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
 51.  85.最大矩形 []  []  []   -   https://leetcode-cn.com/problems/maximal-rectangle/
 52.  [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [] [] []  -  https://leetcode-cn.com/problems/path-sum-iii/
-
-
-
-
+53.  31.下一个排列  [] [] [] [中等] - https://leetcode-cn.com/problems/next-permutation/
+54.  309.最佳买卖股票时机含冷冻期 [] [] [] [中等]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+55.  85.最大矩形  [] [] [] [困难]   -  https://leetcode-cn.com/problems/maximal-rectangle/
+56.  124.二叉树中的最大路径和 [] [] [] [困难]  -  https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/
+57.  198.打家劫舍  [] [] [] [中等]  -  https://leetcode-cn.com/problems/house-robber/
+58.  337.打家劫舍 III  [] [] [] [中等]   -  https://leetcode-cn.com/problems/house-robber-iii/
 
 
 
@@ -79,8 +81,11 @@
 
 1. 剑指 Offer 09. 用两个栈实现队列  [栈、队列] [解决方案：双栈] [2021/7/24]  -  https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/
 2. 剑指 Offer 27. 二叉树的镜像 [二叉树] [解决方案：递归或迭代，层序遍历] [2021/7/24]  -  https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/
-3. 剑指 Offer 36. 二叉搜索树与双向链表  [] [] []  -  https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
-4. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [] [] []   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
+3. 剑指 Offer 36. 二叉搜索树与双向链表  [二叉树 | 链表] [解决方案：中序遍历迭代  |  中序递归 ] [2021/7/25]  -  https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
+4. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [数组] [解决方案：双指针] [2021/7/25] [简单]   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
+5. 剑指 Offer 45. 把数组排成最小的数 [] [] [] [中等]   -  https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/
+6. 剑指 Offer 62. 圆圈中最后剩下的数字 [] [] [] [简单]  -  https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/
+7. 剑指 Offer 07. 重建二叉树  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
 
  
 
