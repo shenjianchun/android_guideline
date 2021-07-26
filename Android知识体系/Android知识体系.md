@@ -68,15 +68,19 @@
 ### 进程和IPC
 
 * 知识点
+  * Android进程基础知识
+
+    * 
+    
   * 进程的优先级
-
-    * 前台进程 （有一个Activity在前台操作 或  BroadcastReceiver正在运行 或  Service正在执行某个回调）
+  
+  * 前台进程 （有一个Activity在前台操作 或  BroadcastReceiver正在运行 或  Service正在执行某个回调）
     * 可见进程 （有Activity在前台但不可操作 或 有前台服务  或 系统正在使用其托管的某个服务）
-    * 服务进程 （包含一个使用startService方法启动的Service）
+  * 服务进程 （包含一个使用startService方法启动的Service）
     * 缓存进程 （暂时不需要用的进程）
-
+  
     > 进程的优先级也可能因从属于进程的其他依赖项而提升。例如，如果进程 A 已通过 Context.BIND_AUTO_CREATE 标记绑定到 Service，或在使用进程 B 中的 ContentProvider，则进程 B 的分类始终至少和进程 A 一样重要。
-
+  
   * APP多进程实现
     * 如何开启多进程？如何实现私有进程？
     
@@ -94,28 +98,50 @@
       两个应用通过ShareUID跑在同一个进程中是有要求的，需要这两个应用有相同的ShareUID并且签名相同才可以。
     
   * 进程间通信方式
-    * 使用Bundle
+    * 使用Bundle，1M大小限制
     * 使用文件共享
     * 使用Socket
-    * 使用Binder（使用AIDL、使用Messenger、使用ContentProvider、Binder线程池）
+    * 使用Binder（使用AIDL、使用Messenger、使用ContentProvider）
     
-  * IPC通信
-    * Binder
-    * AIDL（如何实现、参数 in、out、inout、参数oneway）
-    * 序列化
+  * IPC通信知识
+    * Binder（问题：）
+    
+    1. Binder可以理解为一种虚拟的物理设备，他的设备驱动是 /dev/binder
+      2. Binder调用时耗时的，客户端发起远程请求时，当前线程会被挂起直至服务器进程返回数据；服务端的Binder方法运行在Binder的线程中；因此Binder调用不能在主线程中
+      3. Binder有两个重要的方法：linkToDeath 和 unLinkToDeath ，给BInder设置死亡代理。声明一个IBinder.DeathRecipient对象，再调用binder.linkToDeath(mDeathRecipient，0)。
+      4. Binder连接池。设计逻辑是把所有的AIDL放在同一个Service管理。服务端提供一个queryBinder接口，这个接口能够根据业务模块的特征来返回相应的Binder对象给他们。详情可以参考《Android开发艺术探索》第2章2.5Binder连接池  章节。
+  
+    * AIDL（问题：如何实现、参数 in、out、inout、参数oneway）
+  
+      1. 创建 .aidl 文件，一个接口IInterface ，一个抽象类 IBinder
+      2. 内部类Stub 和 代理类Proxy，Stub为服务端，Proxy为客户端
+      3. 几个重要的方法：DESCRIPTOR，asInterface，asBinder，transact，onTransact
+      4. .aidl文件中的参数in代表只能由客户端流向服务端；out 表示数据只能由服务端流向客户端；inout 则表示数据可在服务端与客户端之间双向流通；**oneway关键字用于修改远程调用的行为，**被oneway修饰了的方法不可以有返回值，也不可以有带out或inout的参数
+    
+    * 序列化 （问题：有哪几种序列化的方式，哪种更好？）
+    
+      1. Serializable接口
+      2. Parcelable接口
+    
     * 匿名共享内存
     
+    * RemoteCallbackList
+    
+      RemoteCallbackList是系统专门提供用于删除跨进程listener的接口。使用registerListener和unregisgerListener 来注册和反注册，使用beginBroadcast和finishBroadcast配对使用来通知回调。
+    
   * 进程保活
-
+  
     * lowmemorykiller   、 oom_adj 
+    * persistent参数
     * 提高进程优先级
     * 杀死之后再次拉起
-
+  
   * 进程启动/APP启动
-
+  
 * 参考资料
   * 《Android开发艺术探索》
   * [进程和应用生命周期](https://developer.android.google.cn/guide/components/activities/process-lifecycle)
+  * [Android Detail：进程篇——关于进程你需要了解这些](https://xiaozhuanlan.com/topic/2036195874)    | [Android Detail：进程篇——进程内存分配与优先级](https://juejin.cn/post/6891911483379482637)
   * [Android AIDL参数中in、out、inout、oneway含义及区别](http://nicethemes.cn/news/txtlist_i6454v.html)
 
 
