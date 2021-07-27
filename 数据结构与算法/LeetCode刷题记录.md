@@ -52,14 +52,16 @@
 48.  322.零钱兑换 [数组] [解决方案：记忆搜索（递归）  |  动态规划，自下而上] [2021/7/25] [中等]  -  https://leetcode-cn.com/problems/coin-change/
 49.  438.找到字符串中所有字母异位词 [字符串] [解决方案：滑动窗口 + 双指针] [2021/7/24]  [中等] -  https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/ 
 50.  534.二叉树的直径  [二叉树] [解决方案：深度优先搜索（路径长度 = 路径经过节点数 - 1）] [2021/7/25] [简单] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
-52.  [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [二叉树] [解决方案：前序遍历 | **前缀和、递归、回溯**] [2021/7/26] [中等]  -  https://leetcode-cn.com/problems/path-sum-iii/
+52.  [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [二叉树] [解决方案：前序遍历 | 前缀和、递归、回溯（注意0的路径）] [2021/7/26] [中等]  -  https://leetcode-cn.com/problems/path-sum-iii/
 53.  31.下一个排列  [数组] [解决方案：两遍扫描（从尾开始）] [2021/7/26] [中等] - https://leetcode-cn.com/problems/next-permutation/
 54.  309.最佳买卖股票时机含冷冻期 [] [] [] [中等]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
 55.  85.最大矩形  [数组] [解决方案：使用柱状图的优化暴力方法] [2021/7/26] [困难]   -  https://leetcode-cn.com/problems/maximal-rectangle/  （关联题目：84）
 55.  84.柱状图中最大的矩形[数组|矩阵] [解决方案：单调栈 ] [2021/7/26] [困难]  -  https://leetcode-cn.com/problems/largest-rectangle-in-histogram/
 56. 124.二叉树中的最大路径和 [] [] [] [困难]  -  https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/
-57. 198.打家劫舍  [] [] [] [中等]  -  https://leetcode-cn.com/problems/house-robber/
-58. 337.打家劫舍 III  [] [] [] [中等]   -  https://leetcode-cn.com/problems/house-robber-iii/
+57. 198.打家劫舍  [数组] [解决方案：动态规划 dp[i]=max(dp[i−2]+nums[i],dp[i−1])  ] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber/
+58. 337.打家劫舍 III  [二叉树] [解决方案：动态规划] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber-iii/
+59. 55.跳跃游戏 [数组] [解决方案：贪心算法] [2021/7/27] [中等]   -  https://leetcode-cn.com/problems/jump-game/
+60.  347.前 K 个高频元素  [] [] [] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
 
 
 
