@@ -67,57 +67,125 @@
 
 ### 进程和IPC
 
-* 知识点
-  * Android进程基础知识
+#### 进程相关知识
 
-    * 
-    
-  * 进程的优先级
-  
+* UID、UserID、AppId、Pid
+
+  * android中uid用于标识一个应用程序，uid在应用安装时被分配，并且在应用存在于手机上期间，都不会改变，范围是从10000开始，到19999结束,而且，UID由用户ID(UserId)和应用ID(AppId)共同决定
+  * 系统中会有多个用户 (User，即手机里的主机、访客等多用户), 每个用户也有一个唯一的 ID 值, 称为"UserId"
+  * Pid就是各进程的身份标识,程序一运行系统就会自动分配给进程一个独一无二的PID
+  * AppID跟app相关，包名相同的appid都一样，即使是不同用户
+
+* 进程的内存分配
+
+  * 内存类型
+
+    Android 设备包含三种不同类型的内存：RAM、zRAM 和存储器。
+
+  * 内存页
+
+    Android 的物理内存被分为多个「页」（page）。通常，每个页拥有 4KB 的内存。有三种页类型：已用页、缓存页、空闲页。
+
+  * 统计内存占用
+
+    * 常驻内存大小 (Resident Set Size - **RSS**) ： 应用使用的 **共享页 + 非共享页的数量**
+
+    * 按比例分摊的内存大小 (Proportional Set Size - **PSS**) ： 应用使用的 **非共享页数量 + 共享页均匀分摊数量**（例如，如果三个进程共享 3MB，则每个进程的 PSS 为 1MB）
+
+    * 独占内存大小 (Unique Set Size - **USS**) ： 应用使用的 **非共享页数量（不包括共享页）**
+
+* 进程内存不足管理
+
+  * 内核交换守护进程 （kernel swap daemon）
+    * 内核交换守护进程 (`kswapd`) 是 Linux 内核的一部分，用于将已使用内存转换为可用内存。当设备上的可用内存不足时，该守护进程将变为活动状态。Linux 内核设有可用内存上下限阈值。
+  * 低内存终止守护进程 （Low-memory killer）
+    * 很多时候，`kswapd` 不能为系统释放足够的内存。在这种情况下，系统会使用 [`onTrimMemory()`](https://developer.android.google.cn/reference/android/content/ComponentCallbacks2?hl=zh-cn#onTrimMemory(int)) 通知应用内存不足，应该减少其分配量。如果这还不够，内核会开始终止进程以释放内存。它会使用低内存终止守护进程 (LMK) 来执行此操作。`lmk` 会每隔一段时间检查一次，当达到触发阈值时，便开始工作
+
+* 进程类型
+
   * 前台进程 （有一个Activity在前台操作 或  BroadcastReceiver正在运行 或  Service正在执行某个回调）
-    * 可见进程 （有Activity在前台但不可操作 或 有前台服务  或 系统正在使用其托管的某个服务）
+  * 可见进程 （有Activity在前台但不可操作 或 有前台服务  或 系统正在使用其托管的某个服务）
   * 服务进程 （包含一个使用startService方法启动的Service）
-    * 缓存进程 （暂时不需要用的进程）
+  * 缓存进程 （暂时不需要用的进程）
+
+  > 进程的优先级也可能因从属于进程的其他依赖项而提升。例如，如果进程 A 已通过 Context.BIND_AUTO_CREATE 标记绑定到 Service，或在使用进程 B 中的 ContentProvider，则进程 B 的分类始终至少和进程 A 一样重要。
+
+* 进程优先级
   
-    > 进程的优先级也可能因从属于进程的其他依赖项而提升。例如，如果进程 A 已通过 Context.BIND_AUTO_CREATE 标记绑定到 Service，或在使用进程 B 中的 ContentProvider，则进程 B 的分类始终至少和进程 A 一样重要。
+  * oom_adj
   
-  * APP多进程实现
-    * 如何开启多进程？如何实现私有进程？
+    在 Android 的 `lmk` 机制中，会对于所有进程进行分类，对于每一类别的进程会有其 `oom_adj` 值的取值范围，**oom_adj 值越高则代表进程越不重要**，在系统执行低杀操作时，会从 `oom_adj` 值越高的开始杀。
+  
+    <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b0659f9706d044df9200bc30f11cb30f~tplv-k3u1fbpfcp-zoom-1.image" style="zoom: 50%;" />
+  
+  * procstate
+  
+    ADJ 是以 lmk 的角度对进程优先级的描述，相对比较底层。在 Java 世界中管理着 Android 四大组件和进程的是 AMS（Activity Manager Service）。AMS 对进程优先级的描述为 procstate（Process State），以变量的形式定义在 frameworks/base/core/java/android/app/ActivityManager.java 中。
+  
     
-      四大组件的申明的时候加上 `android:process=`标签，process名字如果直接写成“ :remote” 则说明是此前应用的子进程，其他应用的组件不可以和它跑在同一个进程中。而process名字不以“：” 开头的，则表示为全局进程，其他应用可以通过SharedUID方式和它跑在同一个进程中。
-    
-    * 多进程引发的问题
-    
-      1. 静态成员和单例模式失效
-      2. 线程同步机制失效
-      3. SharedPreferences的可靠性下降
-      4. Application会多次创建
-    
-    * ShareUID
-    
-      两个应用通过ShareUID跑在同一个进程中是有要求的，需要这两个应用有相同的ShareUID并且签名相同才可以。
-    
+  
+* 杀死进程
+  
+  * Linux 杀进程方式
+    * Linux 杀死进程的方式便是依托 SIGKILL 信号，它的值是 9。
+  * Android 底层杀进程方式
+    * Android 杀进程底层也是使用的信号的方式。  Process.killProcess(Process.myPid())、killProcessQuiet、killProcessGroup。
+  * 上层 AMS 杀进程方式
+    * AMS 中封装着杀死进程的方法，不过本质上都是上面 Process 的三个 kill 方法的调用。效果最好的方法是 **forceStopPackage**。
+    * force stop 是 Android 中杀进程的一把利器，使用它可以 **杀死指定包名的进程，清理相关的四大组件，清除已注册的 alarm 和 notification**。
+  
+* 进程保活
+  
+  * persistent参数
+  * 提高进程优先级
+  * 杀死之后再次拉起
+  
+  * 进程启动/APP启动
+  
+* APP多进程实现
+  
+  * 如何开启多进程？如何实现私有进程？
+  
+    四大组件的申明的时候加上 `android:process=`标签，process名字如果直接写成“ :remote” 则说明是此前应用的子进程，其他应用的组件不可以和它跑在同一个进程中。而process名字不以“：” 开头的，则表示为全局进程，其他应用可以通过SharedUID方式和它跑在同一个进程中。
+  
+  * 多进程引发的问题
+  
+    1. 静态成员和单例模式失效
+    2. 线程同步机制失效
+    3. SharedPreferences的可靠性下降
+    4. Application会多次创建
+  
+  * ShareUID
+  
+    两个应用通过ShareUID跑在同一个进程中是有要求的，需要这两个应用有相同的ShareUID并且签名相同才可以。
+  
+  
+
+#### IPC
+
   * 进程间通信方式
+    
     * 使用Bundle，1M大小限制
     * 使用文件共享
     * 使用Socket
     * 使用Binder（使用AIDL、使用Messenger、使用ContentProvider）
     
   * IPC通信知识
+    
     * Binder（问题：）
     
     1. Binder可以理解为一种虚拟的物理设备，他的设备驱动是 /dev/binder
       2. Binder调用时耗时的，客户端发起远程请求时，当前线程会被挂起直至服务器进程返回数据；服务端的Binder方法运行在Binder的线程中；因此Binder调用不能在主线程中
       3. Binder有两个重要的方法：linkToDeath 和 unLinkToDeath ，给BInder设置死亡代理。声明一个IBinder.DeathRecipient对象，再调用binder.linkToDeath(mDeathRecipient，0)。
-      4. Binder连接池。设计逻辑是把所有的AIDL放在同一个Service管理。服务端提供一个queryBinder接口，这个接口能够根据业务模块的特征来返回相应的Binder对象给他们。详情可以参考《Android开发艺术探索》第2章2.5Binder连接池  章节。
-  
-    * AIDL（问题：如何实现、参数 in、out、inout、参数oneway）
-  
+    4. Binder连接池。设计逻辑是把所有的AIDL放在同一个Service管理。服务端提供一个queryBinder接口，这个接口能够根据业务模块的特征来返回相应的Binder对象给他们。详情可以参考《Android开发艺术探索》第2章2.5Binder连接池  章节。
+    
+  * AIDL（问题：如何实现、参数 in、out、inout、参数oneway）
+    
       1. 创建 .aidl 文件，一个接口IInterface ，一个抽象类 IBinder
       2. 内部类Stub 和 代理类Proxy，Stub为服务端，Proxy为客户端
       3. 几个重要的方法：DESCRIPTOR，asInterface，asBinder，transact，onTransact
       4. .aidl文件中的参数in代表只能由客户端流向服务端；out 表示数据只能由服务端流向客户端；inout 则表示数据可在服务端与客户端之间双向流通；**oneway关键字用于修改远程调用的行为，**被oneway修饰了的方法不可以有返回值，也不可以有带out或inout的参数
-    
+      
     * 序列化 （问题：有哪几种序列化的方式，哪种更好？）
     
       1. Serializable接口
@@ -129,20 +197,14 @@
     
       RemoteCallbackList是系统专门提供用于删除跨进程listener的接口。使用registerListener和unregisgerListener 来注册和反注册，使用beginBroadcast和finishBroadcast配对使用来通知回调。
     
-  * 进程保活
-  
-    * lowmemorykiller   、 oom_adj 
-    * persistent参数
-    * 提高进程优先级
-    * 杀死之后再次拉起
-  
-  * 进程启动/APP启动
-  
-* 参考资料
-  * 《Android开发艺术探索》
-  * [进程和应用生命周期](https://developer.android.google.cn/guide/components/activities/process-lifecycle)
-  * [Android Detail：进程篇——关于进程你需要了解这些](https://xiaozhuanlan.com/topic/2036195874)    | [Android Detail：进程篇——进程内存分配与优先级](https://juejin.cn/post/6891911483379482637)
-  * [Android AIDL参数中in、out、inout、oneway含义及区别](http://nicethemes.cn/news/txtlist_i6454v.html)
+    
+    
+#### 参考资料
+* 《Android开发艺术探索》
+* [进程和应用生命周期](https://developer.android.google.cn/guide/components/activities/process-lifecycle)
+* [Android官网 - 管理内存](https://developer.android.google.cn/topic/performance/memory-overview?hl=zh-cn)
+* [Android Detail：进程篇——关于进程你需要了解这些](https://xiaozhuanlan.com/topic/2036195874)    | [Android Detail：进程篇——进程内存分配与优先级](https://juejin.cn/post/6891911483379482637)
+* [Android AIDL参数中in、out、inout、oneway含义及区别](http://nicethemes.cn/news/txtlist_i6454v.html)
 
 
 
