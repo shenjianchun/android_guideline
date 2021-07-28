@@ -757,17 +757,31 @@
          > - 对于能够复用的对象，可以考虑使用对象池把它们缓存起来
 
   * 内存优化方法
-    
-    * Memory profile
+
+    * Memory profile ([使用内存性能分析器查看应用的内存使用情况](https://developer.android.google.cn/studio/profile/memory-profiler?hl=zh-cn))
+
     * MAT
+
     * LeakCanary
       1. LeakCanary 原理 ，详情 [LeakCanary原理](#LeakCanary)
+
+         > 1）检测保留的实例
+         >
+         > 2） 堆转储
+         >
+         > 3）泄漏踪迹
+         >
+         > 4）泄漏分组
+
       2. 安装 LeakCanary
+
       3. 使用 LeakCanary 分析内存泄漏
+
     * 监听和获取系统内存状态
+
       1. Android 应用可以通过在 Activity 中实现 ComponentCallback2 接口获取系统内存的相关事件. ComponentCallnback2 提供了 onTrimMemory(level) 回调方法
       2. ActivityManager.getMemoryInfo()。 Android 提供了一个 ActivityManager.getMemoryInfo() 方法给我们查询内存信息，这个方法会返回一个 ActivityManager.MemoryInfo 对象，这个对象包含了系统当前内存状态，这些状态信息包括可用内存、总内存以及低杀内存阈值。
-    
+
   * 内存优化技巧
 
     * 谨慎使用 Service，而是使用JobSchedule或新的WorkManager
@@ -824,6 +838,7 @@
   * [卡顿、ANR、死锁，线上如何监控？](https://juejin.cn/post/6973564044351373326)
   * [《广研Android卡顿监控系统》](https://mp.weixin.qq.com/s/MthGj4AwFPL2JrZ0x1i4fw)
   * [彻底理解安卓应用无响应机制](http://gityuan.com/2019/04/06/android-anr/)
+  * [Systrace实战：彻底搞懂卡顿原理！](https://mp.weixin.qq.com/s/eij3z6wlT4k3GGQm637b-A)
 
 
 
