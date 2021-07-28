@@ -91,9 +91,12 @@
 2. 剑指 Offer 27. 二叉树的镜像 [二叉树] [解决方案：递归或迭代，层序遍历] [2021/7/24]  -  https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/
 3. 剑指 Offer 36. 二叉搜索树与双向链表  [二叉树 | 链表] [解决方案：中序遍历迭代  |  中序递归 ] [2021/7/25]  -  https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
 4. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [数组] [解决方案：双指针] [2021/7/25] [简单]   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
-5. 剑指 Offer 45. 把数组排成最小的数 [] [] [] [中等]   -  https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/
+5. 剑指 Offer 45. 把数组排成最小的数 [数组] [解决方案：字符串排序] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/
 6. 剑指 Offer 62. 圆圈中最后剩下的数字 [数组] [解决方案：约瑟夫环， 公式为当前index + m) % 上一轮剩余数字的个数] [2021/7/27] [简单]  -  https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/
 7. 剑指 Offer 07. 重建二叉树  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
+8. 剑指 Offer 07. 重建二叉树  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
+9.  剑指 Offer 04. 二维数组中的查找  [] [] [] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/
+10. 剑指 Offer 64. 求1+2+…+n  [] [] [] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
 
  
 
