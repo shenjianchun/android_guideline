@@ -54,15 +54,20 @@
 50.  534.二叉树的直径  [二叉树] [解决方案：深度优先搜索（路径长度 = 路径经过节点数 - 1）] [2021/7/25] [简单] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
 52.  [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [二叉树] [解决方案：前序遍历 | 前缀和、递归、回溯（注意0的路径）] [2021/7/26] [中等]  -  https://leetcode-cn.com/problems/path-sum-iii/
 53.  31.下一个排列  [数组] [解决方案：两遍扫描（从尾开始）] [2021/7/26] [中等] - https://leetcode-cn.com/problems/next-permutation/
-54.  309.最佳买卖股票时机含冷冻期 [] [] [] [中等]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+54.  309.最佳买卖股票时机含冷冻期 [数组] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
 55.  85.最大矩形  [数组] [解决方案：使用柱状图的优化暴力方法] [2021/7/26] [困难]   -  https://leetcode-cn.com/problems/maximal-rectangle/  （关联题目：84）
 55.  84.柱状图中最大的矩形[数组|矩阵] [解决方案：单调栈 ] [2021/7/26] [困难]  -  https://leetcode-cn.com/problems/largest-rectangle-in-histogram/
-56. 124.二叉树中的最大路径和 [] [] [] [困难]  -  https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/
+56. 124.二叉树中的最大路径和 [二叉树] [解决方案：递归，最大贡献值] [2021/7/28] [困难]  -  https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/
 57. 198.打家劫舍  [数组] [解决方案：动态规划 dp[i]=max(dp[i−2]+nums[i],dp[i−1])  ] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber/
 58. 337.打家劫舍 III  [二叉树] [解决方案：动态规划] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber-iii/
 59. 55.跳跃游戏 [数组] [解决方案：贪心算法] [2021/7/27] [中等]   -  https://leetcode-cn.com/problems/jump-game/
-60.  347.前 K 个高频元素  [] [] [] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
-61.  64.最小路径和  [] [] [] []   -  https://leetcode-cn.com/problems/minimum-path-sum/
+60.  64.最小路径和  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/minimum-path-sum/
+61. 347.前 K 个高频元素  [] [] [] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
+62.  76.最小覆盖子串 [] [] [] [困难]  -  https://leetcode-cn.com/problems/minimum-window-substring/
+63.  105.从前序与中序遍历序列构造二叉树 [] [] [] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+64.  114.二叉树展开为链表 [] [] [] [中等]  -   https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
+65.   239.滑动窗口最大值 [] [] [] [困难]  -  https://leetcode-cn.com/problems/sliding-window-maximum/
+66. 72. 编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 
 
 
