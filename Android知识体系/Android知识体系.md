@@ -580,7 +580,11 @@
 
 ### Android 官方架构组件
 
+#### LiveData
 
+
+
+#### ViewModel
 
 
 
@@ -760,11 +764,31 @@
 
     * Memory profile ([使用内存性能分析器查看应用的内存使用情况](https://developer.android.google.cn/studio/profile/memory-profiler?hl=zh-cn))
 
+      > 内存计数中的类别如下：
+    >
+      > - **Java**：从 Java 或 Kotlin 代码分配的对象的内存。
+      >
+    > - **Native**：从 C 或 C++ 代码分配的对象的内存。
+      >
+      >   即使您的应用中不使用 C++，您也可能会看到此处使用了一些原生内存，因为即使您编写的代码采用 Java 或 Kotlin 语言，Android 框架仍使用原生内存代表您处理各种任务，如处理图像资源和其他图形。
+      >
+      > - **Graphics**：图形缓冲区队列为向屏幕显示像素（包括 GL 表面、GL 纹理等等）所使用的内存。（请注意，这是与 CPU 共享的内存，不是 GPU 专用内存。）
+      >
+      > - **Stack**：您的应用中的原生堆栈和 Java 堆栈使用的内存。这通常与您的应用运行多少线程有关。
+      >
+    > - **Code**：您的应用用于处理代码和资源（如 dex 字节码、经过优化或编译的 dex 代码、.so 库和字体）的内存。
+      >
+    > - **Others**：您的应用使用的系统不确定如何分类的内存。
+      >
+    > - **Allocated**：您的应用分配的 Java/Kotlin 对象数。此数字没有计入 C 或 C++ 中分配的对象。
+      >
+    >   如果连接到搭载 Android 7.1 及更低版本的设备，只有在内存性能分析器连接到您运行的应用时，才开始此分配计数。因此，您开始分析之前分配的任何对象都不会被计入。但是，Android 8.0 及更高版本附带一个设备内置性能剖析工具，该工具可跟踪所有分配，因此，在 Android 8.0 及更高版本上，此数字始终表示您的应用中待处理的 Java 对象总数。
+  
     * MAT
 
     * LeakCanary
-      1. LeakCanary 原理 ，详情 [LeakCanary原理](#LeakCanary)
-
+    1. LeakCanary 原理 ，详情 [LeakCanary原理](#LeakCanary)
+  
          > 1）检测保留的实例
          >
          > 2） 堆转储
@@ -772,18 +796,18 @@
          > 3）泄漏踪迹
          >
          > 4）泄漏分组
-
+  
       2. 安装 LeakCanary
-
+  
       3. 使用 LeakCanary 分析内存泄漏
-
+  
     * 监听和获取系统内存状态
-
+  
       1. Android 应用可以通过在 Activity 中实现 ComponentCallback2 接口获取系统内存的相关事件. ComponentCallnback2 提供了 onTrimMemory(level) 回调方法
       2. ActivityManager.getMemoryInfo()。 Android 提供了一个 ActivityManager.getMemoryInfo() 方法给我们查询内存信息，这个方法会返回一个 ActivityManager.MemoryInfo 对象，这个对象包含了系统当前内存状态，这些状态信息包括可用内存、总内存以及低杀内存阈值。
-
+  
   * 内存优化技巧
-
+  
     * 谨慎使用 Service，而是使用JobSchedule或新的WorkManager
     * 选择优化后的数据容器。Android 框架包含几个经过优化的数据容器，包括 `SparseArray`、`SparseBooleanArray` 和 `LongSparseArray`。 
     * 小心代码抽象
