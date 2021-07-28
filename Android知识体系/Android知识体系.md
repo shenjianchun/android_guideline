@@ -646,17 +646,138 @@
 
 * 知识点
   * 内存优化基础
-    	为什么要做内存优化
-    	什么是Dalvik和ART
-    	什么是低杀
-    	图片对内存有什么影响
-    	什么是内存泄露
-    	什么是内存抖动
+
+    * 为什么要做内存优化
+
+      1. 降低crash率  2. 运行更流畅  3. 存活时间长
+
+    * Dalvik和ART
+
+      1. Dalvik 是 Dalvik Virtual Machine（Dalvik 虚拟机）的简称，是 Android 平台的核心组成部分之一，Dalvik 与 JVM 的区别有如下几个。
+
+         > 1）**Dalvik基于寄存器**，JVM基于的是栈
+         >
+         > 2）**dx工具**。`Dalvik 有自己的字节码`， Dalvik 会用 dx 工具将所有的 .class 文件转换为一个 .dex 文件，然后会从该 .dex 文件读取指令和数据。生成.dex之后，会 通过dexopt工具进行优化生成odex文件。
+         >
+         > 3）**与 Zygote 共享内存区域**。 Dalvik 由 Zygote 孵化器创建的，Zygote 本身也是一个 Dalvik VM 进程，当系统需要创建一个进程时，Zygote 就会进行 fork，快速创建和初始化一个 DVM 实例。
+         >
+         > 4） **独立进程空间**。在 Androd 中，每一个应用都运行在一个 Dalvik VM 实例中，`每一个 Dalvik VM 都运行在一个独立的进程空间`，这种机制使得 Dalvik 能在有限的内存中同时运行多个进程。
+         >
+         > 5）**类共享机制**。Dalvik 拥有预加载—共享机制，不同应用之间在运行时可以共享相同的类，拥有更高的效率。
+         >
+         > 6）**不兼容JVM**
+
+         ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5cd88e6a2a524d81ad4012ecf875e796~tplv-k3u1fbpfcp-zoom-1.image)
+
+      2. 查看Dalvik堆信息。可以通过`   adb shell getprop dalvik.vm.heapsize` 来获取 设备中每一个进程能够使用的堆大小。
+
+         > 1） 堆分配的初始值。dalvik.vm.heapstartsize 是堆分配的初始值大小，这个值越小，系统内存消耗越慢，但是当应用扩展这个堆，导致 GC 和堆调整时，应用会变慢。
+         >
+         > 2）单个应用可用最大内存。dalvik.vm.heapgrowthlimit 是单个应用可用最大内存，如果在清单文件中声明 largeHeap 为 true，则 App 使用的内存到 heapsize 才会 OOM，否则达到 heapgrowthlimit 就会 OOM。
+         >
+         > 3）堆内存最大值。 dalvik.vm.heapsize 是进程可用的堆内存最大值，一旦应用申请的内存超过这个值，就会 OOM。
+
+      3. ART
+
+         ART 的全称是 Android Runtime，是从 Android 4.4 开始新增的**应用运行时环境**，是一个执行本地机器指令的虚拟机，用于替代 Dalvik 虚拟机。ART与Dalvik的区别：
+
+         > 1）预编译。在 ART 中，系统在安装应用时会进行一次预编译（AOT，Ahead-Of-Time），将字节码预先编译成机器码并存储在本地，这样应用就不用在每次运行时执行编译了，运行效率也大大提高。Dalvik 中的应用每次运行时，字节码都需要通过即时编译器 JIT 转换为机器码，这会使得应用的运行效率降低。
+         >
+         > 
+         >
+         > 2）垃圾回收算法。在 ART 下，GC 速度比 Dalvik 要快，这是因为应用本身做了垃圾回收的一些工作，启动 GC 后，不再是两次暂停，而是一次暂停，而且 ART 使用了一种新技术（packard pre-cleaning），在暂停前做了许多事情，减轻了暂停时的工作量。在 Dalvik 采用的垃圾回收算法是标记-清除算法，启动垃圾回收机制会造成两次暂停（一次在遍历阶段，另一次在标记阶段）。
+         >
+         > 
+         >
+         > 3）64位。Dalvik 是为 32 位 CPU 设计的，而 ART 支持 64 位并兼容 32 位 CPU，这也是 Dalvik 被淘汰的主要原因。
+
+    * 虚拟机内存结构
+
+      1. [运行时的数据区域 | 内存结构](../Java语言知识体系/Java知识体系.md/#运行时的数据区域 | 内存结构)
+
+    * 垃圾回收机制
+
+      1. 可达性分析算法
+
+         > 可达性分析算法（Rechability Analysis）用于判定对象是否存活，这个算法的基本思路就是通过一系列称为 `GC Roots` 的跟对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程中所走过的路径称为引用链（Reference Chain），如果某个对象到 GC Roots 之间没有任何引用链相连，也就是不可达时，则证明该对象不可能再被使用。
+         >
+         > 
+         >
+         > GC Roots 对象包括下面几种：
+         >
+         > - 在虚拟机栈（栈帧中的本地变量表）中引用的对象，比如各个线程被调用的方法堆栈中使用到的参数、局部变量和临时变量等
+         > - 在方法区中类静态属性引用的对象，比如字符串常量池里的引用
+         > - 在本地方法栈中 JNI（Native 方法）引用的对象
+         > - Java 虚拟机内部的引用，如基本数据类型对应的 Class 对象
+         > - 所有被同步锁（synchronized关键字）持有的对象
+         > - 反映 Java 虚拟机内部情况的 JMXBean、JVMTI 中注册的回调和本地代码缓存等
+
+         <img src="https://s3.jpg.cm/2021/06/11/ILjuP6.png" style="zoom:50%;" />
+
+      2. 四种引用类型
+
+         > 在 JDK 1.2 后，Java 对引用的概念进行了扩充，把引用分为`强引用（Strongly Reference）`、`软引用（Soft Reference）`、`弱引用（Weak Reference）`和`虚引用（Phanton Reference）` 4 种。
+
+      3. 分代回收算法
+
+         > 分代回收（Generational Collection）算法把 Java 堆划分为不同的区域，然后把回收对象按照年龄（对象熬过垃圾回收的次数）分配到不同的区域中，这样垃圾回收器就可以每次只回收其中一个或几个区域，所以才有 `Minor GC（Young GC）新生代回收`、`Major GC（Old GC）老年代回收` 和 `Full GC（整个 Java 堆和方法区的垃圾回收）` 这样的回收类型划分，才能针对不同的区域安排与里面存储对象存亡特征匹配的垃圾回收算法，从而发展出了`标记-复制算法`、`标记-清除算法`、`标记-整理算法`等针对性的垃圾回收算法。
+         >
+         > 根据分代收集理论，Java 堆至少划分为`新生代（Young Generation）`、`老年代（Old Generation）`两个区域，在新生代中，每次垃圾回收时都有大批对象死去，回收后存活的对象会晋升为老年代中存放。
+
+    * 图片对内存有什么影响
+
+    * 什么是内存泄露
+
+      1. 内存泄漏指的是一块内存没有被使用且无法被 GC 回收，从而造成了内存的浪费。
+
+      2. 常见的导致内存泄漏的 3 个原因分别是：`非静态内部类`、`静态变量`、`资源未释放`，`内存泄漏的本质就是`长生命周期对象持有了短生命周期对象的引用，导致短生命周期对象无法被释放。
+
+         > 资源未释放大致为：
+         >
+         > 忘了注销 BroadcastReceiver
+         >
+         > 忘了关闭数据库游标（Cursor）
+         >
+         > 忘了关闭流
+         >
+         > 忘了调用 recycle() 方法回收创建的 Bitmap 使用的内存
+         >
+         > 忘了在 Activity 退出时取消 RxJava 或协程所开启异步任务
+         >
+         > Webview
+
+    * 什么是内存抖动
+
+      1. 当我们在短时间内频繁创建大量临时对象时，就会引起内存抖动
+
+      2. 如何避免
+
+         > - 尽量避免在循环体中创建对象
+         > - 尽量不要在自定义 View 的 onDraw() 方法中创建对象，因为这个方法会被频繁调用
+         > - 对于能够复用的对象，可以考虑使用对象池把它们缓存起来
+
   * 内存优化方法
-    	Memory profile
-    	MAT
-    	LeakCanary
-    	怎么监听和获取系统内容
+    
+    * Memory profile
+    * MAT
+    * LeakCanary
+      1. LeakCanary 原理 ，详情 [LeakCanary原理](#LeakCanary)
+      2. 安装 LeakCanary
+      3. 使用 LeakCanary 分析内存泄漏
+    * 监听和获取系统内存状态
+      1. Android 应用可以通过在 Activity 中实现 ComponentCallback2 接口获取系统内存的相关事件. ComponentCallnback2 提供了 onTrimMemory(level) 回调方法
+      2. ActivityManager.getMemoryInfo()。 Android 提供了一个 ActivityManager.getMemoryInfo() 方法给我们查询内存信息，这个方法会返回一个 ActivityManager.MemoryInfo 对象，这个对象包含了系统当前内存状态，这些状态信息包括可用内存、总内存以及低杀内存阈值。
+    
+  * 内存优化技巧
+
+    * 谨慎使用 Service，而是使用JobSchedule或新的WorkManager
+    * 选择优化后的数据容器。Android 框架包含几个经过优化的数据容器，包括 `SparseArray`、`SparseBooleanArray` 和 `LongSparseArray`。 
+    * 小心代码抽象
+    * 使用 protobuf精简版 作为序列化数据
+    * 避免内存抖动
+    * Apk 瘦身
+    * 使用 Dagger2 进行依赖注入
+    * 谨慎使用第三方库
 * 参考资料
   * [探索 Android 内存优化方法](https://juejin.cn/post/6844903897958449166)
   * [Android内存管理知识百科](https://mp.weixin.qq.com/s/LCN3ACxbvtGLiahqokYxTw)
