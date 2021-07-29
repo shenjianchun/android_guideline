@@ -62,7 +62,7 @@
 58. 337.打家劫舍 III  [二叉树] [解决方案：动态规划] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber-iii/
 59. 55.跳跃游戏 [数组] [解决方案：贪心算法] [2021/7/27] [中等]   -  https://leetcode-cn.com/problems/jump-game/
 60.  64.最小路径和  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/minimum-path-sum/
-61. 347.前 K 个高频元素  [] [] [] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
+61. 347.前 K 个高频元素  [数组] [解决方案：哈希 + 暴力] [2021/7/29] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
 62.  76.最小覆盖子串 [] [] [] [困难]  -  https://leetcode-cn.com/problems/minimum-window-substring/
 63.  105.从前序与中序遍历序列构造二叉树 [] [] [] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
 64.  114.二叉树展开为链表 [] [] [] [中等]  -   https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
