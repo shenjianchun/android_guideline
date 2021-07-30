@@ -146,11 +146,14 @@
     	add和remove的流程是怎么样的？
     	ArrayList 在多线程使用应该注意什么?
     
-  * LinkedList 
-    	有使用过 LinkedList 吗？说一下它的底层实现 ？
-
-    ​	LinkedList 实现 栈、列表 ，参考 [LinkedList实现栈、队列或者双端队列分析](https://blog.csdn.net/huangfan322/article/details/52756441)
-
+  * LinkedList
+  
+* 有使用过 LinkedList 吗？说一下它的底层实现 ？
+  
+* LinkedList 实现 栈、列表 
+      
+    >  参考 [LinkedList实现栈、队列或者双端队列分析](https://blog.csdn.net/huangfan322/article/details/52756441)   |   [Java双向队列Deque栈与队列](https://blog.csdn.net/u013967628/article/details/85210036)
+    
   * CopyOnWriteArrayList 
     	如何实现线程安全的
     	add和remove的安全实现方式
@@ -171,13 +174,28 @@
   * ConCurrentHashMap
 * 参考资料
 
+
+
 ### Queue
 
 * 知识点
   * 队列和集合的相同点以及区别
+  
   * LinkedBlockingQueue 
+  
   * ArrayBlockingQueue 
+  
   * 说一下 LinkedBlockingQueue 和 ArrayBlockingQueue 有什么区别?
+  
+  * PriorityQueue 
+  
+    > [JAVA中PRIORITYQUEUE详解](https://www.cnblogs.com/Elliott-Su-Faith-change-our-life/p/7472265.html)
+
+
+
+### Deque
+
+ [Java双向队列Deque栈与队列](https://blog.csdn.net/u013967628/article/details/85210036)
 
 
 
