@@ -70,6 +70,8 @@
 66.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 67.  169.多数元素 [] [] [] [简单]  -  https://leetcode-cn.com/problems/majority-element/
 68.  287.寻找重复数  [] [] [] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
+69.  79.单词搜索  [] [] [] [中等]  -  https://leetcode-cn.com/problems/word-search/
+70.  139.单词拆分  [] [] [] [中等]  -  https://leetcode-cn.com/problems/word-break/
 
 
 
