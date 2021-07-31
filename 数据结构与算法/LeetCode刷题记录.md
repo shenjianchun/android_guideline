@@ -64,10 +64,12 @@
 60.  64.最小路径和  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/minimum-path-sum/
 61. 347.前 K 个高频元素  [数组] [解决方案：哈希 + 暴力 | 使用堆，PriorityQueue] [2021/7/29] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
 62.  76.最小覆盖子串 [字符串] [解决方案：滑动窗口] [2021/7/30] [困难]  -  https://leetcode-cn.com/problems/minimum-window-substring/
-63.  105.从前序与中序遍历序列构造二叉树 [] [] [] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+63.  105.从前序与中序遍历序列构造二叉树 [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
 64.  114.二叉树展开为链表 [二叉树] [解决方案：前序遍历，列表] [2021/7/30] [中等]  -   https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
-65.   239.滑动窗口最大值 [] [] [] [困难]  -  https://leetcode-cn.com/problems/sliding-window-maximum/
-66. 72. 编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+65.   239.滑动窗口最大值 [数组 | 滑动串口] [解决方案：优先队列，堆] [2021/7/31]  [困难]  -  https://leetcode-cn.com/problems/sliding-window-maximum/
+66.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+67.  169.多数元素 [] [] [] [简单]  -  https://leetcode-cn.com/problems/majority-element/
+68.  287.寻找重复数  [] [] [] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
 
 
 
@@ -93,9 +95,9 @@
 4. 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 [数组] [解决方案：双指针] [2021/7/25] [简单]   -   https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
 5. 剑指 Offer 45. 把数组排成最小的数 [数组] [解决方案：字符串排序] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/
 6. 剑指 Offer 62. 圆圈中最后剩下的数字 [数组] [解决方案：约瑟夫环， 公式为当前index + m) % 上一轮剩余数字的个数] [2021/7/27] [简单]  -  https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/
-7. 剑指 Offer 07. 重建二叉树  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
+7. 剑指 Offer 07. 重建二叉树  [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]   -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
 9.  剑指 Offer 04. 二维数组中的查找  [] [] [] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/
-10. 剑指 Offer 64. 求1+2+…+n  [] [] [] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
+10. 剑指 Offer 64. 求1+2+…+n  [递归] [解决方案：递归] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
 
  
 
