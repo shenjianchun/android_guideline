@@ -67,11 +67,12 @@
 63.  105.从前序与中序遍历序列构造二叉树 [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
 64.  114.二叉树展开为链表 [二叉树] [解决方案：前序遍历，列表] [2021/7/30] [中等]  -   https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
 65.   239.滑动窗口最大值 [数组 | 滑动串口] [解决方案：优先队列，堆] [2021/7/31]  [困难]  -  https://leetcode-cn.com/problems/sliding-window-maximum/
-66.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
-67.  169.多数元素 [] [] [] [简单]  -  https://leetcode-cn.com/problems/majority-element/
-68.  287.寻找重复数  [] [] [] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
-69.  79.单词搜索  [] [] [] [中等]  -  https://leetcode-cn.com/problems/word-search/
-70.  139.单词拆分  [] [] [] [中等]  -  https://leetcode-cn.com/problems/word-break/
+66.  240.搜索二维矩阵 II [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/search-a-2d-matrix-ii/ 
+67. 72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+68. 169.多数元素 [] [] [] [简单]  -  https://leetcode-cn.com/problems/majority-element/
+69. 287.寻找重复数  [数组] [解决方案：二分法，时间换空间] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
+70. 79.单词搜索  [] [] [] [中等]  -  https://leetcode-cn.com/problems/word-search/
+71. 139.单词拆分  [] [] [] [中等]  -  https://leetcode-cn.com/problems/word-break/
 
 
 
@@ -98,7 +99,7 @@
 5. 剑指 Offer 45. 把数组排成最小的数 [数组] [解决方案：字符串排序] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/
 6. 剑指 Offer 62. 圆圈中最后剩下的数字 [数组] [解决方案：约瑟夫环， 公式为当前index + m) % 上一轮剩余数字的个数] [2021/7/27] [简单]  -  https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/
 7. 剑指 Offer 07. 重建二叉树  [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]   -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
-9.  剑指 Offer 04. 二维数组中的查找  [] [] [] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/
+9.  剑指 Offer 04. 二维数组中的查找  [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/
 10. 剑指 Offer 64. 求1+2+…+n  [递归] [解决方案：递归] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
 
  
