@@ -47,33 +47,39 @@
 43. 155.最小栈 [栈] [解决方案：使用辅助栈保存最小值] [2021/7/23] -  https://leetcode-cn.com/problems/min-stack/
 44. 148.排序链表 [链表 | 排序] [解决方案：自顶向下归并排序  |  自底向上归并排序] [2021/7/23]  -  https://leetcode-cn.com/problems/sort-list/
 45. 98.验证二叉搜索树 [二叉树] [解决方案：递归，左小右大 | 中序遍历 + 栈] [2021/7/23]  - https://leetcode-cn.com/problems/validate-binary-search-tree/
-46.  448.找到所有数组中消失的数字  [数组] [解决方案：哈希 | 原地修改] [2021/7/23]  -  https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/
+46. 448.找到所有数组中消失的数字  [数组] [解决方案：哈希 | 原地修改] [2021/7/23]  -  https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/
 47. 39.组合总和  [数组] [解决方案：搜索回溯] [2021/7/24]   -  https://leetcode-cn.com/problems/combination-sum/
-48.  322.零钱兑换 [数组] [解决方案：记忆搜索（递归）  |  动态规划，自下而上] [2021/7/25] [中等]  -  https://leetcode-cn.com/problems/coin-change/
-49.  438.找到字符串中所有字母异位词 [字符串] [解决方案：滑动窗口 + 双指针] [2021/7/24]  [中等] -  https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/ 
-50.  534.二叉树的直径  [二叉树] [解决方案：深度优先搜索（路径长度 = 路径经过节点数 - 1）] [2021/7/25] [简单] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
-52.  [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [二叉树] [解决方案：前序遍历 | 前缀和、递归、回溯（注意0的路径）] [2021/7/26] [中等]  -  https://leetcode-cn.com/problems/path-sum-iii/
-53.  31.下一个排列  [数组] [解决方案：两遍扫描（从尾开始）] [2021/7/26] [中等] - https://leetcode-cn.com/problems/next-permutation/
-54.  309.最佳买卖股票时机含冷冻期 [数组] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
-55.  85.最大矩形  [数组] [解决方案：使用柱状图的优化暴力方法] [2021/7/26] [困难]   -  https://leetcode-cn.com/problems/maximal-rectangle/  （关联题目：84）
-55.  84.柱状图中最大的矩形[数组|矩阵] [解决方案：单调栈 ] [2021/7/26] [困难]  -  https://leetcode-cn.com/problems/largest-rectangle-in-histogram/
+48. 322.零钱兑换 [数组] [解决方案：记忆搜索（递归）  |  动态规划，自下而上] [2021/7/25] [中等]  -  https://leetcode-cn.com/problems/coin-change/
+49. 438.找到字符串中所有字母异位词 [字符串] [解决方案：滑动窗口 + 双指针] [2021/7/24]  [中等] -  https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/ 
+50. 534.二叉树的直径  [二叉树] [解决方案：深度优先搜索（路径长度 = 路径经过节点数 - 1）] [2021/7/25] [简单] -  https://leetcode-cn.com/problems/diameter-of-binary-tree/
+51. [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/) [二叉树] [解决方案：前序遍历 | 前缀和、递归、回溯（注意0的路径）] [2021/7/26] [中等]  -  https://leetcode-cn.com/problems/path-sum-iii/
+52. 31.下一个排列  [数组] [解决方案：两遍扫描（从尾开始）] [2021/7/26] [中等] - https://leetcode-cn.com/problems/next-permutation/
+53. 309.最佳买卖股票时机含冷冻期 [数组] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]  -  https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+54. 85.最大矩形  [数组] [解决方案：使用柱状图的优化暴力方法] [2021/7/26] [困难]   -  https://leetcode-cn.com/problems/maximal-rectangle/  （关联题目：84）
+55. 84.柱状图中最大的矩形[数组|矩阵] [解决方案：单调栈 ] [2021/7/26] [困难]  -  https://leetcode-cn.com/problems/largest-rectangle-in-histogram/
 56. 124.二叉树中的最大路径和 [二叉树] [解决方案：递归，最大贡献值] [2021/7/28] [困难]  -  https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/
 57. 198.打家劫舍  [数组] [解决方案：动态规划 dp[i]=max(dp[i−2]+nums[i],dp[i−1])  ] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber/
 58. 337.打家劫舍 III  [二叉树] [解决方案：动态规划] [2021/7/27] [中等]  -  https://leetcode-cn.com/problems/house-robber-iii/
 59. 55.跳跃游戏 [数组] [解决方案：贪心算法] [2021/7/27] [中等]   -  https://leetcode-cn.com/problems/jump-game/
-60.  64.最小路径和  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/minimum-path-sum/
+60. 64.最小路径和  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/minimum-path-sum/
 61. 347.前 K 个高频元素  [数组] [解决方案：哈希 + 暴力 | 使用堆，PriorityQueue] [2021/7/29] [中等]  -  https://leetcode-cn.com/problems/top-k-frequent-elements/ 
-62.  76.最小覆盖子串 [字符串] [解决方案：滑动窗口] [2021/7/30] [困难]  -  https://leetcode-cn.com/problems/minimum-window-substring/
-63.  105.从前序与中序遍历序列构造二叉树 [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
-64.  114.二叉树展开为链表 [二叉树] [解决方案：前序遍历，列表] [2021/7/30] [中等]  -   https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
-65.   239.滑动窗口最大值 [数组 | 滑动串口] [解决方案：优先队列，堆] [2021/7/31]  [困难]  -  https://leetcode-cn.com/problems/sliding-window-maximum/
-66.  240.搜索二维矩阵 II [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/search-a-2d-matrix-ii/   
-67. 72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
-68. 169.多数元素 [数组] [解决方案：哈希表] [2021/8/2] [简单]  -  https://leetcode-cn.com/problems/majority-element/
-69. 287.寻找重复数  [数组] [解决方案：二分法，时间换空间] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
-70. 79.单词搜索  [二维数组] [解决方案：回溯] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-search/
-71. 139.单词拆分  [字符串] [解决方案：动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-break/
-72.  221.最大正方形 [矩形|二维数组] [解决方案：暴力法|动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/maximal-square/
+62. 76.最小覆盖子串 [字符串] [解决方案：滑动窗口] [2021/7/30] [困难]  -  https://leetcode-cn.com/problems/minimum-window-substring/
+63. 105.从前序与中序遍历序列构造二叉树 [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+64. 114.二叉树展开为链表 [二叉树] [解决方案：前序遍历，列表] [2021/7/30] [中等]  -   https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
+65. 239.滑动窗口最大值 [数组 | 滑动串口] [解决方案：优先队列，堆] [2021/7/31]  [困难]  -  https://leetcode-cn.com/problems/sliding-window-maximum/
+66. 240.搜索二维矩阵 II [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/search-a-2d-matrix-ii/   
+67. 169.多数元素 [数组] [解决方案：哈希表] [2021/8/2] [简单]  -  https://leetcode-cn.com/problems/majority-element/
+68. 287.寻找重复数  [数组] [解决方案：二分法，时间换空间] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
+69. 79.单词搜索  [二维数组] [解决方案：回溯] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-search/
+70. 139.单词拆分  [字符串] [解决方案：动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-break/
+71. 221.最大正方形 [矩形|二维数组] [解决方案：暴力法|动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/maximal-square/
+72. 72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+73.  11.盛最多水的容器 [] [] [] [中等]  -  https://leetcode-cn.com/problems/container-with-most-water/
+74.  416.分割等和子集 [] [] [] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
+75.  494.目标和  [] [] [] [中等]   -   https://leetcode-cn.com/problems/target-sum/
+76.  10.正则表达式匹配  [] [] [] [中等]  -  https://leetcode-cn.com/problems/regular-expression-matching/
+77.  312.戳气球  [] [] [] [困难]  -  https://leetcode-cn.com/problems/burst-balloons/
+78. 297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
 
 
 
@@ -103,6 +109,8 @@
 9.  剑指 Offer 04. 二维数组中的查找  [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/  （同主站： 240.搜索二维矩阵 II）
 10. 剑指 Offer 64. 求1+2+…+n  [递归] [解决方案：递归] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
 10.  剑指 Offer 05. 替换空格 [] [] [] [简单]  -  https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
+11.  剑指 Offer 31. 栈的压入、弹出序列  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/
+12.  剑指 Offer 35. 复杂链表的复制 [] [] [] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
 
  
 
