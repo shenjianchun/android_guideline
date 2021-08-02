@@ -56,7 +56,7 @@
     
       [Bundle](https://developer.android.google.cn/reference/android/os/Bundle) 对象并不适合保留大量数据，因为它需要在主线程上进行序列化处理并占用系统进程内存。如需保存大量数据，您应组合使用持久性本地存储、[onSaveInstanceState()](https://developer.android.google.cn/reference/android/app/Activity#onSaveInstanceState(android.os.Bundle)) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 方法和 [ViewModel](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel) 类来保存数据，正如[保存界面状态](https://developer.android.google.cn/topic/libraries/architecture/saving-states)中所述。
     
-      > **注意**：为了使 Android 系统恢复 Activity 中视图的状态，每个视图必须具有 `android:id` 属性提供的唯一 ID。
+      > **注意**：为了使 Android 系统恢复 Activity 中视图的状态，每个视图必须具有 `android:id` 属性提供的唯一 ID。 Activity为我们做了一定的恢复工作，Activity使用委托思想，上层委托下层，父容器委托子容器保存过程就完成了。也就是Activity -> Window -> DecorView -> 子view。
     
     * 自行处理配置变更，在Manifest的Activity tag中添加 [android:configChanges](https://developer.android.google.cn/guide/topics/manifest/activity-element#config)  ，复写Activity的 [onConfigurationChanged()](https://developer.android.google.cn/reference/android/app/Activity#onconfigurationchanged) 函数，当调用 onConfigurationChanged 的时候，Activity的Resource对象响应的会进行更新。
 * 参考资料
@@ -197,8 +197,15 @@
     
       RemoteCallbackList是系统专门提供用于删除跨进程listener的接口。使用registerListener和unregisgerListener 来注册和反注册，使用beginBroadcast和finishBroadcast配对使用来通知回调。
     
-    
-    
+
+
+
+#### Binder
+
+* 原理
+
+
+
 #### 参考资料
 * 《Android开发艺术探索》
 * [进程和应用生命周期](https://developer.android.google.cn/guide/components/activities/process-lifecycle)
@@ -237,11 +244,189 @@
 ### Activity
 
 * 知识点
-  * Activity的生命周期和启动模式
+  * Activity的生命周期
+
+    * 典型情况下的生命周期
+
+      > 其中onRestart只有用户自己返回的时候才会调用。
+
+      ![](https://developer.android.google.cn/guide/components/images/activity_lifecycle.png?hl=zh-cn)
+
+    * 异常情况下的生命周期
+
+      异常生命周期会调用onSaveInstanceState 和 onRestoreInstanceState 函数，主要是Config发生变化、内存不足导致Activity被杀的时候会调用以上两个函数。
+
+  * Activity的启动模式
+
+    * Activity的LaunchMode
+
+      1. standand（标准模式）
+      2. singleTop（栈顶复用模式）
+      3. singleTask（栈内复用模式）
+      4. singleInstance（单实例模式）
+
+      > TaskAffinity（相关性），默认情况下，所有的Activity所属的任务栈的名字为应用包名。也可以单独指定TaskAffinity属性，这个属性值不能和包名相同，否则相当于没指定。
+      >
+      > 
+      >
+      > TaskAffinity主要是和singleTask启动模式或者allowTaskReparenting属性配对使用，在其他情况下没有意义。当 Activity 的 [`allowTaskReparenting`](https://developer.android.google.cn/guide/topics/manifest/activity-element?hl=zh-cn#reparent) 属性设为 `"true"` 时。在这种情况下，一旦和 Activity 有亲和性的任务进入前台运行，Activity 就可从其启动的任务转移到该任务。
+
+    * Activity的Flags
+
+      1.  [FLAG_ACTIVITY_NEW_TASK](https://developer.android.google.cn/reference/android/content/Intent?hl=zh-cn#FLAG_ACTIVITY_NEW_TASK) ： 和 `"singleTask"` [`launchMode`](https://developer.android.google.cn/guide/topics/manifest/activity-element?hl=zh-cn#lmode) 值产生的行为相同
+
+      2. [FLAG_ACTIVITY_SINGLE_TOP](https://developer.android.google.cn/reference/android/content/Intent?hl=zh-cn#FLAG_ACTIVITY_SINGLE_TOP) ： 和  `"singleTop"` [`launchMode`](https://developer.android.google.cn/guide/topics/manifest/activity-element?hl=zh-cn#lmode) 值产生的行为相同
+
+      3. [FLAG_ACTIVITY_CLEAR_TOP](https://developer.android.google.cn/reference/android/content/Intent?hl=zh-cn#FLAG_ACTIVITY_CLEAR_TOP) ： 如果要启动的 Activity 已经在当前任务中运行，则不会启动该 Activity 的新实例，而是会销毁位于它之上的所有其他 Activity，并通过 `onNewIntent()` 将此 intent 传送给它的已恢复实例（现在位于堆栈顶部）。（`FLAG_ACTIVITY_CLEAR_TOP` 最常与 `FLAG_ACTIVITY_NEW_TASK` 结合使用。将这两个标记结合使用，可以查找其他任务中的现有 Activity，并将其置于能够响应 intent 的位置。）
+
+         > **注意**：如果指定 Activity 的启动模式为 `"standard"`，系统也会将其从堆栈中移除，并在它的位置启动一个新实例来处理传入的 intent。这是因为当启动模式为 `"standard"` 时，始终会为新 intent 创建新的实例。
+
+      4. 
+
+    * Intent中addFlags的方式优先级要高于LaunchMode，两种同时存在的时候以addFlags为准。addFlags无法设置singleInstance模式，而LaunchMode无法使用FLAG_ACTIVITY_CLEAR_TOP
+
   * IntentFilter的匹配规则
+
+    一个Intent匹配任何一组IntentFilter即可成功启动对应的Activity。一组IntentFilter中Action、category和data可以有多个，构成不同类别，统一类别的信息共同约束当前类别的匹配过程。只有一个Intent同时匹配action类别、category类别、data类别才算完全匹配。
+
+    * action的匹配规则
+
+      action中的匹配要求Intent中的action存在且必须和过滤规则中的其中一个action相同，和category的匹配规则不同。
+
+    * category的匹配规则
+
+      category的匹配规则和action不同，要求Intent中如果有category，那么所有的category都必须和过滤规则中的其中一个category相同。也就是说Inent中如果出现了category，不管有几个category，对于每个category来说，它必须是过滤规则中已经定义的category。
+
+      > 不设置category也可以，原因是系统启动Activity的时候会默认给我加上"android.intent.category.DEFAULT"，所以隐式的Activity必须加上"android.intent.category.DEFAULT"这个category。
+
+    * data的匹配规则
+
+      如果定义了data，那么Intent中必须也要定义可匹配的data。
+
+      data由两部分组成，mimeType和URI。mimeType指媒体类型，URI包括Scheme、Host、Port、Path。`URI的schema是有默认值的，为content和file`。
 * 参考资料
   * 《Android开发艺术探索》
+  * [官方文档 - Activity生命周期](https://developer.android.google.cn/guide/components/activities/activity-lifecycle?hl=zh-cn)
   * [不怕面试再问 Activity，一次彻底地梳理清楚！](https://mp.weixin.qq.com/s/FdfBfyePoX2BI5OkXtmICA)
+
+
+
+### Broadcast
+
+* 知识点
+
+  * 系统广播的变更
+
+    * 从 Android 9（API 级别 28）开始，[`NETWORK_STATE_CHANGED_ACTION`](https://developer.android.com/reference/android/net/wifi/WifiManager#NETWORK_STATE_CHANGED_ACTION) 广播不再接收有关用户位置或个人身份数据的信息。
+    * 从 Android 8.0（API 级别 26）开始，系统对清单声明的接收器施加了额外的限制。如果您的应用以 Android 8.0 或更高版本为目标平台，那么对于大多数隐式广播（没有明确针对您的应用的广播），您不能使用清单来声明接收器。当用户正在活跃地使用您的应用时，您仍可使用[上下文注册的接收器](https://developer.android.com/guide/components/broadcasts#context-registered-recievers)。
+    * Android 7.0（API 级别 24）及更高版本不发送以下系统广播：ACTION_NEW_PICTURE 、ACTION_NEW_VIDEO。
+
+  * 接收广播
+
+    * 清单申明
+
+    * 动态注册
+
+    * 对进程状态的影响
+
+      当进程执行接收器（即当前在运行其 `onReceive()` 方法中的代码）时，它被认为是前台进程。但是，一旦从 `onReceive()` 返回代码，BroadcastReceiver 就不再活跃。
+
+      > 您不应从广播接收器启动长时间运行的后台线程。`onReceive()` 完成后，系统可以随时终止进程来回收内存，在此过程中，也会终止进程中运行的派生线程。要避免这种情况，您应该调用 `goAsync()`（如果您希望在后台线程中多花一点时间来处理广播）或者使用 `JobScheduler` 从接收器调度 `JobService`，这样系统就会知道该进程将继续活跃地工作。
+
+  * 发送广播
+
+    * `sendOrderedBroadcast(Intent, String)` 方法一次向一个接收器发送广播。当接收器逐个顺序执行时，接收器可以向下传递结果，也可以完全中止广播，使其不再传递给其他接收器。接收器的运行顺序可以通过匹配的 intent-filter 的 android:priority 属性来控制；具有相同优先级的接收器将按随机顺序运行。
+    * `sendBroadcast(Intent)` 方法会按随机的顺序向所有接收器发送广播。这称为常规广播。这种方法效率更高，但也意味着接收器无法从其他接收器读取结果，无法传递从广播中收到的数据，也无法中止广播。
+    * `LocalBroadcastManager.sendBroadcast` 方法会将广播发送给与发送器位于同一应用中的接收器。如果您不需要跨应用发送广播，请使用本地广播。这种实现方法的效率更高（无需进行进程间通信），而且您无需担心其他应用在收发您的广播时带来的任何安全问题。
+
+  * 发送、接收广播如何限制
+
+    * 带权限发送
+    * 带权限接收
+
+  * 注意事项（安全权限、生命周期、性能效率）
+
+    * `LocalBroadcastManager` 效率更高（无需进行进程间通信），并且您无需考虑其他应用在收发您的广播时带来的任何安全问题。
+    * 请优先使用上下文注册而不是清单声明
+    * 请勿使用隐式 intent 广播敏感信息
+    * 当您注册接收器时，任何应用都可以向您应用的接收器发送潜在的恶意广播
+    * 广播操作的命名空间是全局性的。请确保在您自己的命名空间中编写操作名称和其他字符串，否则可能会无意中与其他应用发生冲突。
+    * 在广播中如果涉及到耗时操作，请使用[goAsync()](https://developer.android.com/reference/android/content/BroadcastReceiver#goAsync()) 或 [JobScheduler](https://developer.android.com/reference/android/app/job/JobScheduler)。
+    * 请勿从广播接收器启动 Activity，否则会影响用户体验，尤其是有多个接收器时。相反，可以考虑显示[通知](https://developer.android.com/guide/topics/ui/notifiers/notifications)。
+
+* 参考资料
+
+  * [Broadcast - 官网文档](https://developer.android.com/guide/components/broadcasts) 
+
+
+
+### Service
+
+* 知识点
+  * 创建服务
+
+    * `onStartCommand()` 方法必须返回整型数。整型数是一个值，用于描述系统应如何在系统终止服务的情况下继续运行服务。
+
+      > ```
+      > START_NOT_STICKY
+      > ```
+      >
+      > 如果系统在 `onStartCommand()` 返回后终止服务，则除非有待传递的挂起 Intent，否则系统*不会*重建服务。这是最安全的选项，可以避免在不必要时以及应用能够轻松重启所有未完成的作业时运行服务。
+      >
+      > ```
+      > START_STICKY
+      > ```
+      >
+      > 如果系统在 `onStartCommand()` 返回后终止服务，则其会重建服务并调用 `onStartCommand()`，但*不会*重新传递最后一个 Intent。相反，除非有挂起 Intent 要启动服务，否则系统会调用包含空 Intent 的 `onStartCommand()`。在此情况下，系统会传递这些 Intent。此常量适用于不执行命令、但无限期运行并等待作业的媒体播放器（或类似服务）。
+      >
+      > ```
+      > START_REDELIVER_INTENT
+      > ```
+      >
+      > 如果系统在 `onStartCommand()` 返回后终止服务，则其会重建服务，并通过传递给服务的最后一个 Intent 调用 `onStartCommand()`。所有挂起 Intent 均依次传递。此常量适用于主动执行应立即恢复的作业（例如下载文件）的服务。
+
+  * 启动方式（StartService、BindService）
+
+  * 前台服务
+
+    * 如要请求让服务在前台运行，请调用 `startForeground()`
+    * Android 9 及以上需要申明使用 [`FOREGROUND_SERVICE`](https://developer.android.com/reference/android/Manifest.permission#FOREGROUND_SERVICE) 权限
+
+  * 绑定服务（会抛异常）
+
+    * 创建绑定服务的方式
+
+      1. 扩展 Binder 类
+      2. 使用 Messenger
+      3. 使用AIDL
+
+    * 绑定到服务
+
+      1. 实现 `ServiceConnection` 。
+
+         >  onServiceDisconnected() 当与服务的连接意外中断时，例如服务崩溃或被终止时，Android 系统会调用该方法。当客户端取消绑定时，系统不会调用该方法。
+
+      2. 调用 `bindService()`，从而传递 `ServiceConnection` 实现
+
+      3. 当系统调用 `onServiceConnected()` 回调方法时，您可以使用接口定义的方法开始调用服务
+
+      4. 如要断开与服务的连接，请调用 `unbindService()`
+
+      > 您应该始终捕获 `DeadObjectException` 异常，系统会在连接中断时抛出此异常。这是远程方法抛出的唯一异常。
+
+  * AIDL 
+
+    [参考 IPC 章节](#进程和IPC)
+* 参考资料
+  * [Service - 官网文档](https://developer.android.com/guide/components/services) 
+  * [Service自己的总结]( https://blog.csdn.net/Siobhan/article/details/51315974)  
+
+
+
+### Permission
+
+* 知识点
+* 参考资料
 
 
 
@@ -258,37 +443,6 @@
   * [【背上Jetpack之Fragment】你真的会用Fragment吗？Fragment常见问题以及androidx下Fragment的使用新姿势](https://juejin.cn/post/6844904079697657863)
 
 
-
-### Broadcast
-
-* 知识点
-  * 系统广播的变更
-  * 接收广播
-  * 发送广播
-  * 发送、接收广播如何限制
-  * 注意事项（安全权限、生命周期、性能效率）
-* 参考资料
-  * [Broadcast - 官网文档](https://developer.android.com/guide/components/broadcasts) 
-
-
-
-### Service
-
-* 知识点
-  * 启动方式（Start、Binder）
-  * 前台服务
-  * 绑定服务（会抛异常）
-  * AIDL
-* 参考资料
-  * [Service - 官网文档](https://developer.android.com/guide/components/services) 
-  * [Service自己的总结]( https://blog.csdn.net/Siobhan/article/details/51315974)  
-
-
-
-### Permission
-
-* 知识点
-* 参考资料
 
 
 
@@ -951,6 +1105,10 @@
 * 知识点
   * Application 应用启动流程
   * Activity扮演的角色（作用）
+  * Activity的启动流程
+  * Service的启动流程
+  * Broadcast的启动流程
+  * Provider的启动流程
 * 参考资料
   * [[译]Android Application启动流程分析](https://www.jianshu.com/p/a5532ecc8377)
   * [不怕面试再问 Activity，一次彻底地梳理清楚！](https://mp.weixin.qq.com/s/FdfBfyePoX2BI5OkXtmICA)
