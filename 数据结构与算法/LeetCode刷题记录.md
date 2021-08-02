@@ -73,6 +73,7 @@
 69. 287.寻找重复数  [数组] [解决方案：二分法，时间换空间] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/find-the-duplicate-number/
 70. 79.单词搜索  [二维数组] [解决方案：回溯] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-search/
 71. 139.单词拆分  [字符串] [解决方案：动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-break/
+72.  221.最大正方形 [矩形|二维数组] [解决方案：暴力法|动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/maximal-square/
 
 
 
