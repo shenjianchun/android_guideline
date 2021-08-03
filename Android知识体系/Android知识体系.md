@@ -31,10 +31,19 @@
 
 * 知识点
   * Context的使用
+  
   * Context的继承关系（Context -> ContextImpl ; Context -> ContextWrapper -> Application、Activity、Service）
+  
   * Context功能（不同的Context类型都是调用ContextImpl的方法，但是有一些细微的差别，比如启动Activity、弹窗还是需要用Activity）
+  
   * Context的数量	
+  
+    上面已经说过了,Context在我们常用的类型中有Application、Activity、Service三种类型因此一个应用程序中Context的数量可以这么计算：
+     Context数量 = Activity数量 +Service数量 + 1（Application数量）
+  
+    
 * 参考资料
+  
   * [Android中Context的详细介绍](https://juejin.cn/post/6844903533989347336)
 
 
@@ -426,16 +435,50 @@
 ### Permission
 
 * 知识点
+  * 权限的类型
+    1. 安装时权限
+    2. 运行时权限
+    3. 特殊权限
+  * 最佳做法
+    1. 请求最少数量的权限
+    2. 将运行时权限与特定操作相关联
+    3. 考虑应用的依赖项
+    4. 公开透明
+    5. 以显式方式访问系统
 * 参考资料
+  * [官网文档 - Android中的权限](https://developer.android.com/guide/topics/permissions/overview#minimal-number)
 
 
 
 ### Fragment
 
 * 知识点
+  * 创建Fragment
+
+  * Fragment管理器
+
+    1. 访问FragmentManager
+
+       * 在`Activity`中访问， 调用 [`getSupportFragmentManager()`](https://developer.android.com/reference/androidx/fragment/app/FragmentActivity#getSupportFragmentManager()) 方法访问 `FragmentManager`。
+
+       * 在Fragment中访问，Fragment 也能够托管一个或多个子 Fragment。在 Fragment 内，您可以通过 [`getChildFragmentManager()`](https://developer.android.com/reference/androidx/fragment/app/Fragment#getChildFragmentManager()) 获取对管理 Fragment 子级的 `FragmentManager` 的引用。如果您需要访问其宿主 `FragmentManager`，可以使用 [`getParentFragmentManager()`](https://developer.android.com/reference/androidx/fragment/app/Fragment#getParentFragmentManager())。
+
+       <img src="https://developer.android.com/images/guide/fragments/manager-mappings.png" style="zoom: 50%;" />
+
+    2. 使用FragmentManager
+
+       FragmentManager 管理 Fragment 返回堆栈。在运行时，FragmentManager 可以执行添加或移除 Fragment 等返回堆栈操作来响应用户互动。每一组更改作为一个单元（称为 FragmentTransaction）一起提交。
+
+  * Fragment事务
+
+  * Fragment之间添加过度动画效果
+
   * 生命周期
+
   * ViewPager和ViewPager2
+
   * Fragment动画
+
   * 与Activity通信
 * 参考资料
   * [官网文档](https://developer.android.com/guide/fragments)
@@ -453,7 +496,9 @@
 ### include merge ViewStub
 
 * 知识点
-  * 
+  * `<include/>`  ，在要添加可重复使用的组件的布局中，添加 `<include/>` 标记。（通过在 `<include/>` 标记中指定所添加布局的根视图的所有布局参数（任何 `android:layout_*` 属性），您还可以替换这些参数。不过，如果要使用 `<include>` 标记来替换布局属性，您必须同时替换 `android:layout_height` 和 `android:layout_width` 才能让其他布局属性生效。）
+  * `<merge/>` 标记有助于消除视图层次结构中的冗余视图组
+  * ` <ViewStub>` 视图加载延迟
 * 参考资料
   * [Android抽象布局——include、merge 、ViewStub](http://blog.csdn.net/xyz_lmn/article/details/14524567)
 
@@ -462,6 +507,9 @@
 ### ViewSwitcher、TextSwitcher、ImageSwitcher
 
 * 知识点
+  * **ViewSwither** 继承 ViewAnimator，用来在两个View之间来回切换并可以设置不同的切换动画。ViewSwitcher 只能包含有两个子View，一次性只能显示其中一个。
+  * **TextSwitcher** 继承ViewSwitcher，相当于指定了ViewSwitcher的子View只能是TextView。TextSwitcher 可以给屏幕上的Label加上切换动画。通过调用setText(CharSequence)把当前的text退出，显示下一个text并带有动画效果。
+  * **ImageSwitcher**跟TextSwithcer类似，只是用于两个ImageView之间进行有动画的切换。添加子view(ImageView)的方式和设置切换动画都跟ViewSwitcher一样。当调用ImageSwitcher.setImage*方法时会进行两个ImageView的切换。
 * 参考资料
   * [ViewSwitcher、TextSwitcher、ImageSwitcher 使用方法](http://blog.csdn.net/siobhan/article/details/51166380)
 
@@ -617,6 +665,8 @@
 
 ### 应用数据和文件
 
+* 知识点
+  * 
 * 参考资料
   * [官网文档 - 应用数据存储](https://developer.android.google.cn/training/data-storage) 
 
