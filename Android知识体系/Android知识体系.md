@@ -41,7 +41,6 @@
     上面已经说过了,Context在我们常用的类型中有Application、Activity、Service三种类型因此一个应用程序中Context的数量可以这么计算：
      Context数量 = Activity数量 +Service数量 + 1（Application数量）
   
-    
 * 参考资料
   
   * [Android中Context的详细介绍](https://juejin.cn/post/6844903533989347336)
@@ -463,25 +462,31 @@
 
        * 在Fragment中访问，Fragment 也能够托管一个或多个子 Fragment。在 Fragment 内，您可以通过 [`getChildFragmentManager()`](https://developer.android.com/reference/androidx/fragment/app/Fragment#getChildFragmentManager()) 获取对管理 Fragment 子级的 `FragmentManager` 的引用。如果您需要访问其宿主 `FragmentManager`，可以使用 [`getParentFragmentManager()`](https://developer.android.com/reference/androidx/fragment/app/Fragment#getParentFragmentManager())。
 
-       <img src="https://developer.android.com/images/guide/fragments/manager-mappings.png" style="zoom: 50%;" />
+       <img src="https://developer.android.google.cn/images/guide/fragments/manager-mappings.png" style="zoom: 50%;" />
 
     2. 使用FragmentManager
 
-       FragmentManager 管理 Fragment 返回堆栈。在运行时，FragmentManager 可以执行添加或移除 Fragment 等返回堆栈操作来响应用户互动。每一组更改作为一个单元（称为 FragmentTransaction）一起提交。
+       * FragmentManager 管理 Fragment 返回堆栈。在运行时，FragmentManager 可以执行添加或移除 Fragment 等返回堆栈操作来响应用户互动。每一组更改作为一个单元（称为 FragmentTransaction）一起提交。
+       * [setReorderingAllowed(true)](https://developer.android.google.cn/reference/androidx/fragment/app/FragmentTransaction#setReorderingAllowed(boolean)) 可优化事务中涉及的 Fragment 的状态变化，以使动画和过渡正常运行。
+       * 调用 [addToBackStack()](https://developer.android.google.cn/reference/androidx/fragment/app/FragmentTransaction#addToBackStack(java.lang.String)) 会将事务提交到返回堆栈。用户稍后可以通过按“返回”按钮反转事务并恢复上一个 Fragment。如果您在一个事务中添加或移除了多个 Fragment，弹出返回堆栈时，所有这些操作都会撤消。在 `addToBackStack()` 调用中提供的可选名称使您能够使用 [popBackStack()](https://developer.android.google.cn/reference/androidx/fragment/app/FragmentManager#popBackStack(java.lang.String, int)) 弹回到该特定事务。
+       
+       
 
   * Fragment事务
+
+    * 
 
   * Fragment之间添加过度动画效果
 
   * 生命周期
-
+  
   * ViewPager和ViewPager2
-
+  
   * Fragment动画
-
+  
   * 与Activity通信
 * 参考资料
-  * [官网文档](https://developer.android.com/guide/fragments)
+  * [官网文档](https://developer.android.google.cn/guide/fragments)
   * [Android总结 - Fragment](https://blog.csdn.net/Siobhan/article/details/51179833?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162461185316780261988958%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=162461185316780261988958&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-1-51179833.pc_v2_rank_blog_default&utm_term=Fragment&spm=1018.2226.3001.4450)
   * [【背上Jetpack之Fragment】你真的会用Fragment吗？Fragment常见问题以及androidx下Fragment的使用新姿势](https://juejin.cn/post/6844904079697657863)
 
