@@ -2,7 +2,7 @@
 
 ### [LeetCode top 100](https://leetcode-cn.com/problem-list/2cktkvj/) 
 
-1. 1.Two Sum [数组] [2021/7/7] - https://leetcode.com/problems/two-sum/ 
+1.  1.两数之和 [数组] [解决方案：哈希表] [2021/7/7] [简单]  -  https://leetcode-cn.com/problems/two-sum/
 2. 2.add-two-numbers [链表] [2021/7/7] - https://leetcode-cn.com/problems/add-two-numbers/
 3. 21.合并两个有序链表 [链表]  [2021/7/8] - https://leetcode-cn.com/problems/merge-two-sorted-lists/
 4. 3.无重复字符的最长子串 [字符串|集合] [解决方法：滑动窗口] [2021/7/7] -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
@@ -35,7 +35,7 @@
 31. 300.最长递增子序列 [数组] [解决方案：动态规划] [2021/7/19]  -  https://leetcode-cn.com/problems/longest-increasing-subsequence/
 32. 394.字符串解码 [字符串] [解决方案：辅助栈，注意数字大于10的情况] [2021/7/19]  -  https://leetcode-cn.com/problems/decode-string/
 33. 48.旋转图像 [数组] [解决方案：方案三：数组翻转，先上下再对线] [2021/7/19]  -  https://leetcode-cn.com/problems/rotate-image/
-34. 42.接雨水 [数组] [解决方案：方案一，动态规划，空间换时间。还有两种方法没有实践] [2021/7/20]  -  https://leetcode-cn.com/problems/trapping-rain-water/
+34. 42.接雨水 [数组] [解决方案：方案一，动态规划，空间换时间。还有两种方法没有实践] [2021/7/20] [困难] -  https://leetcode-cn.com/problems/trapping-rain-water/
 35. 46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20]  -  https://leetcode-cn.com/problems/permutations/  （重点参考：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/）
 36. 62.不同路径 [数组] [解决方案：动态规划（f(i)(j) = f(i-1) (j)+ f(i)(j-1)）] [2021/7/21]  -  https://leetcode-cn.com/problems/unique-paths/
 37. 23.合并K个升序链表 [链表] [解决方案：顺序合并 | 分治合并] [2021/7/21]  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
@@ -73,13 +73,15 @@
 69. 79.单词搜索  [二维数组] [解决方案：回溯] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-search/
 70. 139.单词拆分  [字符串] [解决方案：动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/word-break/
 71. 221.最大正方形 [矩形|二维数组] [解决方案：暴力法|动态规划] [2021/8/2] [中等]  -  https://leetcode-cn.com/problems/maximal-square/
-72. 72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
-73.  11.盛最多水的容器 [] [] [] [中等]  -  https://leetcode-cn.com/problems/container-with-most-water/
-74.  416.分割等和子集 [] [] [] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
+72. 11.盛最多水的容器 [数组，面积] [解决方案：双指针（左右）] [2021/8/3] [中等]  -  https://leetcode-cn.com/problems/container-with-most-water/
 75.  494.目标和  [数组] [解决方案：回溯 + 暴力法] [2021/8/3] [中等]   -   https://leetcode-cn.com/problems/target-sum/
-76.  10.正则表达式匹配  [] [] [] [中等]  -  https://leetcode-cn.com/problems/regular-expression-matching/
-77.  312.戳气球  [] [] [] [困难]  -  https://leetcode-cn.com/problems/burst-balloons/
+77.  312.戳气球  [数组] [解决方案：动态规划，从底往上] [2021/8/3] [困难]  -  https://leetcode-cn.com/problems/burst-balloons/
 78. 297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
+76. 10.正则表达式匹配  [] [] [] [困难]  -  https://leetcode-cn.com/problems/regular-expression-matching/
+77. 416.分割等和子集 [] [] [] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
+78.  207.课程表 [] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/
+79.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+80.  538.把二叉搜索树转换为累加树 [] [] [] [中等]  -  https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
 
 
 
