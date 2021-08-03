@@ -76,7 +76,7 @@
 72. 72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 73.  11.盛最多水的容器 [] [] [] [中等]  -  https://leetcode-cn.com/problems/container-with-most-water/
 74.  416.分割等和子集 [] [] [] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
-75.  494.目标和  [] [] [] [中等]   -   https://leetcode-cn.com/problems/target-sum/
+75.  494.目标和  [数组] [解决方案：回溯 + 暴力法] [2021/8/3] [中等]   -   https://leetcode-cn.com/problems/target-sum/
 76.  10.正则表达式匹配  [] [] [] [中等]  -  https://leetcode-cn.com/problems/regular-expression-matching/
 77.  312.戳气球  [] [] [] [困难]  -  https://leetcode-cn.com/problems/burst-balloons/
 78. 297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
