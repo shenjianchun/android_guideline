@@ -78,10 +78,12 @@
 77.  312.戳气球  [数组] [解决方案：动态规划，从底往上] [2021/8/3] [困难]  -  https://leetcode-cn.com/problems/burst-balloons/
 78. 297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
 76. 10.正则表达式匹配  [字符串] [解决方案：动态规划，难度太大] [2021/8/4] [困难]  -  https://leetcode-cn.com/problems/regular-expression-matching/
-77. 416.分割等和子集 [] [] [] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
+77. 416.分割等和子集 [数组|背包问题] [解决方案：动态规划，典型的“背包问题”] [2021/8/5] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
 78.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
 79.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 80.  538.把二叉搜索树转换为累加树 [] [] [] [中等]  -  https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
+81.   17.电话号码的字母组合 [] [] [] [中等]  -  https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/
+82.   49.字母异位词分组  [字符串] [解决方案：哈希+排序] [2021/8/5] [中等]  -  https://leetcode-cn.com/problems/group-anagrams/
 
 
 
