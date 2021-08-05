@@ -464,29 +464,74 @@
 
        <img src="https://developer.android.google.cn/images/guide/fragments/manager-mappings.png" style="zoom: 50%;" />
 
-    2. 使用FragmentManager
+    2. 使用FragmentManager （FragmentTransaction）
 
        * FragmentManager 管理 Fragment 返回堆栈。在运行时，FragmentManager 可以执行添加或移除 Fragment 等返回堆栈操作来响应用户互动。每一组更改作为一个单元（称为 FragmentTransaction）一起提交。
        * [setReorderingAllowed(true)](https://developer.android.google.cn/reference/androidx/fragment/app/FragmentTransaction#setReorderingAllowed(boolean)) 可优化事务中涉及的 Fragment 的状态变化，以使动画和过渡正常运行。
        * 调用 [addToBackStack()](https://developer.android.google.cn/reference/androidx/fragment/app/FragmentTransaction#addToBackStack(java.lang.String)) 会将事务提交到返回堆栈。用户稍后可以通过按“返回”按钮反转事务并恢复上一个 Fragment。如果您在一个事务中添加或移除了多个 Fragment，弹出返回堆栈时，所有这些操作都会撤消。在 `addToBackStack()` 调用中提供的可选名称使您能够使用 [popBackStack()](https://developer.android.google.cn/reference/androidx/fragment/app/FragmentManager#popBackStack(java.lang.String, int)) 弹回到该特定事务。
-       
-       
+       * `FragmentManager` 可让您通过 `saveBackStack()` 和 `restoreBackStack()` 方法**支持多个返回堆栈**。这两种方法使您可以通过保存一个返回堆栈并恢复另一个返回堆栈来在返回堆栈之间进行交换。
 
-  * Fragment事务
+    3. 查找现有Fragment
 
-    * 
+      *  [`findFragmentById()`](https://developer.android.com/reference/androidx/fragment/app/FragmentManager#findFragmentById(int)) 
+      *  [`findFragmentByTag()`](https://developer.android.com/reference/androidx/fragment/app/FragmentManager#findFragmentByTag(java.lang.String)) 
 
   * Fragment之间添加过度动画效果
 
+    1. 设置Animation动画
+       * 使用[`FragmentTransaction.setCustomAnimations()`](https://developer.android.com/reference/androidx/fragment/app/FragmentTransaction#setCustomAnimations(int, int))方法
+    2. Transitions动画
+
   * 生命周期
-  
-  * ViewPager和ViewPager2
-  
-  * Fragment动画
-  
-  * 与Activity通信
+
+    1. 使用 addToBackStack()之后的生命周期？
+
+       <img src="https://developer.android.google.cn/images/guide/fragments/fragment-view-lifecycle.png" style="zoom:50%;" />
+
+    2. 使用ViewPager2的生命周期
+
+  * 与Fragment通信
+
+    1. `Fragment` 库提供了两个通信选项：共享的 [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) 和 Fragment Result API。建议的选项取决于用例。如需与任何自定义 API 共享持久性数据，您应使用 `ViewModel`。对于包含的数据可放置在 [`Bundle`](https://developer.android.com/reference/android/os/Bundle) 中的一次性结果，您应使用 Fragment Result API。
+
+  * ViewPager与 Fragment
+
+    1. ViewPagerFragmentPagerAdapter 和 FragmentStatePagerAdapter
+       * FragmentPagerAdapter把每一页都表现为一个Fragment，并且会被保留在fragment manager 中。
+         FragmentPagerAdapter比较适合于少量静态Fragment之间的切换, 比如一套Tab。每一个用户浏览过的Fragment会被保存在内存中，即使它的view已经destroy了。这会导致 使用大量的内存，因为Fragment的实体会被保存到任意的状态。
+       * FragmentStatePagerAdapter使用一个Fragment管理每个page。这个类同时也操控保存和恢复fragment的状态。
+         这个类适合于有大量pages的时候，比如一个列表视图。当page不可见的时候，它们的fragment也会被销毁，只会保留被保存的状态。 这种模式比FragmentPagerAdapter 使用更少的内存，但是在切换的时候会有更多的消耗。
+    2. 切换时的生命周期
+
+  * ViewPager2 与 Fragment 
+
+    1. Viewpager2比ViewPager的优势
+
+       * 垂直方向支持
+       * 支持RTL
+       * 可以修改Fragment的集合
+       * DiffUtil （`ViewPager2` 在 [`RecyclerView`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView) 的基础上构建而成，这意味着它可以访问 [`DiffUtil`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/DiffUtil) 实用程序类。这一点带来了多项优势，但最突出的一项是，这意味着 `ViewPager2` 对象本身会利用 `RecyclerView` 类中的数据集更改动画。）
+
+    2. 如何使用ViewPager2
+
+       * 适配器类
+
+         对于要转换为 `ViewPager2` 对象的每个 `ViewPager` 对象，请更新适配器类以扩展相应的抽象类，如下所示：
+
+         - 当 `ViewPager` 使用 [`PagerAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager/widget/PagerAdapter) 分页浏览视图时，将 [`RecyclerView.Adapter`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.Adapter) 用于 `ViewPager2`。
+         - 当 `ViewPager` 使用 [`FragmentPagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentPagerAdapter) 分页浏览固定数量的较少 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
+         - 当 `ViewPager` 使用 [`FragmentStatePagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentStatePagerAdapter) 分页浏览大量或未知数量的 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
+
+       * 自定义动画，实现 `ViewPager2.PageTransformer` 接口并将其提供给 `ViewPager2` 对象。接口只会公开一个方法 `transformPage()`，方法中有一个 `position` 参数。
+
+         > `position` 参数表示指定页面相对于屏幕中心的位置。 此参数是一个动态属性，会随着用户滚动浏览一系列页面而变化。当页面填满整个屏幕时，其位置值为 `0`。 当页面刚刚离开屏幕右侧时，其位置值为 `1`。如果用户在第一页和第二页之间滚动到一半，则第一页的位置为 -0.5，第二页的位置为 0.5。根据页面在屏幕上的位置，您可以使用 `setAlpha()`、`setTranslationX()` 或 `setScaleY()` 之类的方法设置页面属性，从而创建自定义滑动动画。
+
+       * 支持嵌套的可滚动元素，必须对 `ViewPager2` 对象调用 [`requestDisallowInterceptTouchEvent()`](https://developer.android.com/reference/android/view/ViewGroup#requestDisallowInterceptTouchEvent(boolean))
 * 参考资料
   * [官网文档](https://developer.android.google.cn/guide/fragments)
+  * [深入了解ViewPager2](https://juejin.cn/post/6844904020553760782)
+  * [androidx中的Fragment懒加载方案](https://www.jianshu.com/p/a34eef0e3bc9)
+  * [ViewPager2中的Fragment缓存、预取机制、懒加载实现方式](https://www.jianshu.com/p/1d95e729c571)
   * [Android总结 - Fragment](https://blog.csdn.net/Siobhan/article/details/51179833?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162461185316780261988958%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=162461185316780261988958&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-1-51179833.pc_v2_rank_blog_default&utm_term=Fragment&spm=1018.2226.3001.4450)
   * [【背上Jetpack之Fragment】你真的会用Fragment吗？Fragment常见问题以及androidx下Fragment的使用新姿势](https://juejin.cn/post/6844904079697657863)
 
