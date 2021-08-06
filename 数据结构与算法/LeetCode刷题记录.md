@@ -81,9 +81,10 @@
 77. 416.分割等和子集 [数组|背包问题] [解决方案：动态规划，典型的“背包问题”] [2021/8/5] [中等]   -   https://leetcode-cn.com/problems/partition-equal-subset-sum/
 78.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
 79.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
-80.  538.把二叉搜索树转换为累加树 [] [] [] [中等]  -  https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
-81.   17.电话号码的字母组合 [] [] [] [中等]  -  https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/
+80.  538.把二叉搜索树转换为累加树 [二叉树] [解决方案：反序中序遍历] [2021/8/6] [中等]  -  https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
+81.   17.电话号码的字母组合 [数组|字符串] [解决方案：回溯] [2021/8/6] [中等]  -  https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/
 82.   49.字母异位词分组  [字符串] [解决方案：哈希+排序] [2021/8/5] [中等]  -  https://leetcode-cn.com/problems/group-anagrams/
+83.   234.回文链表 [链表] [解决方案：数组 | 快慢指针] [2021/8/6] [简单]   -   https://leetcode-cn.com/problems/palindrome-linked-list/
 
 
 
