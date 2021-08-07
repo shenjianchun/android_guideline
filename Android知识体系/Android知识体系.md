@@ -582,23 +582,25 @@
 * 参考资料
   * [史上最全ConstraintLayout使用详解](https://mp.weixin.qq.com/s/V-jH0rlIUxgkjSbTV2WjrA)
 
+
+
 ### RecyclerView
 
 * 知识点
   * Adapter、ViewHolder、LayoutManager
-  * 局部刷新
   * ItemDecoration
-  * 动效|ItemAnimator 
+  * 动效|ItemAnimator
+  * 局部刷新
   * 点击&长按
   * 下拉刷新 & 加载更多
   * Header & Footer 
   * SnapHelper
     	LinearSnapHelper
     	PagerSnapHelper
-  * 进阶
-    	四级缓存
+  * 缓存（四级缓存）
+  * RecyclerView性能优化
 * 参考资料
-  * [RecyclerView - Android官网文档](https://developer.android.com/guide/topics/ui/layout/recyclerview?hl=zh_cn)
+  * [RecyclerView - Android官网文档](https://developer.android.google.cn/guide/topics/ui/layout/recyclerview?hl=zh_cn)
   * [深入理解 RecyclerView 的缓存机制](https://juejin.cn/post/6844904146684870669)
 
 
