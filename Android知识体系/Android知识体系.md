@@ -601,6 +601,14 @@
   * RecyclerView性能优化
 * 参考资料
   * [RecyclerView - Android官网文档](https://developer.android.google.cn/guide/topics/ui/layout/recyclerview?hl=zh_cn)
+  * [[CodePath](Using the RecyclerView (Android 5.0))](http://guides.codepath.com/android/Using-the-RecyclerView)
+  * [[CodePath\] Heterogenous Layouts inside RecyclerView (Android 5.0)](http://guides.codepath.com/android/Heterogenous-Layouts-inside-RecyclerView)
+  * [RecyclerView添加Header的正确方式](http://blog.csdn.net/qibin0506/article/details/49716795)
+  * [Android 优雅的为RecyclerView添加HeaderView和FooterView](http://blog.csdn.net/lmj623565791/article/details/51854533)
+  * [[CodePath\] Implementing Pull to Refresh Guide](http://guides.codepath.com/android/Implementing-Pull-to-Refresh-Guide)
+  * [[CodePath\]Endless Scrolling with AdapterViews and RecyclerView (Infinite pagination)](http://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews-and-RecyclerView)
+  * [RecyclerView 实现下拉刷新和自动加载](http://www.jianshu.com/p/4feb0c16d1b5)
+  * [你必须了解的RecyclerView的五大开源项目-解决上拉加载、下拉刷新和添加Header、Footer等问题](http://blog.csdn.net/mynameishuangshuai/article/details/51153978)
   * [深入理解 RecyclerView 的缓存机制](https://juejin.cn/post/6844904146684870669)
 
 
