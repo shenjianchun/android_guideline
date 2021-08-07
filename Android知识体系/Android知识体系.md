@@ -587,29 +587,252 @@
 ### RecyclerView
 
 * 知识点
-  * Adapter、ViewHolder、LayoutManager
-  * ItemDecoration
-  * 动效|ItemAnimator
-  * 局部刷新
-  * 点击&长按
-  * 下拉刷新 & 加载更多
-  * Header & Footer 
-  * SnapHelper
-    	LinearSnapHelper
-    	PagerSnapHelper
+  * RecyclerView 与ListView对比
+
+  * RecyclerView核心组件 
+
+    | 类名                        | 作用                                                     |
+    | :-------------------------- | -------------------------------------------------------- |
+    | Recycler.Adapter            | 处理数据集合并负责绑定视图                               |
+    | RecyclerView.LayoutManager  | 负责Item视图的布局显示管理                               |
+    | RecyclerView.ViewHolder     | 持有所有的用于绑定数据或者需要操作的View                 |
+    | RecyclerView.ItemDecoration | 负责绘制Item附近的分割线                                 |
+    | RecyclerView.ItemAnimator   | 为Item的一般操作添加动画效果，如：item进入、移动、删除等 |
+    | RecyclerView.Recyler        | 负责处理Item View的缓存                                  |
+
+    ![核心组件的关系](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt4iciasKiaPrFk69TMxh9DB0h55icAiciaoSlORib0U0FYWNRLZk5SZQQQxdMgZDW4D2NDThxD9aGVsE8UUw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+    * Recycler.Adapter
+
+      1. Adapter 的常用复写的方法
+
+         ```java
+         public VH onCreateViewHolder(ViewGroup parent, int viewType) 创建Item视图，并返回相应的ViewHolder
+         public void onBindViewHolder(VH holder, int position) 绑定数据到正确的Item视图上。
+         public int getItemCount() 返回该Adapter所持有的Itme数量
+         public int getItemViewType(int position) 用来获取当前项Item(position参数)是哪种类型的布局
+         ```
+
+      2. 通知数据集变化
+
+         | Method                                                      | Description                                                  |
+         | :---------------------------------------------------------- | :----------------------------------------------------------- |
+         | `notifyItemChanged(int pos)`                                | Notify that item at the position has changed.                |
+         | `notifyItemInserted(int pos)`                               | Notify that item reflected at the position has been newly inserted. |
+         | `notifyItemRemoved(int pos)`                                | Notify that items previously located at the position have been removed from the data set. |
+         | `notifyDataSetChanged()`                                    | Notify that the dataset has changed. Use only as last resort. |
+         | `notifyItemRangeChanged(int positionStart, int itemCount)`  | Notify any registered observers that the `itemCount` items starting at position `positionStart` have changed. |
+         | `notifyItemRangeInserted(int positionStart, int itemCount)` | Notify any registered observers that the currently reflected `itemCount` items starting at `positionStart` have been newly inserted. |
+         | `notifyItemRangeRemoved(int positionStart, int itemCount)`  | Notify any registered observers that the `itemCount` items previously located at `positionStart` have been removed from the data set. |
+
+      3. 大数据量变化 与 DiffUils
+
+      4. adapter订阅者模式
+
+         
+
+    * RecyclerView.LayoutManager
+
+      1. LayoutManager的作用
+      2. 常用的LayoutManager
+         - `LinearLayoutManager` 将各个项排列在一维列表中。将 `RecyclerView` 与 `LinearLayoutManager` 搭配使用可提供类似于旧版 `ListView` 布局的功能。
+         - `GridLayoutManager` 将各个项排列在二维网格中，就像棋盘上的方格一样。将 `RecyclerView` 与 `GridLayoutManager` 搭配使用可提供类似于旧版 `GridView` 布局的功能。
+         - `StaggeredGridLayoutManager` 将各个项排列在二维网格中，每一列都在前一列基础上稍微偏移，就像美国国旗中的星星一样。
+      3. 如何自定义LayoutManager
+      4. setLayoutManager源码里做了什么？
+
+      
+
+    * RecyclerView.ViewHolder
+
+      1. ViewHolder的作用
+
+      2. ViewHolder如何复用
+
+         
+
+    * RecyclerView.ItemDecoration
+
+      1. ItemDecoration的作用，本质是一个Drawable
+
+      2. 如何使用ItemDecoration
+
+         ```java
+         mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                      mLayoutManager.getOrientation());
+         recyclerView.addItemDecoration(mDividerItemDecoration);
+         ```
+
+         
+
+      3. 自定义ItemDecoration有哪些重写方法？
+
+         
+
+    * RecyclerView.ItemAnimator  动效
+
+      1. 如何使用ItemAnimator  
+
+         ```java
+         //设置默认的动画模式
+         recyclerView.setItemAnimator(new DefaultItemAnimator());
+         ```
+
+      2. ItemAnimator  中的几个重要方法
+
+         
+
+  * 点击&长按&选择|多选
+
+    * Item的Touch事件
+
+      1. `RecyclerView.OnItemTouchListener`
+
+      ```
+      recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+      
+          @Override
+          public void onTouchEvent(RecyclerView recycler, MotionEvent event) {
+              // Handle on touch events here
+          }
+      
+          @Override
+          public boolean onInterceptTouchEvent(RecyclerView recycler, MotionEvent event) {
+              return false;
+          }
+      
+      });
+      ```
+
+      
+
+    * Item的click事件 和 longClick事件
+
+      1. Attaching Click Listeners with Decorators
+
+         RecyclerView is to add a decorator class such as [this clever `ItemClickSupport` decorator](https://gist.github.com/nesquena/231e356f372f214c4fe6) and then implement the following code in your Activity or Fragment code:
+
+         ```
+         public class PostsFragment extends Fragment {
+             // ...
+         
+             @Override
+             public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+                 super.onViewCreated(view, savedInstanceState);
+         
+                 // Leveraging ItemClickSupport decorator to handle clicks on items in our recyclerView
+                 ItemClickSupport.addTo(rvPosts).setOnItemClickListener(
+                         new ItemClickSupport.OnItemClickListener() {
+                             @Override
+                             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                                 // do stuff
+                             }
+                         }
+                 );
+         
+             }
+         
+             // ...
+         }
+         ```
+
+         
+
+      2. Simple Click Handler within ViewHolder
+
+         ```
+             // Used to cache the views within the item layout for fast access
+             public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+                 public TextView tvName;
+                 public TextView tvHometown;
+                 private Context context;
+         
+                 public ViewHolder(Context context, View itemView) {
+                     super(itemView);
+                     this.tvName = (TextView) itemView.findViewById(R.id.tvName);
+                     this.tvHometown = (TextView) itemView.findViewById(R.id.tvHometown);
+                     // Store the context
+                     this.context = context;
+                     // Attach a click listener to the entire row view
+                     itemView.setOnClickListener(this);
+                 }
+         
+                 // Handles the row being being clicked
+                 @Override
+                 public void onClick(View view) {
+                     int position = getAdapterPosition(); // gets item position
+                     if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+                         User user = users.get(position);
+                         // We can access the data within the views
+                         Toast.makeText(context, tvName.getText(), Toast.LENGTH_SHORT).show();
+                     }
+                 }
+             }
+         ```
+
+         
+
+    * Item的选择和多选
+
+      
+
+  * Header & Footer
+
+    * 
+
+  * RecyelerView滑动
+
+    * 下拉刷新 & 加载更多
+
+      1. 下拉刷新如何实现？
+
+         
+
+      2. 上拉加载更多如何实现？
+
+         1） 使用  [EndlessRecyclerViewScrollListener.java](https://gist.github.com/nesquena/d09dc68ff07e845cc622) 
+
+         
+
+    * SnapHelper
+
+      1. SnapHelper的作用
+
+      2. SnapHelper是怎么让RecyclerView对齐的？
+
+      3. LinearSnapHelper & PagerSnapHelper
+
+    * 滑动冲突
+
+      
+
   * 缓存（四级缓存）
+
+    
+
   * RecyclerView性能优化
+
+    * 数据优化
+
+      1. 使用DiffUtil
+      2. 使用`recyclerView.setHasFixedSize(true);` ，如果items是固定且不会发生变化，为什么？
+
+    * 布局优化
+
+      
+
 * 参考资料
   * [RecyclerView - Android官网文档](https://developer.android.google.cn/guide/topics/ui/layout/recyclerview?hl=zh_cn)
   * [[CodePath](Using the RecyclerView (Android 5.0))](http://guides.codepath.com/android/Using-the-RecyclerView)
   * [[CodePath\] Heterogenous Layouts inside RecyclerView (Android 5.0)](http://guides.codepath.com/android/Heterogenous-Layouts-inside-RecyclerView)
-  * [RecyclerView添加Header的正确方式](http://blog.csdn.net/qibin0506/article/details/49716795)
   * [Android 优雅的为RecyclerView添加HeaderView和FooterView](http://blog.csdn.net/lmj623565791/article/details/51854533)
   * [[CodePath\] Implementing Pull to Refresh Guide](http://guides.codepath.com/android/Implementing-Pull-to-Refresh-Guide)
   * [[CodePath\]Endless Scrolling with AdapterViews and RecyclerView (Infinite pagination)](http://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews-and-RecyclerView)
   * [RecyclerView 实现下拉刷新和自动加载](http://www.jianshu.com/p/4feb0c16d1b5)
   * [你必须了解的RecyclerView的五大开源项目-解决上拉加载、下拉刷新和添加Header、Footer等问题](http://blog.csdn.net/mynameishuangshuai/article/details/51153978)
   * [深入理解 RecyclerView 的缓存机制](https://juejin.cn/post/6844904146684870669)
+  * [RecyclerView问题汇总](https://juejin.cn/post/6844903837724213256)
+  * [看完这篇，面试RecyclerView的时候再也不怕了](https://mp.weixin.qq.com/s/auphzaQF6_wJx6dGFY6niA)
 
 
 
@@ -657,6 +880,8 @@
   * [Android 开发绕不过的坑：你的 Bitmap 究竟占多大内存？](https://www.cnblogs.com/krislight1105/p/5203277.html)
   * [Android Bitmap变迁与原理解析（4.x-8.x）](https://juejin.cn/post/6844903608887017485)
   * [Android 高清加载巨图方案 拒绝压缩图片](https://blog.csdn.net/lmj623565791/article/details/49300989)
+
+
 
 ### Drawable
 
