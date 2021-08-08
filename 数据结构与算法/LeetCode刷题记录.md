@@ -84,9 +84,11 @@
 83.   234.回文链表 [链表] [解决方案：数组 | 快慢指针] [2021/8/6] [简单]   -   https://leetcode-cn.com/problems/palindrome-linked-list/
 81.   338.比特位计数 [二进制|字节] [解决方案：Brian Kernighan 算法，n = n & (n -1) 使最后一个1变成0] [2021/8/7] [简单]  -   https://leetcode-cn.com/problems/counting-bits/
 82.   96.不同的二叉搜索树 [二叉树] [解决方案：动态规划，笛卡尔积] [2021/8/7] [中等]  -  https://leetcode-cn.com/problems/unique-binary-search-trees/
-83.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
-84.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
-85.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+83.   581.最短无序连续子数组  [数组] [解决方案：排序] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/
+84.   238.除自身以外数组的乘积 [数组] [解决方案：左右乘积] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/product-of-array-except-self/
+85.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
+86.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
+87.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 
 
 
