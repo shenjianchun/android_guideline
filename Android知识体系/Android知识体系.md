@@ -855,11 +855,37 @@
 ### ImageView
 
 * 知识点
-  * 使用、属性
+  * 属性
+
+    * adjustViewBounds，保持原图的长宽比，需要设置maxWidth/maxHeight 或者长宽中使用wrap_content
+
   * Scale Types
+
+    center：保持原图的大小，显示在ImageView的中心。当原图的size大于ImageView的size，超过部分裁剪处理。
+
+    centerCrop：以填满整个ImageView为目的，将原图的中心对准ImageView的中心，等比例放大缩小原图，直到填满ImageView为止（指的是ImageView的宽和高都要填满），放大或缩小后的原图超过ImageView的部分作裁剪处理。（去除Padding）
+
+    centerInside：以原图完全显示为目的，将图片的内容完整居中显示，通过按比例放大缩小原图的size宽(高)等于或小于ImageView的宽(高)。如果原图的size本身就小于ImageView的size，则原图的size不作任何处理，居中显示在ImageView。（当原图长宽都小于ImageView的时候，不进行任何处理，直接居中显示，当原图长宽大于ImageView的时候，效果如同fitCenter）
+
+    matrix：不改变原图的大小，从ImageView的左上角开始绘制原图，原图超过ImageView的部分作裁剪处理。
+
+    fitCenter：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，居中显示。
+
+    fitStart：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，显示在ImageView的上/前部分位置
+
+    fitEnd：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，显示在ImageView的下/后部分位置
+
+    fitXY：把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView.
+
+    ![](https://img-blog.csdn.net/20160503100939448)
+
+    
+
   * ImageView和Bitmap
   * SVG图片
+
 * 参考资料
+  
   * [Working with the ImageView](https://github.com/codepath/android_guides/wiki/Working-with-the-ImageView)
 
 
