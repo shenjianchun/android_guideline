@@ -861,27 +861,22 @@
 
   * Scale Types
 
-    center：保持原图的大小，显示在ImageView的中心。当原图的size大于ImageView的size，超过部分裁剪处理。
+    * center：保持原图的大小，显示在ImageView的中心。当原图的size大于ImageView的size，超过部分裁剪处理。
 
-    centerCrop：以填满整个ImageView为目的，将原图的中心对准ImageView的中心，等比例放大缩小原图，直到填满ImageView为止（指的是ImageView的宽和高都要填满），放大或缩小后的原图超过ImageView的部分作裁剪处理。（去除Padding）
-
-    centerInside：以原图完全显示为目的，将图片的内容完整居中显示，通过按比例放大缩小原图的size宽(高)等于或小于ImageView的宽(高)。如果原图的size本身就小于ImageView的size，则原图的size不作任何处理，居中显示在ImageView。（当原图长宽都小于ImageView的时候，不进行任何处理，直接居中显示，当原图长宽大于ImageView的时候，效果如同fitCenter）
-
-    matrix：不改变原图的大小，从ImageView的左上角开始绘制原图，原图超过ImageView的部分作裁剪处理。
-
-    fitCenter：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，居中显示。
-
-    fitStart：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，显示在ImageView的上/前部分位置
-
-    fitEnd：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，显示在ImageView的下/后部分位置
-
-    fitXY：把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView.
+    * centerCrop：以填满整个ImageView为目的，将原图的中心对准ImageView的中心，等比例放大缩小原图，直到填满ImageView为止（指的是ImageView的宽和高都要填满），放大或缩小后的原图超过ImageView的部分作裁剪处理。（去除Padding）
+    * centerInside：以原图完全显示为目的，将图片的内容完整居中显示，通过按比例放大缩小原图的size宽(高)等于或小于ImageView的宽(高)。如果原图的size本身就小于ImageView的size，则原图的size不作任何处理，居中显示在ImageView。（当原图长宽都小于ImageView的时候，不进行任何处理，直接居中显示，当原图长宽大于ImageView的时候，效果如同fitCenter）
+    * matrix：不改变原图的大小，从ImageView的左上角开始绘制原图，原图超过ImageView的部分作裁剪处理。
+    * fitCenter：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，居中显示。
+    * fitStart：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，显示在ImageView的上/前部分位置
+    * fitEnd：把原图按比例扩大或缩小长和宽，保证原图整体都在ImageView中，并且原图中的长或者宽肯定有一个等于ImageView的长或者宽，显示在ImageView的下/后部分位置
+    * fitXY：把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView.
 
     ![](https://img-blog.csdn.net/20160503100939448)
 
     
 
   * ImageView和Bitmap
+    * 
   * SVG图片
 
 * 参考资料
@@ -988,15 +983,73 @@
 ### 应用数据和文件
 
 * 知识点
-  * 
+
+  * 存储位置的类别
+
+    - **应用专属存储空间**：存储仅供应用使用的文件，可以存储到内部存储卷中的专属目录或外部存储空间中的其他专属目录。使用内部存储空间中的目录保存其他应用不应访问的敏感信息。
+    - **共享存储**：存储您的应用打算与其他应用共享的文件，包括媒体、文档和其他文件。
+    - **偏好设置**：以键值对形式存储私有原始数据。
+    - **数据库**：使用 Room 持久性库将结构化数据存储在专用数据库中。
+
+    | 内容类型                                                     | 访问方法                                 | 所需权限                                                     | 其他应用是否可以访问？                                       | 卸载应用时是否移除文件？                                     |      |
+    | :----------------------------------------------------------- | :--------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | ---- |
+    | [应用专属文件](https://developer.android.google.cn/training/data-storage/app-specific) | 仅供您的应用使用的文件                   | 从内部存储空间访问，可以使用 `getFilesDir()` 或 `getCacheDir()` 方法  从外部存储空间访问，可以使用 `getExternalFilesDir()` 或 `getExternalCacheDir()` 方法 | 从内部存储空间访问不需要任何权限  如果应用在搭载 Android 4.4（API 级别 19）或更高版本的设备上运行，从外部存储空间访问不需要任何权限 | 如果文件存储在内部存储空间中的目录内，则不能访问  如果文件存储在外部存储空间中的目录内，则可以访问 | 是   |
+    | [媒体](https://developer.android.google.cn/training/data-storage/shared/media) | 可共享的媒体文件（图片、音频文件、视频） | `MediaStore` API                                             | 在 Android 10（API 级别 29）或更高版本中，访问其他应用的文件需要 `READ_EXTERNAL_STORAGE` 或 `WRITE_EXTERNAL_STORAGE` 权限  在 Android 9（API 级别 28）或更低版本中，访问**所有**文件均需要相关权限 | 是，但其他应用需要 `READ_EXTERNAL_STORAGE` 权限              | 否   |
+    | [文档和其他文件](https://developer.android.google.cn/training/data-storage/shared/documents-files) | 其他类型的可共享内容，包括已下载的文件   | 存储访问框架                                                 | 无                                                           | 是，可以通过系统文件选择器访问                               | 否   |
+    | [应用偏好设置](https://developer.android.google.cn/training/data-storage/shared-preferences) | 键值对                                   | [Jetpack Preferences](https://developer.android.google.cn/guide/topics/ui/settings/use-saved-values) 库 | 无                                                           | 否                                                           | 是   |
+    | 数据库                                                       | 结构化数据                               | [Room](https://developer.android.google.cn/training/data-storage/room) 持久性库 | 无                                                           | 否                                                           | 是   |
+
+  
+
+  * 对外部存储空间的访问和所需权限
+    * Android 为对外部存储空间的读写访问定义了以下权限：[`READ_EXTERNAL_STORAGE`](https://developer.android.google.cn/reference/android/Manifest.permission#READ_EXTERNAL_STORAGE) 和 [`WRITE_EXTERNAL_STORAGE`](https://developer.android.google.cn/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE)。
+  * 对文件操作的最佳做法
+    * 请勿反复打开和关闭文件
+    * 共享单个文件（如果您需要与其他应用共享特定文件，请使用 FileProvider API 。 如果您需要向其他应用提供数据，可以使用内容提供器。）
+
+  
+
+  
+
 * 参考资料
+  
   * [官网文档 - 应用数据存储](https://developer.android.google.cn/training/data-storage) 
+  * [Android总结 - 保存数据](https://blog.csdn.net/siobhan/article/details/51145498)
+
+
+
+### 应用专属空间
+
+* 内部空间
+* 外部空间（要先查看可用空间、选择物理存储位置）
+* 查询可用空间
+  *  getAllocatableBytes() 
+
+
+
+### 共享的存储空间
+
+- **媒体内容**：系统提供标准的公共目录来存储这些类型的文件，这样用户就可以将所有照片保存在一个公共位置，将所有音乐和音频文件保存在另一个公共位置，依此类推。您的应用可以使用此平台的 [`MediaStore`](https://developer.android.google.cn/reference/android/provider/MediaStore) API 访问此内容。
+
+- **文档和其他文件**：系统有一个特殊目录，用于包含其他文件类型，例如 PDF 文档和采用 EPUB 格式的图书。您的应用可以使用此平台的存储访问框架访问这些文件。
+
+  > DocumentsUI
 
 
 
 ### Preferences
 
+* 创建新的共享偏好设置文件或访问已有共享偏好设置文件
 
+  * `getSharedPreferences()` - 如果您需要多个由名称（使用第一个参数指定）标识的共享偏好设置文件，则使用此方法。您可以从您的应用中的任何 `Context` 调用此方法。
+  * `getPreferences()` - 如果您只需使用 Activity 的一个共享首选项，请从 `Activity` 中使用此方法。由于这会检索属于该 Activity 的默认共享偏好设置文件，因此您无需提供名称。
+
+  > 如果您使用 `SharedPreferences` API 保存**应用设置**，则应改用 `getDefaultSharedPreferences()` 获取整个应用的默认共享偏好设置文件。
+
+* 写入
+
+  *  `SharedPreferences` 调用 `edit()` 以创建一个 `SharedPreferences.Editor`。
+  * `apply()` 会立即更改内存中的 `SharedPreferences` 对象，但会将更新**异步**写入磁盘。 `commit()` 将数据**同步**写入磁盘。
 
 
 
@@ -1006,19 +1059,16 @@
   * 权限
   * 创建CP
   * 读取或操作CP数据
+  * 批处理
+  * bulkInsert
+    *  ContentProviderOperation 和 ContentResolver.applyBatch()
   * 创建和使用FileProvider
-
+  * 自定义文档提供程序  DocumentsProvider
+  
 * 参考资料
+  * [ContentProvider基础 - 官方](https://developer.android.google.cn/guide/topics/providers/content-provider-basics)
   * [ContentProvider 的批处理操作](https://blog.csdn.net/siobhan/article/details/54983233)
-
-
-
-### Files
-
-* 知识点
-* 参考资料
-  * [数据和文件存储概览-Android官网](https://developer.android.google.cn/training/data-storage)
-  * [Android总结 - 保存数据](https://blog.csdn.net/siobhan/article/details/51145498)
+  * [FileProvider的创建](https://developer.android.google.cn/reference/androidx/core/content/FileProvider?hl=en#ProviderDefinition)
 
 
 
@@ -1027,10 +1077,9 @@
 * 知识点
 
   * SQLiteOpenHelper （创建、CRUD）
-  * 批量操作（bultInsert、ContentProviderOperation）
   * 升级、降级（逐版本升级）
   * ORMs(数据库框架)
-
+  
 * 参考资料
 
   * [Local Databases with SQLiteOpenHelper - CodePath - 使用篇](https://guides.codepath.com/android/Local-Databases-with-SQLiteOpenHelper)
@@ -1038,6 +1087,23 @@
   * [绝对值得一看的Android数据库升级攻略](https://blog.csdn.net/s003603u/article/details/53942411)
 
     
+
+### 访问所有文件
+
+* 知识点
+
+  * 请求权限
+
+    * An app can request All files access from the user by doing the following:
+
+      1. Declare the [`MANAGE_EXTERNAL_STORAGE`](https://developer.android.google.cn/reference/android/Manifest.permission#MANAGE_EXTERNAL_STORAGE) permission in the manifest.
+      2. Use the [`ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION`](https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION) intent action to direct users to a system settings page where they can enable the following option for your app: **Allow access to manage all files**.
+
+      To determine whether your app has been granted the `MANAGE_EXTERNAL_STORAGE` permission, call [`Environment.isExternalStorageManager()`](https://developer.android.google.cn/reference/android/os/Environment#isExternalStorageManager()).
+
+* 参考资料
+
+  * [管理存储设备上的所有文件](https://developer.android.google.cn/training/data-storage/manage-all-files)
 
 
 
