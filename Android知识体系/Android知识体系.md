@@ -876,9 +876,10 @@
     
 
   * ImageView和Bitmap
+    
     * 
-  * SVG图片
-
+* SVG图片
+  
 * 参考资料
   
   * [Working with the ImageView](https://github.com/codepath/android_guides/wiki/Working-with-the-ImageView)
@@ -1375,12 +1376,13 @@
     > - **Allocated**：您的应用分配的 Java/Kotlin 对象数。此数字没有计入 C 或 C++ 中分配的对象。
       >
     >   如果连接到搭载 Android 7.1 及更低版本的设备，只有在内存性能分析器连接到您运行的应用时，才开始此分配计数。因此，您开始分析之前分配的任何对象都不会被计入。但是，Android 8.0 及更高版本附带一个设备内置性能剖析工具，该工具可跟踪所有分配，因此，在 Android 8.0 及更高版本上，此数字始终表示您的应用中待处理的 Java 对象总数。
-  
+
     * MAT
 
     * LeakCanary
-    1. LeakCanary 原理 ，详情 [LeakCanary原理](#LeakCanary)
-  
+
+      1. LeakCanary 原理 ，详情 [LeakCanary原理](#LeakCanary)
+
          > 1）检测保留的实例
          >
          > 2） 堆转储
@@ -1388,18 +1390,18 @@
          > 3）泄漏踪迹
          >
          > 4）泄漏分组
-  
+
       2. 安装 LeakCanary
-  
+
       3. 使用 LeakCanary 分析内存泄漏
-  
+
     * 监听和获取系统内存状态
-  
+
       1. Android 应用可以通过在 Activity 中实现 ComponentCallback2 接口获取系统内存的相关事件. ComponentCallnback2 提供了 onTrimMemory(level) 回调方法
       2. ActivityManager.getMemoryInfo()。 Android 提供了一个 ActivityManager.getMemoryInfo() 方法给我们查询内存信息，这个方法会返回一个 ActivityManager.MemoryInfo 对象，这个对象包含了系统当前内存状态，这些状态信息包括可用内存、总内存以及低杀内存阈值。
-  
+
   * 内存优化技巧
-  
+
     * 谨慎使用 Service，而是使用JobSchedule或新的WorkManager
     * 选择优化后的数据容器。Android 框架包含几个经过优化的数据容器，包括 `SparseArray`、`SparseBooleanArray` 和 `LongSparseArray`。 
     * 小心代码抽象
