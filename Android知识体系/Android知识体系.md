@@ -915,6 +915,7 @@
   * VectorDrawable
 * 参考资料
   * [Drawables -  CodePath - 使用篇](https://guides.codepath.com/android/Drawables)
+  * [可绘制对象资源_官网](https://developer.android.com/guide/topics/resources/drawable-resource#Transition)
   * 《Android开发艺术探索》
 
 
@@ -923,6 +924,7 @@
 
 * 知识点
 * 参考资料
+  * [Android全面解析之Window机制](https://juejin.cn/post/6888688477714841608)
   * [像360悬浮窗那样，用WindowManager实现炫酷的悬浮迷你音乐盒（上）](http://www.jianshu.com/p/95ceb0a2ed27)
 
 
@@ -1173,11 +1175,27 @@
 
 ### Android 官方架构组件
 
+
+
+#### Lifecycle
+
+
+
 #### LiveData
 
 
 
+
+
 #### ViewModel
+
+
+
+
+
+#### Room
+
+
 
 
 
@@ -1503,6 +1521,8 @@
 
 ### Android 系统启动
 
+* 知识点
+  * 
 * 参考资料
   * [详解 Android 是如何启动的](http://www.woaitqs.cc/android/2016/06/15/how-android-launch-itself.html)
   * [Android系统启动源码分析](http://blog.csdn.net/ynztlxdeai/article/details/69675754)
@@ -1513,14 +1533,225 @@
 
 * 知识点
 
-  * ThreadLocal
+  * ThreadLocal<T>
+
+    * 工作原理
+
+      ThreadLocal是一个线程内部的数据存储类，通过它可以额在制定的线程中存储数据，数据存储以后，只有在制定线程中可以获取到存储的数据，对于其他线程来说则无法获取到数据。
+
+    * 使用场景
+
+      1. 当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候，就可以考虑采用ThreadLocal。
+      2. 另一个试用场景是复杂逻辑下的对象传递，比如监听器的传递，有些时候一个线程中的任务过于复杂，在这种情况下，我们有需要监听器能够贯穿整个线程的执行过程。此时可以采用ThreadLocal。
+
+    * 内部实现
+
+      1. ThreadLocal是一个泛型，只需要弄清楚 ThreadLocal
+
+      2. ThreadLocalMap，在Thread中y有一个threadLocals的变量来存储数据。ThreadLocalMap中通过table数组变量进行存储，而table的索引在set的时候会通过算法计算出来。
+
+         * 对于某一ThreadLocal来讲，他的索引值i是确定的，在不同线程之间访问时访问的是不同的table数组的同一位置即都为table[i]，只不过这个不同线程之间的table是独立的。
+
+         * 对于同一线程的不同ThreadLocal来讲，这些ThreadLocal实例共享一个table数组，然后每个ThreadLocal实例在table中的索引i是不同的。
+
+         ```
+             /* ThreadLocal values pertaining to this thread. This map is maintained
+              * by the ThreadLocal class. */
+             ThreadLocal.ThreadLocalMap threadLocals = null;
+         ```
+
+         ```
+         
+         //ThreadLocalMap构造方法
+         ThreadLocalMap(ThreadLocal<?> firstKey, Object firstValue) {
+                 //内部成员数组，INITIAL_CAPACITY值为16的常量
+                 table = new Entry[INITIAL_CAPACITY];
+                 //位运算，结果与取模相同，计算出需要存放的位置
+                 //threadLocalHashCode比较有趣
+                 int i = firstKey.threadLocalHashCode & (INITIAL_CAPACITY - 1);
+                 table[i] = new Entry(firstKey, firstValue);
+                 size = 1;
+                 setThreshold(INITIAL_CAPACITY);
+         }
+         ```
+
+         
+
   * 消息队列MessageQueue的工作原理
+
+    * MessageQueue主要包含两个操作：插入和读取。读取操作会伴随插入操作，分别对应的方法为 enqueueMessage 和 next。
+
+    * MessageQueue 使用单链表的数据结构来维护消息列表。
+
+    * next方法是一个无限循环的方法，如果消息队列中没有消息，那么next方法会一直阻塞在这里。当有新消息到来时，next方法会返回这条消息并将其从单链表中移除。
+
+    * nativePollOnce的底层逻辑
+
+      1. Linux eventfd事件等待/响应机制
+      2. Linux IO多路复用epoll ，
+      3.  epoll_wait 读取消息 和 wake 唤醒
+
+      <img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e1f07df30c95445888836dfcf7f158f6~tplv-k3u1fbpfcp-watermark.awebp" style="zoom: 33%;" />
+
+    
+
   * Looper的工作原理
+
+    * Looper扮演着消息循环的角色，就是不停地从MessageQueue中查看是否有新消息，如果有新消息就会立即处理，否则就一直阻塞在那里。
+
+    * Looper在构造方法中它会创建一个MessageQueue，然后将当前线程的对象保存起来。
+
+      ```java
+          private Looper(boolean quitAllowed) {
+              mQueue = new MessageQueue(quitAllowed);
+              mThread = Thread.currentThread();
+          }
+      ```
+
+    * Looper.prepare()为当前线程创建一个Looper， Looper.loop()开始消息循环。
+
+      ```java
+      class LooperThread extends Thread {
+      
+          public Handler mHandler;
+      
+          public void run() {
+      
+              //将当前线程初始化为Looper线程
+              Looper.prepare();
+      
+              // ...其他处理，如实例化handler
+              mHandler = new Handler() {
+                  public void handleMessage(Message msg) {
+                      // process incoming messages here
+                  }
+              };
+      
+              // 开始循环处理消息队列
+              Looper.loop();
+          }
+      }
+      ```
+
+    * Looper.prepareMainLooper ，主要是给主线程也是ActivityThread创建Looper使用的，其本质也是通过prepare方法来实现的。
+
+      Looper.getMainLooper方法来获取主线程的Looper
+
+    * quit和quitSafely 退出一个Looper。区别是：quit是直接退出Looper，而quitSafely只是设定一个退出标记，把已有消息处理完成后安全退出。只有Looper推出后线程才会停止，所以不用的Looper一定要退出。
+
+    * Looper.loop，方法是一个死循环，只有当MessageQueue的next返回了null才会跳出循环，而当调用了Looper的quit或quitSafely的时候会直接调用MessageQueue的quit，从而让next返回null。
+
+      Looper消息处理方式：MessageQueue.next返回信息后，`msg.target.dispatchMessage(msg);` 中 msg.target就是Handler对象，发送消息最终又交给了Handler的dispathMessage。
+
   * Handler的工作原理
+
+    * Handler的工作主要包含消息的发送和接收。send和post两种方式。
+
+    * Handler的dispatchMessage处理消息的流程：
+
+      1. 首先，检查Message的callback是否为null，此callback时一个Runnable对象，实际上是Handler的post方法传递的Runnable参数。，
+      2. 其次，检查mCallback时候覅为null，不为null就调用mCallback的handleMessage方法来处理消息。此Callback是在创建Handler对象的时候可以作为构造函数的参数来进行赋值，作用是用来创建一个Handler的实例单并不需要派生Handler的子类。
+      3. 最后，调用handleMessage。
+
+      ```java
+          /**
+           * Handle system messages here.
+           */
+          public void dispatchMessage(@NonNull Message msg) {
+              if (msg.callback != null) {
+                  handleCallback(msg);
+              } else {
+                  if (mCallback != null) {
+                      if (mCallback.handleMessage(msg)) {
+                          return;
+                      }
+                  }
+                  handleMessage(msg);
+              }
+          }
+      ```
+
+    * IdleHandler 
+
+      1. IdleHandler 说白了，就是 Handler 机制提供的一种，可以在 Looper 事件循环的过程中，当出现空闲的时候，允许我们执行任务的一种机制。
+      
+      2. IdleHandler 被定义在 MessageQueue 中，它是一个接口。在 MessageQueue 中定义了对应的 add 和 remove 方法。add 或 remove 其实操作的都是 `mIdleHandlers`，它的类型是一个 ArrayList。
+      
+      3. IdleHandler 主要是在 MessageQueue 出现空闲的时候被执行，那么何时出现空闲？
+      
+         > 1. MessageQueue 为空，没有消息；
+         > 2. MessageQueue 中最近需要处理的消息，是一个延迟消息（when>currentTime），需要滞后执行；
+      
+      4. 在 `next()` 中，当队列空闲的时候，循环 mIdleHandler 中记录的 IdleHandler 对象，如果其 `queueIdle()` 返回值为 `false` 时，将其从 `mIdleHander` 中移除。
+      
+      
+
+  * Message的工作原理
+
+    * Message 有 `public` 修饰的构造函数，但是一般不建议直接通过构造函数来构建 Message，而是通过 `Message.obtain()` 来获取消息，从而达到Message的复用效果。
+
+      `sPool` 是消息缓存池，链表结构，其最大容量 `MAX_POOL_SIZE` 为 50。`obtain()` 方法会直接从消息池中取消息，循环利用，节约资源。当消息池为空时，再去新建消息。
+
+      ```java
+      public static Message obtain() {
+          synchronized (sPoolSync) {
+              if (sPool != null) {
+                  Message m = sPool;
+                  sPool = m.next;
+                  m.next = null;
+                  m.flags = 0; // clear in-use flag
+                  sPoolSize--;
+                  return m;
+              }
+          }
+          return new Message();
+      }
+      ```
+
+    * `msg.recycleUnchecked() ` 这个方法会回收已经分发处理的消息，并放入缓存池中。
+
+      ```java
+      void recycleUnchecked() {
+          // Mark the message as in use while it remains in the recycled object pool.
+          // Clear out all other details.
+          flags = FLAG_IN_USE;
+          what = 0;
+          arg1 = 0;
+          arg2 = 0;
+          obj = null;
+          replyTo = null;
+          sendingUid = -1;
+          when = 0;
+          target = null;
+          callback = null;
+          data = null;
+      
+          synchronized (sPoolSync) {
+              if (sPoolSize < MAX_POOL_SIZE) {
+                  next = sPool;
+                  sPool = this;
+                  sPoolSize++;
+              }
+          }
+      }
+      ```
+
+      
+
+  * 主线程的消息循环
+
+    * ActivityThread的主入口为main，会通过Looper.prepareMainLooper()创建主线程的Looper以及MessageQueue，并通过Looper.loop来开启主线程的循环。
+    * ActivityThread.H 为对应的Handler，主要包含四大组件的启动和停止等过程。
+
+  * 在子线程中更新UI
 
 * 参考资料
 
   * 《Android开发艺术探索》
+  * [ThreadLocal](https://www.jianshu.com/p/3c5d7f09dfbd)
+  * [Android消息机制2-Handler(Native层)](http://gityuan.com/2015/12/27/handler-message-native/)
+  *  [Android基础进阶 - 消息机制 之Native层分析](https://juejin.cn/post/6973142800808280071#heading-0)
+  * [面试官：“看你简历上写熟悉 Handler 机制，那聊聊 IdleHandler 吧？”](https://juejin.cn/post/6844904068129751047)
 
 
 
