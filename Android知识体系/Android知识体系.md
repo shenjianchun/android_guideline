@@ -1087,6 +1087,8 @@
 
   * [安卓自定义View进阶-多点触控详解](http://www.gcssloop.com/customview/multi-touch.html)
 
+  * [可能是讲解Android事件分发最好的文章](https://cloud.tencent.com/developer/article/1179381)
+  
     
 
 ### Android 自定义View
@@ -1901,13 +1903,88 @@
 ### Android Input输入系统
 
 * 知识点
-  * Input输入系统
-  * View的事件体系
+  * **Input输入系统**
+  
+    * **输入事件传递流程的组成部分**
+  
+      1. 输入事件传递流程可以大致的分为三个部分，分别是输入系统部分、WMS处理部分和View处理部分。
+  
+      <img src="https://s2.ax1x.com/2019/05/27/VZh4FU.png" style="zoom:67%;" />
+  
+      2. 输入系统部分，主要又分为输入子系统和InputManagerService组成（以下简称IMS），输入事件所产生的原始信息会被Linux内核中的输入子系统采集，原始信息由Kernel space的驱动层一直传递到User space的设备节点。IMS所做的工作就是监听/dev/input下的所有的设备节点，当设备节点有数据时会将数据进行加工处理并找到合适的Window，将输入事件派发给它。
+  
+         <img src="https://s2.ax1x.com/2019/05/27/VZhIW4.png" style="zoom: 67%;" />
+  
+    * **IMS创建**
+  
+      SystemServcie的startOtherServices中初始化InputManagerService  ->  创建InputManagerHandler（使用android.display线程） 并调用 nativeInit函数   ->  在nativeInit创建InputManager
+  
+      ```java
+       private void startOtherServices() {
+       ...
+                 inputManager = new InputManagerService(context);//1
+                 traceEnd();
+                 traceBeginAndSlog("StartWindowManagerService");
+                 // WMS needs sensor service ready
+                 ConcurrentUtils.waitForFutureNoInterrupt(mSensorServiceStart, START_SENSOR_SERVICE);
+                 mSensorServiceStart = null;
+                 wm = WindowManagerService.main(context, inputManager,
+                         mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL,
+                         !mFirstBoot, mOnlyCore, new PhoneWindowManager());//2
+                 ServiceManager.addService(Context.WINDOW_SERVICE, wm);
+                 ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
+                 traceEnd();
+      ...           
+      
+      }
+      ```
+  
+      InputManager构造函数中创建了InputReader和InputDispatcher，InputReader会不断循环读取EventHub中的原始输入事件，将这些原始输入事件进行加工后交由InputDispatcher，InputDispatcher中保存了WMS中的所有Window信息（WMS会将窗口的信息实时的更新到InputDispatcher中），这样InputDispatcher就可以将输入事件派发给合适的Window。InputReader和InputDispatcher都是耗时操作，因此在initialize函数中创建了供它们运行的线程InputReaderThread和InputDispatcherThread。
+  
+      ![](https://s2.ax1x.com/2019/05/27/VZh5YF.png)
+  
+    * **IMS的启动和Input事件的处理**
+  
+      四个关键的类，分别是IMS、EventHub、InputDispatcher和InputReader，它们做了如下的工作：
+  
+      1. IMS启动了InputDispatcherThread和InputReaderThread，分别用来运行InputDispatcher和InputReader。
+  
+      2. InputDispatcher先于InputReader被创建，InputDispatcher的dispatchOnceInnerLocked函数用来将事件分发给合适的Window。InputDispatcher没有输入事件处理时会进入睡眠状态，等待InputReader通知唤醒。
+  
+      3. InputReader通过EventHub的getEvents函数获取事件信息，如果是原始输入事件，就将这些原始输入事件交由不同的InputMapper来处理，最终交由InputDispatcher来进行分发。
+  
+      4. InputDispatcher的notifyKey函数中会根据按键数据来判断InputDispatcher是否要被唤醒，InputDispatcher被唤醒后，会重新调用dispatchOnceInnerLocked函数将输入事件分发给合适的Window。
+  
+         ![](https://s2.ax1x.com/2019/05/27/VZ4ac9.png)
+  
+    * **输入事件分发到窗口**
+  
+      ![](https://s2.ax1x.com/2019/05/27/VZHju4.png)
+  
+      1. Motion事件在InputReaderThread线程中的InputReader进行加工，加工完毕后会判断是否要唤醒InputDispatcherThread，如果需要唤醒，会在InputDispatcherThread的线程循环中不断的用InputDispatcher来分发 Motion事件。
+      2. 将Motion事件交由InputFilter过滤，如果返回值为false，这次Motion事件就会被忽略掉。
+      3. InputReader对Motion事件加工后的数据结构为NotifyMotionArgs，在InputDispatcher的notifyMotion函数中，用NotifyMotionArgs中的事件参数信息构造一个MotionEntry对象。这个MotionEntry对象会被添加到InputDispatcher的mInboundQueue队列的末尾。
+      4. 如果mInboundQueue不为空，取出mInboundQueue队列头部的EventEntry赋值给mPendingEvent。
+      5. 根据mPendingEvent的值，进行事件丢弃处理。
+      6. 调用InputDispatcher的findTouchedWindowTargetsLocked函数，在mWindowHandles窗口列表中为Motion事件找到目标窗口，并为该窗口生成inputTarget。
+      7. 根据inputTarget获取一个Connection，依赖Connection将输入事件发送给目标窗口。
+  
+    * **InputChannel**
+  
+      InputChannel是什么时候创建的，其实应用在setView()的是会调用IWindowSession的addToDisplay()函数。
+      IWindowSession的具体实现在\services\core\java\com\android\server\wm\Session.java中。它包含了InputChannel的建立。它本身是个binder调用，服务端是WMS，最终调用的是WMS的addWindow方法。InputChannel通过InputChannel.openInputChannelPair分别窗建一对InputChannel，然后将Server端的InputChannel注册到InputDispatcher中，将Client端的InputChannel返回给客户端应用。InputChannel数组的一对InputChannel，一个注册给了InputDispatcher，另一个交给应用程序ViewRootImpl。
+  
+      ![](https://upload-images.jianshu.io/upload_images/2828107-dcbf781f1b97a7a9.png?imageMogr2/auto-orient/strip|imageView2/2/w/726/format/webp)
+  
+    
+  
+  * **View的事件体系**
 * 参考资料
   * [Android输入系统（一）输入事件传递流程和InputManagerService的诞生](https://juejin.cn/post/6844903703200137223)
   * [Android输入系统（二）IMS的启动过程和输入事件的处理](https://juejin.cn/post/6844903717574017038)
   * [Android输入系统（三）InputReader的加工类型和InputDispatcher的分发过程](http://liuwangshu.cn/framework/ims/3-inputdispatcher.html)
   * [Android输入系统（四）输入事件是如何分发到Window的？](https://juejin.cn/post/6844903761131880455)
+  * [Android Input（五）-InputChannel通信](https://www.jianshu.com/p/b09afd403f71)
   * [Android4.1 InputManagerService 流程 - 自己总结](https://blog.csdn.net/Siobhan/article/details/8014246)
   * [可能是讲解Android事件分发最好的文章](https://cloud.tencent.com/developer/article/1179381)
 
@@ -1932,18 +2009,103 @@
 
 * 知识点
 
-  * Activity 的 Window的添加过程
+  * **Activity 的 Window的添加过程**
 
-    ActivityThread.performLaunchActivity  -> 创建Activity，调用 Activity.attach -> 创建 PhoneWindow -> Activity.setContentView ->  创建 DecorView ->  
-
-    ActivityThread.handleResumeActivity -> WindowManagerImpl.addView  -> WindowManagerGlobal.addView -> 创建ViewRootImpl -> ViewRootImpl.setView -> IWindowSession.addtoDisplay
+    ActivityThread.performLaunchActivity  -> 创建Activity，调用 Activity.attach -> 创建 PhoneWindow -> Activity.setContentView ->  创建 DecorView ->  ActivityThread.handleResumeActivity -> WindowManagerImpl.addView  -> WindowManagerGlobal.addView -> 创建ViewRootImpl -> ViewRootImpl.setView -> IWindowSession.addtoDisplay
 
     ![](https://upload-images.jianshu.io/upload_images/9696036-b817d3db3ce31ee5.png?imageMogr2/auto-orient/strip|imageView2/2/w/762/format/webp)
+
+  * WindowManagerService解析
+
+    * WMS概述
+
+      WMS是系统的其他服务，无论对于应用开发还是Framework开发都是重点的知识，它的职责有很多，主要有以下几点：
+
+      #### **窗口管理**
+
+      WMS是窗口的管理者，它负责窗口的启动、添加和删除，另外窗口的大小和层级也是由WMS进行管理的。窗口管理的核心成员有DisplayContent、WindowToken和WindowState。
+
+      #### **窗口动画**
+
+      窗口间进行切换时，使用窗口动画可以显得更炫一些，窗口动画由WMS的动画子系统来负责，动画子系统的管理者为WindowAnimator。
+
+      #### **输入系统的中转站**
+
+      通过对窗口的触摸从而产生触摸事件，InputManagerService（IMS）会对触摸事件进行处理，它会寻找一个最合适的窗口来处理触摸反馈信息，WMS是窗口的管理者，因此，WMS“理所应当”的成为了输入系统的中转站。
+
+      #### **Surface管理**
+
+      窗口并不具备有绘制的功能，因此每个窗口都需要有一块Surface来供自己绘制。为每个窗口分配Surface是由WMS来完成的。
+
+      WMS的职责可以简单总结为下图。
+
+      ![](https://s2.ax1x.com/2019/05/28/VexIGd.png)
+
+    * WMS启动
+
+      SystemServer中startOtherServices  ->  DisplayThread的getHandler来初始化WMS对象 ， 说明WMS的创建是运行在“android.display”线程中  -> 在WMS的构造函数中初始化WindowManagerPolicy（PhoneWindowManager），在android.ui线程。
+
+      ![](https://s2.ax1x.com/2019/05/28/VexoRA.png)
+
+    * WMS中的重要成员
+
+      ```java
+      final WindowManagerPolicy mPolicy;
+      final IActivityManager mActivityManager;
+      final ActivityManagerInternal mAmInternal;
+      final AppOpsManager mAppOps;
+      final DisplaySettings mDisplaySettings;
+      ...
+      final ArraySet<Session> mSessions = new ArraySet<>();
+      final WindowHashMap mWindowMap = new WindowHashMap();
+      final ArrayList<AppWindowToken> mFinishedStarting = new ArrayList<>();
+      final ArrayList<AppWindowToken> mFinishedEarlyAnim = new ArrayList<>();
+      final ArrayList<AppWindowToken> mWindowReplacementTimeouts = new ArrayList<>();
+      final ArrayList<WindowState> mResizingWindows = new ArrayList<>();
+      final ArrayList<WindowState> mPendingRemove = new ArrayList<>();
+      WindowState[] mPendingRemoveTmp = new WindowState[20];
+      final ArrayList<WindowState> mDestroySurface = new ArrayList<>();
+      final ArrayList<WindowState> mDestroyPreservedSurface = new ArrayList<>();
+      ...
+      final H mH = new H();
+      ...
+      final WindowAnimator mAnimator;
+      ...
+       final InputManagerService mInputManager
+      ```
+
+      1. **mPolicy：WindowManagerPolicy**
+      2. **mSessions：ArraySet**
+      3. **mWindowMap：WindowHashMap**
+      4. **mFinishedStarting：ArrayList**
+      5. **mResizingWindows：ArrayList**
+      6. **mAnimator：WindowAnimator**
+      7. **mH：H**
+      8. **mInputManager：InputManagerService**
+
+    * 在WMS中添加Window的过程
+
+      addWindow方法分了3个部分来进行讲解，主要就是做了下面4件事：
+
+      1. 对所要添加的窗口进行检查，如果窗口不满足一些条件，就不会再执行下面的代码逻辑。
+      2. WindowToken相关的处理，比如有的窗口类型需要提供WindowToken，没有提供的话就不会执行下面的代码逻辑，有的窗口类型则需要由WMS隐式创建WindowToken。
+      3. WindowState的创建和相关处理，将WindowToken和WindowState相关联。
+      4. 创建和配置DisplayContent，完成窗口添加到系统前的准备工作。
+
+    * 删除Window的过程
+
+      简单的总结为以下4点：
+
+      1. 检查删除线程的正确性，如果不正确就抛出异常。
+      2. 从ViewRootImpl列表、布局参数列表和View列表中删除与V对应的元素。
+      3. 判断是否可以直接执行删除操作，如果不能就推迟删除操作。
+      4. 执行删除操作，清理和释放与V相关的一切资源。
 
 * 参考资料
   * [Android解析WindowManager - 刘望舒](http://liuwangshu.cn/framework/wm/3-add-window.html)
   * [Android解析WindowManagerService - 刘望舒](http://liuwangshu.cn/framework/wms/1-wms-produce.html)
   * [Android系统_图形系统总结](https://www.jianshu.com/p/238eb0a17760)
+  * [Android图形系统篇总结](https://www.jianshu.com/p/180e1b6d0dcd)
 
 
 
