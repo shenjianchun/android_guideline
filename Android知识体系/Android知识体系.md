@@ -920,11 +920,153 @@
 
 
 
-### 窗口 window 
+### 窗口 window 使用
 
 * 知识点
+
+  * 显示、移出和更新窗口
+
+    * 主要是调用WindowManager提供的三个方法
+
+      ```java
+      public interface ViewManager{
+          //'向窗口添加视图'
+          public void addView(View view, ViewGroup.LayoutParams params);
+          //'更新窗口中视图'
+          public void updateViewLayout(View view, ViewGroup.LayoutParams params);
+          //'移除窗口中视图'
+          public void removeView(View view);
+      }
+      
+      ```
+
+  * WindowManager.LayoutParams
+
+    * type
+
+      Window有一个Z-Order属性，Z-Order越大，window越靠近用户，也就显示越高，高度高的window会覆盖高度低的window。window的type属性就是Z-Order的值，我们可以给window的type属性赋值来决定window的高度。
+
+      | Window 类型 | 含义                                                         | Window 层级 |
+      | :---------- | :----------------------------------------------------------- | :---------- |
+      | 应用 Window | 对应着一个 Activity                                          | 1-99        |
+      | 子 Window   | 不能单独存在，需要附属在父 Window 中（比如 Dialog 就是子 Window） | 1000-1999   |
+      | 系统 Window | 需要声明权限才能创建 Window ，比如 Toast 、状态栏、悬浮窗    | 2000-2999   |
+
+      
+
+    * flag
+
+      flag控制的范围包括了：各种情景下的显示逻辑（锁屏，游戏等）还有触控事件的处理逻辑。控制显示确实是他的很大部分功能，但是并不是全部。以下是常用的flag：
+
+      ```java
+      // 当 Window 可见时允许锁屏
+      public static final int FLAG_ALLOW_LOCK_WHILE_SCREEN_ON = 0x00000001;
+      
+      // Window 后面的内容都变暗
+      public static final int FLAG_DIM_BEHIND = 0x00000002;
+      
+      // Window 不能获得输入焦点，即不接受任何按键或按钮事件，例如该 Window 上 有 EditView，点击 EditView 是 不会弹出软键盘的
+      // Window 范围外的事件依旧为原窗口处理；例如点击该窗口外的view，依然会有响应。另外只要设置了此Flag，都将会启用FLAG_NOT_TOUCH_MODAL
+      public static final int FLAG_NOT_FOCUSABLE = 0x00000008;
+      
+      // 设置了该 Flag,将 Window 之外的按键事件发送给后面的 Window 处理, 而自己只会处理 Window 区域内的触摸事件
+      // Window 之外的 view 也是可以响应 touch 事件。
+      public static final int FLAG_NOT_TOUCH_MODAL  = 0x00000020;
+      
+      // 设置了该Flag，表示该 Window 将不会接受任何 touch 事件，例如点击该 Window 不会有响应，只会传给下面有聚焦的窗口。
+      public static final int FLAG_NOT_TOUCHABLE      = 0x00000010;
+      
+      // 只要 Window 可见时屏幕就会一直亮着
+      public static final int FLAG_KEEP_SCREEN_ON     = 0x00000080;
+      
+      // 允许 Window 占满整个屏幕
+      public static final int FLAG_LAYOUT_IN_SCREEN   = 0x00000100;
+      
+      // 允许 Window 超过屏幕之外
+      public static final int FLAG_LAYOUT_NO_LIMITS   = 0x00000200;
+      
+      // 全屏显示，隐藏所有的 Window 装饰，比如在游戏、播放器中的全屏显示
+      public static final int FLAG_FULLSCREEN      = 0x00000400;
+      
+      // 表示比FLAG_FULLSCREEN低一级，会显示状态栏
+      public static final int FLAG_FORCE_NOT_FULLSCREEN   = 0x00000800;
+      
+      // 当用户的脸贴近屏幕时（比如打电话），不会去响应此事件
+      public static final int FLAG_IGNORE_CHEEK_PRESSES    = 0x00008000;
+      
+      // 则当按键动作发生在 Window 之外时，将接收到一个MotionEvent.ACTION_OUTSIDE事件。
+      public static final int FLAG_WATCH_OUTSIDE_TOUCH = 0x00040000;
+      
+      @Deprecated
+      // 窗口可以在锁屏的 Window 之上显示, 使用 Activity#setShowWhenLocked(boolean) 方法代替
+      public static final int FLAG_SHOW_WHEN_LOCKED = 0x00080000;
+      
+      // 表示负责绘制系统栏背景。如果设置，系统栏将以透明背景绘制，
+      // 此 Window 中的相应区域将填充 Window＃getStatusBarColor（）和 Window＃getNavigationBarColor（）中指定的颜色。
+      public static final int FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS = 0x80000000;
+      
+      // 表示要求系统壁纸显示在该 Window 后面，Window 表面必须是半透明的，才能真正看到它背后的壁纸
+      public static final int FLAG_SHOW_WALLPAPER = 0x00100000;
+      
+      ```
+
+    * dimAmount
+
+      这个参数是要和`WindowManager.LayoutParams.FLAG_DIM_BEHIND`这个flag属性一起使用，dimAmount的取值在0.0f~1.0f之间，取值越大背景的变暗程度越高，默认取值1.0f。
+
+    * width、height
+
+      和View中的width、height一样的理解，就是控制窗口视图的大小
+
+    * gravity
+
+      窗口的对齐方式，一般在创建窗口的时候，都会设置gravity为左上角对齐，也就是`Gravity.LEFT | Gravity.TOP`，因为窗口的坐标设置，是基于gravity来进行计算的，设置gravity左上角，刚好是和系统的坐标相对应，方便计算。
+
+    * x、y
+
+      x和y用于控制窗口的坐标位置，如果有设置gravity的话，x和y设置的就是在gravity这个基础上的一个偏移量。不设置gravity的话，x和y就是一个绝对坐标。
+
+    * windowAnimations
+
+      windowAnimations控制的是窗口出现和消失的动画效果，设置的是要系统自带的动画效果（android.R.style之下的动画效果），因为窗口管理器是不能访问应用资源的。
+
+    * format
+
+      format可以理解为最后窗口生成的位图是什么格式，默认背景是黑色的。一般我们都设置为PixelFormat.RGBA_8888，这样我们的窗口就会有一个透明的背景。
+
+    * alpha
+
+      window的透明度
+
+  * 设置悬浮窗点击事件
+
+    为浮窗设置点击事件等价于为浮窗视图设置点击事件。
+
+  * 拖拽窗口
+
+    调用updateViewLayout更新Layoutparam的x，y即可
+
+  * 浮框自动贴边
+
+    把贴边理解成一个水平位移动画。在松手时求出动画起点和终点横坐标，利用动画值不断更新浮窗位置
+
+  * 监听浮窗界外点击事件
+
+    * window添加FLAG_WATCH_OUTSIDE_TOUCH的flag，在 onTouch中监听ACTION_OUTSIDE事件。
+
+* 浮窗的几种实现方式
+
+  * 应用内悬浮窗
+  * addContentView实现
+  * 应用外悬浮窗(有局限性)
+    * 需要申请权限 并且在Service中添加
+  * 无障碍悬浮窗
+
 * 参考资料
+  
+  * [悬浮窗的一种实现 | Android悬浮窗Window应用](https://juejin.cn/post/6844904038153093127#heading-7)
   * [Android全面解析之Window机制](https://juejin.cn/post/6888688477714841608)
+  * [Android悬浮窗看这篇就够了](https://juejin.cn/post/6951608145537925128#heading-6)
   * [像360悬浮窗那样，用WindowManager实现炫酷的悬浮迷你音乐盒（上）](http://www.jianshu.com/p/95ceb0a2ed27)
 
 
@@ -1789,9 +1931,19 @@
 ### Android WMS系统分析
 
 * 知识点
+
+  * Activity 的 Window的添加过程
+
+    ActivityThread.performLaunchActivity  -> 创建Activity，调用 Activity.attach -> 创建 PhoneWindow -> Activity.setContentView ->  创建 DecorView ->  
+
+    ActivityThread.handleResumeActivity -> WindowManagerImpl.addView  -> WindowManagerGlobal.addView -> 创建ViewRootImpl -> ViewRootImpl.setView -> IWindowSession.addtoDisplay
+
+    ![](https://upload-images.jianshu.io/upload_images/9696036-b817d3db3ce31ee5.png?imageMogr2/auto-orient/strip|imageView2/2/w/762/format/webp)
+
 * 参考资料
   * [Android解析WindowManager - 刘望舒](http://liuwangshu.cn/framework/wm/3-add-window.html)
   * [Android解析WindowManagerService - 刘望舒](http://liuwangshu.cn/framework/wms/1-wms-produce.html)
+  * [Android系统_图形系统总结](https://www.jianshu.com/p/238eb0a17760)
 
 
 
