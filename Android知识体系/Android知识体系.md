@@ -1323,6 +1323,29 @@
 
 #### Lifecycle
 
+* **生命周期**
+
+  [`Lifecycle`](https://developer.android.google.cn/reference/androidx/lifecycle/Lifecycle) 是一个类，用于存储有关组件（如 Activity 或 Fragment）的生命周期状态的信息，并允许其他对象观察此状态。
+
+  [`Lifecycle`](https://developer.android.google.cn/reference/androidx/lifecycle/Lifecycle) 使用两种主要枚举跟踪其关联组件的生命周期状态：
+
+  * 事件
+  * 状态
+
+  ![](https://developer.android.google.cn/images/topic/libraries/architecture/lifecycle-states.svg?dcb_=0.07736335048381582)
+
+
+
+* **LifecycleOwner、  Lifecycle、LifecycleObserver ** 
+  * LifecycleOwner 表示具备 Lifecycle 属性，一个借口类。如果您有一个自定义类并希望使其成为 [`LifecycleOwner`](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleOwner)，您可以使用 [LifecycleRegistry](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleRegistry) 类，但需要将事件转发到该类
+  * Lifecycle 定义一个类具有Android生命周期
+  * LifecycleObserver 生命周期变化的回调接口
+* **处理 ON_STOP 事件**
+* 参考
+  * 
+
+
+
 
 
 #### LiveData
@@ -1340,6 +1363,13 @@
 #### Room
 
 
+
+#### 参考
+
+* [Android Jetpack - 刘望舒](http://liuwangshu.cn/tags/Android-Jetpack/)
+* [学习Android Jetpack? 实战和教程这里全都有！](https://juejin.cn/post/6844903889574051848)
+* [【AAC 系列二】深入理解架构组件的基石：Lifecycle](https://juejin.cn/post/6844903842589442062)
+* [“终于懂了“系列：Jetpack AAC完整解析（一）Lifecycle 完全掌握！](https://juejin.cn/post/6893870636733890574)
 
 
 
