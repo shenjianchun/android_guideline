@@ -1321,6 +1321,14 @@
 
 
 
+* 常见的架构原则
+  * 分离关注点
+  * 通过模型（数据）驱动界面
+
+![](https://developer.android.google.cn/topic/libraries/architecture/images/final-architecture.png?hl=zh-cn)
+
+
+
 #### Lifecycle
 
 * **生命周期**
@@ -1337,26 +1345,22 @@
 
 
 * **LifecycleOwner、  Lifecycle、LifecycleObserver ** 
+  
   * LifecycleOwner 表示具备 Lifecycle 属性，一个借口类。如果您有一个自定义类并希望使其成为 [`LifecycleOwner`](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleOwner)，您可以使用 [LifecycleRegistry](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleRegistry) 类，但需要将事件转发到该类
   * Lifecycle 定义一个类具有Android生命周期
   * LifecycleObserver 生命周期变化的回调接口
+  
 * **处理 ON_STOP 事件**
-* 参考
-  * 
+
+* **实现原理**
+
+  SupportActivity 在 onCreate 方法里注入了 ReportFragment ，通过 Fragment 的机制来实现生命周期的监听。通过ReportFragmengt生命周期中调用 dispatchXXX 和 dispatch状态。
 
 
 
+#### LiveData & ViewModel
 
-
-#### LiveData
-
-
-
-
-
-#### ViewModel
-
-
+[`LiveData`](https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn) 是一种可观察的数据存储器类。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类旨在以注重生命周期的方式存储和管理界面相关的数据。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类让数据可在发生屏幕旋转等配置更改后继续留存。
 
 
 
@@ -2024,13 +2028,122 @@
 
 * 知识点
   * Application 应用启动流程
+
   * Activity扮演的角色（作用）
+
   * Activity的启动流程
+
+    * 启动流程可以用一下的图来解释
+
+      ![Android复习总结 —— Activity启动流程](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/30c91006923a4d848c8adbb2cfb34478~tplv-k3u1fbpfcp-watermark.awebp)
+
+      几个基础概念：
+
+      > - **ActivityThread**：
+      >
+      > App进程的实际入口。在`main()`方法中，会开启主线程`Handler`的`Looper`消息循环，处理系统消息。
+      >
+      > - **ApplicationThread** ：
+      >
+      > 与系统进程进行Binder通讯的`IApplicationThread`代理类。主要用于`system_server`进程对App进程的Binder代理调用，管理生命周期。
+      >
+      > - **Instrumentation**：
+      >
+      > 每个App进程唯一的生命周期管理具体执行类。Activity、Application的生命周期管理都是由该类通过`callXXX()`系列方法来实现的。
+      >
+      > - **ActivityTaskManagerService**：
+      >
+      > 用于管理活动及其容器(任务、堆栈、显示……)的系统服务。接受App进程发送的**请求启动Activity**的Binder代理调用。
+      >
+      > - **ActivityManagerService**：
+      >
+      > 在系统进程中管理Activity与其他组件运行状态的系统服务。接受App进程发送**绑定Application**的Binder代理调用。
+      >
+      > - **ActivityStarter**：
+      >
+      > 在系统进程中管理如何启动Activity的控制器
+      >
+      > - **ActivityStack**：
+      >
+      > Activity所在的回退栈。控制Activity的回退顺序，在栈顶就是当前获取到焦点的Activity。
+      >
+      > - **ActivityStackSupervisor**：
+      >
+      > 系统内唯一，所有回退栈**ActivityStack**的管理类。
+      >
+      > - **ClientLifecycleManager**：
+      >
+      > 向App进程通过Binder发送具体生命周期状态事务的管理类。
+
+      
+
+      大致流程：
+
+      > 1. `startActivity()`通过Binder通信向**system_service进程**的`ActivityManagerService`通知需要启动Activity
+      > 2. **system_service进程**会先将当前处于焦点状态的`Activity`迁移至**onPause状态**。（Binder方式）
+      > 3. 根据`Activity`**启动模式**，启动目标`Activity`。（**如果是进程已存在则跳过4、5**）
+      > 4. 如果新Activity所在的进程不存在于系统内，会通过Socket消息通知**Zygote进程**。以**Zygote进程**为原型**fork**拷贝出新的进程，并以反射的方式调用`ActivityThread.main`方法。
+      > 5. `ActivityThread.attach`方法内通过Binder通知**system_service进程**的`ActivityManagerService`对新进程进行绑定与初始化。然后`ActivityManagerService`再通知新进程创建`Application`并执行`onCreate`方法。
+      > 6. 进程创建并启动完成后，调用`realStartActivityLocked`创建并启动`Activity`，通过Binder通知目标`Activity`所在进程执行生命周期事务，并最终调用`Activity.onCreate`方法，完成启动事务。
+
+      
+
+    
+
+    * 参考资料
+      * [Android复习总结 —— Activity启动流程](https://juejin.cn/post/6897451019177820173)
+      * [Android深入四大组件（六）Android8.0 根Activity启动过程（前篇）](http://liuwangshu.cn/framework/component/6-activity-start-1.html)
+      * [Android深入四大组件（七）Android8.0 根Activity启动过程（后篇）](http://liuwangshu.cn/framework/component/7-activity-start-2.html)
+
   * Service的启动流程
+
+    * startService的流程
+
+      
+
+      ![](https://img-blog.csdnimg.cn/20200108145130415.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NoaXNoaTE5OTQzMw==,size_16,color_FFFFFF,t_70)
+
+    * binderService的流程
+
+      ![](https://img-blog.csdnimg.cn/20210518110329246.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI2NDk4MzEx,size_16,color_FFFFFF,t_70)
+
+    * 参考资料
+
+      * [基于Android10的Service的启动流程](https://blog.csdn.net/chishi199433/article/details/103891219)
+      * [Service的启动流程——基于Android11](https://blog.csdn.net/qq_26498311/article/details/116980167)
+
   * Broadcast的启动流程
+
+    * 发送广播过程的流程如下
+
+      ![](https://skytoby.github.io/2019/BroadcastCast%E5%B9%BF%E6%92%AD%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/broadcast.jpg)
+
+    * **广播机制**
+
+      1.当发送串行广播（order= true）时
+
+      - 静态注册的广播接收者（receivers），采用串行处理
+      - 动态注册的广播接收者（registeredReceivers），采用串行处理
+
+      2.当发送并行广播（order= false）时
+
+      - 静态注册的广播接收者（receivers），采用串行处理
+      - 动态注册的广播接收者（registeredReceivers），采用并行处理
+
+      静态注册的receiver都是采用串行处理；动态注册的registeredReceivers处理方式无论是串行还是并行，取决于广播的发送方式（processNextBroadcast）；静态注册的广播由于其所在的进程没有创建，而进程的创建需要耗费系统的资源比较多，所以让静态注册的广播串行化，防止瞬间启动大量的进程。
+
+      广播ANR只有在串行广播时才需要考虑，因为接收者是串行处理的，前一个receiver处理慢，会影响后一个receiver；并行广播通过一个循环一次性将所有的receiver分发完，不存在彼此影响的问题，没有广播超时。
+
+      串行超时情况：某个广播处理时间>2*receiver总个数*mTimeoutPeriod，其中mTimeoutPeriod，前后队列为10s,后台队列为60s；某个receiver的执行时间超过mTimeoutPeriod。
+
   * Provider的启动流程
+
+    * 参考资料
+      * [Android10.0 ContentProvider原理分析](https://skytoby.github.io/2019/BroadcastCast%E5%B9%BF%E6%92%AD%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/)
 * 参考资料
   * [[译]Android Application启动流程分析](https://www.jianshu.com/p/a5532ecc8377)
+  * [Android应用程序进程启动过程（前篇）](http://liuwangshu.cn/framework/applicationprocess/1.html)
+  * [Android应用程序进程启动过程（后篇）](http://liuwangshu.cn/framework/applicationprocess/2.html)
   * [不怕面试再问 Activity，一次彻底地梳理清楚！](https://mp.weixin.qq.com/s/FdfBfyePoX2BI5OkXtmICA)
 
 
