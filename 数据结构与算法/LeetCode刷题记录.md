@@ -86,9 +86,10 @@
 82.   96.不同的二叉搜索树 [二叉树] [解决方案：动态规划，笛卡尔积] [2021/8/7] [中等]  -  https://leetcode-cn.com/problems/unique-binary-search-trees/
 83.   581.最短无序连续子数组  [数组] [解决方案：排序] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/
 84.   238.除自身以外数组的乘积 [数组] [解决方案：左右乘积] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/product-of-array-except-self/
-85.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
-86.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
-87.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+85.   152.乘积最大子数组 [数组] [] [] [中等]  -  https://leetcode-cn.com/problems/maximum-product-subarray/
+86.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
+87.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
+88.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 
 
 
@@ -119,7 +120,7 @@
 10. 剑指 Offer 64. 求1+2+…+n  [递归] [解决方案：递归] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
 10.  剑指 Offer 05. 替换空格 [] [] [] [简单]  -  https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
 11.  剑指 Offer 31. 栈的压入、弹出序列  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/
-12.  剑指 Offer 35. 复杂链表的复制 [] [] [] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
+12.  剑指 Offer 35. 复杂链表的复制 [链表] [解决方案：哈希表 | 复制出来的节点放到被复制的后面] [2021/8/16] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
 
  
 
