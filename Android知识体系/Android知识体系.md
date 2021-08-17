@@ -1077,7 +1077,17 @@
 
   * View坐标系 与 对象方法
 
-  * 
+    1. 关于获取坐标的相关方法
+
+       ![](https://img-blog.csdn.net/20160416151944699)
+
+       
+
+    <img src="https://img-blog.csdn.net/20160416152117873" style="zoom: 50%;" />
+
+    
+
+  * View事件分发
 
     
 

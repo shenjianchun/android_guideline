@@ -86,7 +86,7 @@
 82.   96.不同的二叉搜索树 [二叉树] [解决方案：动态规划，笛卡尔积] [2021/8/7] [中等]  -  https://leetcode-cn.com/problems/unique-binary-search-trees/
 83.   581.最短无序连续子数组  [数组] [解决方案：排序] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/
 84.   238.除自身以外数组的乘积 [数组] [解决方案：左右乘积] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/product-of-array-except-self/
-85.   152.乘积最大子数组 [数组] [] [] [中等]  -  https://leetcode-cn.com/problems/maximum-product-subarray/
+85.   152.乘积最大子数组 [数组] [解决方案：动态规划] [2021/8/17] [中等]  -  https://leetcode-cn.com/problems/maximum-product-subarray/
 86.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
 87.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
 88.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
