@@ -1292,10 +1292,67 @@
 
   * **View事件传递机制**
 
+    * WindowInputEventReceiver接收到Input事件后的如何传到到Activity的？
+    
+      ![](https://upload-images.jianshu.io/upload_images/10866057-4b5c124f3234dedb.png?imageMogr2/auto-orient/strip|imageView2/2/w/891/format/webp)
+    
+    
+    
+    * 从Activity往下传递事件的流程？
+    
+      ![](https://upload-images.jianshu.io/upload_images/10866057-258980d5ede08a3a.png?imageMogr2/auto-orient/strip|imageView2/2/w/1012/format/webp)
+    
+    * 事件传递机制的总结：
+      1. **事件序列**是指按下到抬起之间发生的一系列事件.
+      2. 默认一个事件序列只能被一个View拦截并消耗. (例外：采用非常规,在onTouchEvent强行传递给其他View. 不推荐)
+      3. 某个View一旦决定拦截，那么这个事件序列只能由它自己处理（如果事件序列能够传递给它的话）， 并且它的`onInterceptTouchEvent()`不会再被调用。
+      4. 某个View一旦开始处理事件，如果View不消耗`ACTION_DOWN`事件（onTouchEvent返回了false）, 那么同一个事件序列都不会再交给它来处理，并且事件会重新传递到父元素的`onTouchEvent()`再次调用方法。
+      5. 如果View不消耗除`ACTION_DOWN`以外的其他事件，那么这个点击事件会消失，而此时父元素的`onTouchEvent()`不会被调用，并且当前View可以持续收到后续的事件，最终这些消失的事件会传递到activity处理。
+      6. `ViewGroup`默认不拦截任何事件, 源码中ViewGroup的`onInterceptTouchEvent()`默认返回false
+      7. `View`没有`onInterceptTouchEvent()`, 因为它没有子View,所以直接调用`onTouchEvent()`
+      8. `View`的`onTouchEvent`默认都会消耗事件返回true，除非它不可点击的(需要`clickable`和`longClickable`同时为false)。View的`longClickable`默认都为false，而`clickable`需要区分控件, 如`Button`默认为true, `TextView`默认为false.
+      9. `View`的`enable`属性不影响`onTouchEvent`的默认返回值，哪怕一个View是`disable`状态. 只要它的`clickable`或者`longClickable`有一个为true. 那么它的`onTouchEvent()`就返回true
+      10. `onClick`会发生的前提是当前View为可点击，并且他收到了down和up事件
+      11. 事件传递的过程是由外向内的，通过`requestDisallowInterceptTouchEvent()`可以在子元素中干预父元素的事件分发过程，但是`ACTION_DOWN`事件除外.
+    
+    
+    
   * **View的滑动冲突**
 
-    
-    
+    * 常见的滑动冲突场景
+
+      * 场景1：外部滑动方向和内部滑动方向不一致；
+      * 场景2：外部滑动方向和内部滑动方向一致；
+      * 场景3：上面两种情况的嵌套。
+
+    * 滑动冲突的解决方式
+
+      * 外部拦截法
+
+        > 是指点击事件都是需要先经过父容器的拦截处理, 如果父容器需要此事件就拦截,不需要就下放. 外部拦截需要重写父容器的onInterceptTouchEvent方法
+
+        大概的处理流程：
+
+        - `ACTION_DOWN`这个事件,父容器必须返回false, 即不拦截`ACTION_DOWN`事件, 因为一旦父容器拦截了这个事件, 那么后续的`ACTION_MOVE`,`ACTION_UP`事件都会交由父容器来处理了. 这个时候这个**事件序列**剩余部分无法传递给子元素了.
+        - `ACTION_MOVE`这个事件,就可以根据实际的需求来决定是否需要拦截. 如果需要拦截就返回true.否则false.
+        - `ACTION_UP`这个事件必须返回false, 因为`ACTION_UP`事件本身没有太多意义.
+
+      * 内部拦截法
+
+        > 是指父容器不拦截任何事件, 所有的事件都需要传递给子元素, 如果子元素需要此事件就直接消费. 否则就交由父容器进行处理, 由于这种方法和Android中的事件分发机制不一致, 需要配合requestDisallowInterceptTouchEvent()方式才能正常工作. 需要重写子元素的dispatchTouchEvent
+
+        这种拦截法的使用规则:
+
+        子View中的`dispatchTouchEvent()`进行复写.
+
+        - `ACTION_DOWN`事件中: 让父容器拒绝拦截所有事件, 调用`parent.requestDisallowInterceptTouchEvent(true)`
+        - `ACTION_MOVE`事件中: 进行条件的拦截判断, 如果在某一种场景需要拦截,那么就调用方法允许父容器拦截事件.
+        - `return` 时, 调用`super.dispatchTouchEvent(event)`
+
+        父容器的`onInterceptTouchEvent()`进行`ACTION_DOWN`返回false, 其余都是返回true的复写.
+
+        说明一点, 为什么父容器不连`ACTION_DOWN`一并的用true复写. 因为`ACTION_DOWN`这个事件是不受`INTERCEPT_FLAG`这个标记影响的的, 就是不管拦截标记是否是何值, 按下事件必然会执行, 所以如果这里返回true, 那么就代表着, 这个事件序列的后续部分将由父容器进行处理, 而子容器无法收到这个事件.
+
     
 
 * 参考资料
@@ -1307,6 +1364,8 @@
   * [安卓自定义View进阶-多点触控详解](http://www.gcssloop.com/customview/multi-touch.html)
   
   * [可能是讲解Android事件分发最好的文章](https://cloud.tencent.com/developer/article/1179381)
+  
+  * [Android 事件分发流程](https://www.jianshu.com/p/40e083ac6111)
   
   * 《Android开发艺术探索》
   
