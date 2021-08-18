@@ -1075,29 +1075,240 @@
 
 * 知识点
 
-  * View坐标系 与 对象方法
+  * **View坐标系**
 
-    1. 关于获取坐标的相关方法
+    1. View提供的方法
 
-       ![](https://img-blog.csdn.net/20160416151944699)
-
+       * getTop：获取到的，是view自身的顶边到其父布局顶边的距离
+    * getLeft：获取到的，是view自身的左边到其父布局左边的距离
+       * getRight：获取到的，是view自身的右边到其父布局左边的距离
+       * getBottom：获取到的，是view自身的底边到其父布局顶边的距离
+       * getX()、getY()：x，y是View左上角的坐标（相对于父容器的坐标）  x = left + translationX
+       * getTranslationX（）、getTranslationY（）：是View左上角相对于父容器的偏移量
        
-
-    <img src="https://img-blog.csdn.net/20160416152117873" style="zoom: 50%;" />
+       >  View在平移的过程中，top和left表示的是原始左上角的位置信息，其值不会发生改变，此时改变的是x、y、translationX和translationY这四个参数。
+       
+       
+       
+       * getLocationInWindow（）：获取控件 相对 窗口Window 的位置
+       * getLocationOnScreen（）：获得 View 相对 屏幕 的绝对坐标
+       * getGlobalVisibleRect（）：View可见部分 相对于 屏幕的坐标。
+       * getLocalVisibleRect（）：View可见部分 相对于 自身View位置左上角的坐标。
 
     
 
-  * View事件分发
+    2. MotionEvent中的方法
+       * getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离
+       * getY()：获取点击事件相对控件顶边的y轴坐标，即点击事件距离控件顶边的距离
+       * getRawX()：获取点击事件相对整个屏幕左边的x轴坐标，即点击事件距离整个屏幕左边的距离
+       * getRawY()：获取点击事件相对整个屏幕顶边的y轴坐标，即点击事件距离整个屏幕顶边的距离
 
+    <img src="https://img-blog.csdn.net/20160416152117873" style="zoom: 50%;" />
+
+    3. TouchSlop
+
+       TouchSlop是系统所能识别出的被认为是滑动的最小距离，换个说法，当手指在屏幕上滑动时，如果两次滑动之间的距离小于这个 常量，那么系统就不认为你是在进行滑动操作。
+
+       获取方法：
+
+       ```java
+       ViewConfiguration.get(getContext()).getScaledTouchSlop();
+       ```
+
+       
+
+    4. 获取坐标的时机
+
+       * ViewTreeObserver  - addOnGlobalLayoutListener
+       * ViewTreeObserver  -  addOnPreDrawListener
+       * view.post()
+       * onWindowFocusChanged
+
+    
+
+    5. 常用的工具类
+
+       * VelocityTracker
+
+         速度追踪，用于追踪手指在滑动过程中的速度，包括水平和竖直方向的速度。
+
+         ```kotlin
+             private const val DEBUG_TAG = "Velocity"
+         
+             class MainActivity : Activity() {
+                 private var mVelocityTracker: VelocityTracker? = null
+         
+                 override fun onTouchEvent(event: MotionEvent): Boolean {
+         
+                     when (event.actionMasked) {
+                         MotionEvent.ACTION_DOWN -> {
+                             // Reset the velocity tracker back to its initial state.
+                             mVelocityTracker?.clear()
+                             // If necessary retrieve a new VelocityTracker object to watch the
+                             // velocity of a motion.
+                             mVelocityTracker = mVelocityTracker ?: VelocityTracker.obtain()
+                             // Add a user's movement to the tracker.
+                             mVelocityTracker?.addMovement(event)
+                         }
+                         MotionEvent.ACTION_MOVE -> {
+                             mVelocityTracker?.apply {
+                                 val pointerId: Int = event.getPointerId(event.actionIndex)
+                                 addMovement(event)
+                                 // When you want to determine the velocity, call
+                                 // computeCurrentVelocity(). Then call getXVelocity()
+                                 // and getYVelocity() to retrieve the velocity for each pointer ID.
+                                 computeCurrentVelocity(1000)
+                                 // Log velocity of pixels per second
+                                 // Best practice to use VelocityTrackerCompat where possible.
+                                 Log.d("", "X velocity: ${getXVelocity(pointerId)}")
+                                 Log.d("", "Y velocity: ${getYVelocity(pointerId)}")
+                             }
+                         }
+                         MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                             // Return a VelocityTracker object back to be re-used by others.
+                             mVelocityTracker?.recycle()
+                             mVelocityTracker = null
+                         }
+                     }
+                     return true
+                 }
+             }
+             
+         ```
+
+         
+
+       * GestureDetector
+
+         手势检测，用于辅助检测用户的单击、滑动、长按、双击等行为。如果您只想处理几个手势，可以扩展 `GestureDetector.SimpleOnGestureListener`，而无需实现 `GestureDetector.OnGestureListener` 接口。
+
+         ```kotlin
+             private const val DEBUG_TAG = "Gestures"
+         
+             class MainActivity :
+                     Activity(),
+                     GestureDetector.OnGestureListener,
+                     GestureDetector.OnDoubleTapListener {
+         
+                 private lateinit var mDetector: GestureDetectorCompat
+         
+                 // Called when the activity is first created.
+                 public override fun onCreate(savedInstanceState: Bundle?) {
+                     super.onCreate(savedInstanceState)
+                     setContentView(R.layout.activity_main)
+                     // Instantiate the gesture detector with the
+                     // application context and an implementation of
+                     // GestureDetector.OnGestureListener
+                     mDetector = GestureDetectorCompat(this, this)
+                     // Set the gesture detector as the double tap
+                     // listener.
+                     mDetector.setOnDoubleTapListener(this)
+                 }
+         
+                 override fun onTouchEvent(event: MotionEvent): Boolean {
+                     return if (mDetector.onTouchEvent(event)) {
+                         true
+                     } else {
+                         super.onTouchEvent(event)
+                     }
+                 }
+         
+                 override fun onDown(event: MotionEvent): Boolean {
+                     Log.d(DEBUG_TAG, "onDown: $event")
+                     return true
+                 }
+         
+                 override fun onFling(
+                         event1: MotionEvent,
+                         event2: MotionEvent,
+                         velocityX: Float,
+                         velocityY: Float
+                 ): Boolean {
+                     Log.d(DEBUG_TAG, "onFling: $event1 $event2")
+                     return true
+                 }
+         
+                 override fun onLongPress(event: MotionEvent) {
+                     Log.d(DEBUG_TAG, "onLongPress: $event")
+                 }
+         
+                 override fun onScroll(
+                         event1: MotionEvent,
+                         event2: MotionEvent,
+                         distanceX: Float,
+                         distanceY: Float
+                 ): Boolean {
+                     Log.d(DEBUG_TAG, "onScroll: $event1 $event2")
+                     return true
+                 }
+         
+                 override fun onShowPress(event: MotionEvent) {
+                     Log.d(DEBUG_TAG, "onShowPress: $event")
+                 }
+         
+                 override fun onSingleTapUp(event: MotionEvent): Boolean {
+                     Log.d(DEBUG_TAG, "onSingleTapUp: $event")
+                     return true
+                 }
+         
+                 override fun onDoubleTap(event: MotionEvent): Boolean {
+                     Log.d(DEBUG_TAG, "onDoubleTap: $event")
+                     return true
+                 }
+         
+                 override fun onDoubleTapEvent(event: MotionEvent): Boolean {
+                     Log.d(DEBUG_TAG, "onDoubleTapEvent: $event")
+                     return true
+                 }
+         
+                 override fun onSingleTapConfirmed(event: MotionEvent): Boolean {
+                     Log.d(DEBUG_TAG, "onSingleTapConfirmed: $event")
+                     return true
+                 }
+         
+             }
+         ```
+
+         
+
+       * Scroller
+
+         弹性滑动对象，用于实现View 的弹性滑动。Scroller本身无法让View弹性滑动，它需要和View的computeScroll方法配合使用才能共同完成这个功能。
+
+    
+
+  * View的滑动
+
+    * 使用scrollTo/scrollBy（相对滑动）
+      1. View内部有两个属性mScrollX和mScrollY，scrollTo()中mScrollX的值等于view左边缘和view内容左边缘在水平方向的距离，并且当view的左边缘在view的内容左边缘右边时，mScrollX为正，反之为负；同理mScrollY等于view上边缘和view内容上边缘在竖直方向的距离，并且当view的上边缘在view的内容上边缘下边时，mScrollY为正，反之为负。当View没有使用scrollTo()和scrollBy()进行滑动的时候，mScrollX和mScrollY默认等于零，也就是view的左边缘与内容左边缘重合。
+      2. scrollTo/scrollBy只能改变View内容的位置而不能改变View在布局中的位置。
+      3. 适用场景：操作简单，适合对View内容的滑动
+    * 使用动画
+      1. 适用场景：操作简单，主要适用于没有交互的View和实现复杂的动画效果
+    * 改变布局参数
+      1. 适用场景：操作稍微复杂，适用于有交互的View
+
+    
+
+  * **View事件传递机制**
+
+  * **View的滑动冲突**
+
+    
+    
     
 
 * 参考资料
 
+  * [Android：你知道该如何正确获取View坐标位置的方法吗？](https://blog.csdn.net/carson_ho/article/details/103342511)
+
   * [那些你应该知道却不一定知道的——View坐标分析汇总](https://blog.csdn.net/mr_immortalz/article/details/51168278)
 
   * [安卓自定义View进阶-多点触控详解](http://www.gcssloop.com/customview/multi-touch.html)
-
+  
   * [可能是讲解Android事件分发最好的文章](https://cloud.tencent.com/developer/article/1179381)
+  
+  * 《Android开发艺术探索》
   
     
 
