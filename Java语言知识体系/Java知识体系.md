@@ -92,17 +92,340 @@
 
 * 知识点
   * 什么是Class
+
+    对于每一种类，Java 虚拟机都会初始化出一个 Class 类型的实例，每当我们编写并且编译一个新创建的类就会产生一个对应 Class 对象，并且这个 Class 对象会被保存在同名 .class 文件里。当我们 new 一个新对象或者引用静态成员变量时，Java 虚拟机(JVM)中的类加载器系统会将对应 Class 对象加载到 JVM 中，然后 JVM 再根据这个类型信息相关的Class 对象创建我们需要实例对象或者提供静态变量的引用值。
+
   * 如何获取Class
+
+    * Object.getClass()  ，通过对象实例获取对应 Class 对象
+
+      ```java
+      //Returns the Class for String
+      Class c = "foo".getClass();
+      ```
+
+      
+
+    * The .class Syntax  ， 通过类的类型获取Class对象,基本类型同样可以使用这种方法
+
+      ```java
+      //The `.class` syntax returns the Class corresponding to the type `boolean`.
+      Class c = boolean.class;  
+      
+      //Returns the Class for String
+      Class c = String.class;
+      ```
+
+    * Class.forName()  ，通过类的全限定名获取Class对象， 基本类型无法使用此方法
+
+      ```java
+      Class c = Class.forName("java.lang.String");
+      ```
+
+      
+
+    * Class.getSuperclass()获得给定类的父类 Class
+
+      ```java
+      // javax.swing.JButton的父类是javax.swing.AbstractButton
+      Class c = javax.swing.JButton.class.getSuperclass();
+      ```
+
+      
+
   * 通过Class获取类修饰符和类型
+
+    ![](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt5tL9GD0n77s3FwJiarzao9SKeiccYrAOy1qStMPfiadTQhuy4bmt3kx18tyf5zaq3ITOmRK3ib4Be6eA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+    
+
   * Member
-    	Field
-    	Method
-    	Constructor
+
+    * Field
+
+      通过 Field 你可以访问给定对象的类变量，包括获取变量的类型、修饰符、注解、变量名、变量的值或者重新设置变量值，即使变量是 private 的。
+
+      1. Class 提供了4种方法获得给定类的 Field
+
+      - - getDeclaredField(String name)   
+
+          获取指定的变量（只要是声明的变量都能获得，包括 private）
+
+        - getField(String name)    
+
+          获取指定的变量（只能获得 public 的）
+
+        - getDeclaredFields()        
+
+          获取所有声明的变量（包括 private）
+
+        - getFields()
+
+          获取所有的 public 变量
+
+      2. 通过Field获取变量类型、修饰符、注解
+
+         ```java
+         public void testField(){
+                 Class c = Cat.class;
+                 Field[] fields = c.getDeclaredFields();
+                 for(Field f : fields){
+                     StringBuilder builder = new StringBuilder();
+                     //获取名称
+                     builder.append("filed name = ");
+                     builder.append(f.getName());
+                     //获取类型
+                     builder.append(" type = ");
+                     builder.append(f.getType());
+                     //获取修饰符
+                     builder.append(" modifiers = ");
+                     builder.append(Modifier.toString(f.getModifiers()));
+                     //获取注解
+                     Annotation[] ann = f.getAnnotations();
+                     if (ann.length != 0) {
+                         builder.append(" annotations = ");
+                         for (Annotation a : ann){
+                             builder.append(a.toString());
+                             builder.append(" ");
+                         }
+                     } else {
+                         builder.append("  -- No Annotations --");
+                     }
+                     Log.d(TAG, builder.toString());
+                 }
+             }
+         ```
+
+      3. 通过Field获取、设置变量值
+
+         ```java
+         public void testField(){
+                 Cat cat = new Cat("Tom", 2);
+                 Class c = cat.getClass();
+                 try {
+                     //注意获取private变量时，需要用getDeclaredField
+                     Field fieldName = c.getDeclaredField("name");
+                     Field fieldAge = c.getField("age");
+                     // 取消 Java 语言访问权限检查
+                     fieldName.setAccessible(true);
+                     //反射获取名字, 年龄
+                     String name = (String) fieldName.get(cat);
+                     int age = fieldAge.getInt(cat);
+                     Log.d(TAG, "before set, Cat name = " + name + " age = " + age);
+                     //反射重新set名字和年龄
+                     fieldName.set(cat, "Timmy");
+                     fieldAge.setInt(cat, 3);
+                     Log.d(TAG, "after set, Cat " + cat.toString());
+                 } catch (NoSuchFieldException e) {
+                     e.printStackTrace();
+                 } catch (IllegalAccessException e) {
+                     e.printStackTrace();
+                 }
+             }
+         ```
+
+         
+
+    * Method
+
+      1. 获取Method
+
+         Class 依然提供了4种方法获取 Method:
+
+         - - getDeclaredMethod(String name, Class<?>... parameterTypes)
+
+             根据方法名获得指定的方法， 参数 name 为方法名，参数 parameterTypes 为方法的参数类型，如 getDeclaredMethod(“eat”, String.class)
+
+           - getMethod(String name, Class<?>... parameterTypes)
+
+             根据方法名获取指定的 public 方法，其它同上
+
+           - getDeclaredMethods()
+
+             获取所有声明的方法
+
+           - getMethods()
+
+             获取所有的 public 方法
+
+         > 注意：获取带参数方法时，如果参数类型错误会报 NoSuchMethodException，对于参数是泛型的情况，泛型须当成Object处理（Object.class）
+
+      2. 通过Method获取方法返回类型
+
+         - getReturnType()  获取目标方法返回类型对应的 Class 对象
+         - getGenericReturnType()  获取目标方法返回类型对应的 Type 对象
+
+         > 这两个方法有啥区别呢？
+         >
+         > - getReturnType()返回类型为 Class，getGenericReturnType() 返回类型为 Type; Class 实现 Type。
+         >
+         > - 返回值为普通简单类型如 Object, int, String 等，getGenericReturnType() 返回值和 getReturnType() 一样
+         >
+         >   例如 public String function1()，那么各自返回值为：
+         >
+         > - - getReturnType() : class java.lang.String
+         >   - getGenericReturnType() : class java.lang.String
+         >
+         > - 返回值为泛型
+         >
+         >   例如 public T function2()，那么各自返回值为：
+         >
+         > - - getReturnType() : class java.lang.Object
+         >   - getGenericReturnType() : T
+         >
+         > - 返回值为参数化类型
+         >
+         >   例如public Class<String> function3()，那么各自返回值为：
+         >
+         > - - getReturnType() : class java.lang.Class
+         >   - getGenericReturnType() : java.lang.Class<java.lang.String>
+         >
+         > 其实反射中所有形如 getGenericXXX()的方法规则都与上面所述类似。
+
+         
+
+      3. 通过Method获取方法参数类型
+
+         * getParameterTypes() 获取目标方法各参数类型对应的 Class 对象
+
+         * getGenericParameterTypes() 获取目标方法各参数类型对应的 Type 对象
+
+           返回值为数组，它俩区别同上 “方法返回类型的区别” 。
+
+         
+
+      4. 通过Method获取方法声明抛出的异常的类型
+
+         * getExceptionTypes() 获取目标方法抛出的异常类型对应的 Class 对象
+
+         * getGenericExceptionTypes()  获取目标方法抛出的异常类型对应的 Type 对象
+           返回值为数组，区别同上
+
+           
+
+      5. 通过Method获取方法参数名称
+
+         .class 文件中默认不存储方法参数名称，如果想要获取方法参数名称，需要在编译的时候加上 -parameters 参数。(构造方法的参数获取方法同样)
+
+         ```java
+         //这里的m可以是普通方法Method，也可以是构造方法Constructor
+         //获取方法所有参数
+         Parameter[] params = m.getParameters();
+         for (int i = 0; i < params.length; i++) {
+             Parameter p = params[i];
+             p.getType();   //获取参数类型
+             p.getName();  //获取参数名称，如果编译时未加上`-parameters`，返回的名称形如`argX`, X为参数在方法声明中的位置，从0开始
+             p.getModifiers(); //获取参数修饰符
+             p.isNamePresent();  //.class文件中是否保存参数名称, 编译时加上`-parameters`返回true,反之flase
+         }
+         ```
+
+         
+
+      6. 通过Method获取方法修饰符
+
+         ```java
+         method.getModifiers();
+         ```
+
+         
+
+      7. 通过反射调用方法
+
+         反射通过Method的invoke()方法来调用目标方法。第一个参数为需要调用的目标类对象，如果方法为static的，则该参数为null。后面的参数都为目标方法的参数值，顺序与目标方法声明中的参数顺序一致。
+
+         ```java
+         public native Object invoke(Object obj, Object... args)
+                     throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+         ```
+
+         > 注意：如果方法是private的，可以使用 method.setAccessible(true) 方法绕过权限检查
+
+         ```java
+         Class<?> c = Cat.class;
+          try {
+              //构造Cat实例
+              Constructor constructor = c.getConstructor(String.class, int.class);
+              Object cat = constructor.newInstance( "Jack", 3);
+              //调用无参方法
+              Method sleep = c.getDeclaredMethod("sleep");
+              sleep.invoke(cat);
+              //调用定项参数方法
+              Method eat = c.getDeclaredMethod("eat", String.class);
+              eat.invoke(cat, "grass");
+              //调用不定项参数方法
+              //不定项参数可以当成数组来处理
+              Class[] argTypes = new Class[] { String[].class };
+              Method varargsEat = c.getDeclaredMethod("eat", argTypes);
+              String[] foods = new String[]{
+                   "grass", "meat"
+              };
+              varargsEat.invoke(cat, (Object)foods);
+           } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+              e.printStackTrace();
+          }
+         ```
+
+         被调用的方法本身所抛出的异常在反射中都会以 InvocationTargetException 抛出。换句话说，反射调用过程中如果异常 InvocationTargetException 抛出，说明反射调用本身是成功的，因为这个异常是目标方法本身所抛出的异常。
+
+         
+
+    * Constructor
+
+      1. 获取构造方法
+
+         和 Method 一样，Class 也为 Constructor 提供了4种方法获取
+
+         - - getDeclaredConstructor(Class<?>... parameterTypes)
+
+             获取指定构造函数，参数 parameterTypes 为构造方法的参数类型
+
+           - getConstructor(Class<?>... parameterTypes)
+
+             获取指定 public 构造函数，参数 parameterTypes 为构造方法的参数类型
+
+           - getDeclaredConstructors()
+
+             获取所有声明的构造方法
+
+           - getConstructors()
+
+             获取所有的 public 构造方法
+
+         构造方法的名称、限定符、参数、声明的异常等获取方法都与 Method 类似，请参照Method。
+
+      2. 创建对象
+
+         通过反射有两种方法可以创建对象：
+
+         - java.lang.reflect.Constructor.newInstance()
+         - Class.newInstance()
+
+         > **一般来讲，我们优先使用第一种方法**；那么这两种方法有何异同呢？
+         >
+         > 1. Class.newInstance()仅可用来调用无参的构造方法；Constructor.newInstance()可以调用任意参数的构造方法。
+         > 2. Class.newInstance()会将构造方法中抛出的异常不作处理原样抛出; Constructor.newInstance()会将构造方法中抛出的异常都包装成 InvocationTargetException 抛出。
+         > 3. Class.newInstance()需要拥有构造方法的访问权限; Constructor.newInstance()可以通过 setAccessible(true) 方法绕过访问权限访问 private 构造方法。
+
+         ```java
+         Class<?> c = Cat.class;
+         try {
+             Constructor constructor = c.getConstructor(String.class, int.class);
+             Cat cat = (Cat) constructor.newInstance( "Jack", 3);
+         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+             e.printStackTrace();
+         }
+         ```
+
+         
+
   * 副作用
-    	性能开销
-    	安全限制
-    	内部曝光
+    
+    * 性能开销
+    * 安全限制
+    * 内部曝光
 * 参考资料
+  
   * [一篇文章带你学懂Java反射](https://mp.weixin.qq.com/s/PYjFA1v_mwMpyKACI3B9PQ)
 
 
