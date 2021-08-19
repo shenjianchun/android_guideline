@@ -87,7 +87,7 @@
 83.   581.最短无序连续子数组  [数组] [解决方案：排序] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/
 84.   238.除自身以外数组的乘积 [数组] [解决方案：左右乘积] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/product-of-array-except-self/
 85.   152.乘积最大子数组 [数组] [解决方案：动态规划] [2021/8/17] [中等]  -  https://leetcode-cn.com/problems/maximum-product-subarray/
-86.  461.汉明距离 [] [] [] [简单]  -  https://leetcode-cn.com/problems/hamming-distance/ 
+86.  461.汉明距离 [二进制] [解决方案：异或，遍历最后一位] [2021/8/18] [简单]  -  https://leetcode-cn.com/problems/hamming-distance/ 
 87.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
 88.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
 89.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/

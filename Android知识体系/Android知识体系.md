@@ -1382,11 +1382,164 @@
 ## 动画
 
 * 知识点
-  * 动画类型（PropertyAnimation、Layout、Drawable、Fragment、Activity（overridePendingTransition、Transitions）
-  * 动画监听
-  * 插值器与估值器		
+  * **动画类型（PropertyAnimation、Layout、Drawable、Fragment、Activity（overridePendingTransition、Transitions）**
+
+  * **View动画**
+
+    * 帧动画
+    * 补间动画
+
+  * **Layout动画**
+
+    * 使用[android:layoutAnimation](http://developer.android.com/reference/android/view/ViewGroup.html#attr_android:layoutAnimation) 属性
+
+      ```xml
+      <LinearLayout 
+          ...
+          android:layoutAnimation="@anim/layout_bottom_to_top_slide" />
+      ```
+
+  * **Activity动画**
+
+    * 使用 [overridePendingTransition](http://developer.android.com/reference/android/app/Activity.html#overridePendingTransition(int, int)) 
+
+      ```java
+      Intent i = new Intent(MainActivity.this, SecondActivity.class);
+      startActivity(i);
+      overridePendingTransition(R.anim.right_in, R.anim.left_out);
+      ```
+
+    * 使用 Transtion动画（共享元素）
+
+      
+
+  * **属性动画**
+
+    * 动画监听
+
+      * AnimatorListenerAdapter 
+      * AnimatorUpdateListener，它会监听整个动画过程，动画是由许多帧组成的，没播放一帧，onAnimationUpdate就会被调用一次。
+
+    * 插值器与估值器		
+
+      * 插值器（Interpolator）
+
+        1. 作用：设置属性值从初始值过渡到结束值 的变化规律，如匀速、加速 & 减速等等，即确定了 动画效果变化的模式，如匀速变化、加速变化等等。
+
+        2. 使用：
+
+           ```xml
+           <?xml version="1.0" encoding="utf-8"?>
+           <!--通过资源ID设置插值器-->
+           <scale xmlns:android="http://schemas.android.com/apk/res/android"
+               android:interpolator="@android:anim/overshoot_interpolator"
+               android:duration="3000"
+               android:startOffset="1000"
+           
+               android:fromXScale="0.0"
+               android:toXScale="2"
+               android:fromYScale="0.0"
+               android:toYScale="2"
+               android:pivotX="50%"
+               android:pivotY="50%">
+           </scale>
+           ```
+
+           ```java
+           Animation scaleAnimation = new ScaleAnimation(0, 2, 0, 2, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+           scaleAnimation.setDuration(3000);
+           //scaleAnimation.setInterpolator(MainActivity.this,android.R.anim.overshoot_interpolator); 通过设置资源ID方式实现，等同于下面创建对象方式
+           //创建对应的插值器类对象
+           Interpolator overShootInterpolator = new OvershootInterpolator();
+           //给动画设置插值器
+           scaleAnimation.setInterpolator(overShootInterpolator);
+           //播放动画
+           button.startAnimation(scaleAnimation);
+           ```
+
+           
+
+        3. 自定义插值器
+
+           **根据动画的进度（0%-100%）计算出当前属性值改变的百分比**。自定义插值器需要实现 Interpolator / TimeInterpolator接口 & 复写getInterpolation()方法。
+
+           > 补间动画实现Interpolator接口；属性动画一般实现TimeInterpolator接口
+           >
+           > TimeInterpolator接口是属性动画中新增的，用于兼容Interpolator接口，这使得所有过去的Interpolator实现类也可以直接在属性动画使用。
+
+           ```java
+           // 匀速差值器：LinearInterpolator
+               @HasNativeInterpolator
+               public class LinearInterpolator extends BaseInterpolator implements NativeInterpolatorFactory {
+                   // 仅贴出关键代码
+                   ...
+                   public float getInterpolation(float input) {
+                       return input;
+                       /*没有对input值进行任何逻辑处理，直接返回
+                        即input值 = fraction值
+                        因为input值是匀速增加的，因此fraction值也是匀速增加的，
+                        所以动画的运动情况也是匀速的，所以是匀速插值器。*/
+                   }
+               }
+           
+               // 先加速再减速 差值器：AccelerateDecelerateInterpolator
+               @HasNativeInterpolator
+               public class AccelerateDecelerateInterpolator implements Interpolator, NativeInterpolatorFactory {
+                   // 仅贴出关键代码
+                   ...
+                   public float getInterpolation(float input) {
+                       return (float) (Math.cos((input + 1) * Math.PI) / 2.0f) + 0.5f;
+                       /*input的运算逻辑如下：
+                        使用了余弦函数，因input的取值范围是0到1，那么cos函数中的取值范围就是π到2π。
+                        而cos(π)的结果是-1，cos(2π)的结果是1
+                        所以该值除以2加上0.5后，getInterpolation()方法最终返回的结果值还是在0到1之间。
+                        只不过经过了余弦运算之后，最终的结果不再是匀速增加的了，而是经历了一个先加速后减速的过程
+                        所以最终，fraction值 = 运算后的值 = 先加速后减速，所以该差值器是先加速再减速的。*/
+                   }
+               }
+           ```
+
+           
+
+      * 估值器（TypeEvaluator）
+
+        1. 作用：设置属性值从初始值过渡到结束值的变化具体数值。**根据当前属性改变的百分比来计算改变后的属性值。**
+
+        2. 使用
+
+           ```java
+           // 在第4个参数中传入对应估值器类的对象
+           ObjectAnimator anim = ObjectAnimator.ofObject(button, "height", new Evaluator()，1，3);
+           ```
+
+           
+
+        3. 自定义估值器
+
+           ```java
+           // FloatEvaluator实现了TypeEvaluator接口
+           public class FloatEvaluator implements TypeEvaluator {  
+               // 重写evaluate()
+               // 参数说明
+               // fraction：表示动画完成度（根据它来计算当前动画的值）
+               // startValue、endValue：动画的初始值和结束值
+               public Object evaluate(float fraction, Object startValue, Object endValue) {  
+                   float startFloat = ((Number) startValue).floatValue();  
+                   return startFloat + fraction * (((Number) endValue).floatValue() - startFloat);  
+                   // 初始值过渡到结束值的算法是：
+                   // 1. 用结束值减去初始值，算出它们之间的差值
+                   // 2. 用上述差值乘以fraction系数
+                   // 3. 再加上初始值，就得到当前动画的值
+               }  
+           }
+           ```
+
+           
 * 参考资料
   * [Animations -  CodePath - 使用篇](https://guides.codepath.com/android/Animations)
+  * [Android动画中篇（插值器、估值器）](https://www.jianshu.com/p/676bb3b4d71d)
+  * [Android动画FillEnabled、FillBefore、FillAfter理解](https://blog.csdn.net/wiker_yong/article/details/40424667)
+  * [Getting Started with Activity & Fragment Transitions (part 1)](https://www.androiddesignpatterns.com/2014/12/activity-fragment-transitions-in-android-lollipop-part1.html)
   * 《Android开发艺术探索》
 
 
@@ -2308,6 +2461,20 @@
 
 * 知识点
   * Application 应用启动流程
+
+    1. 点击Launcher桌面的App图标
+
+    2. AMS发起socket请求
+    3. Zygote进程接收请求并处理参数
+    4. Zygote进程fork出应用进程，应用进程继承得到虚拟机实例
+    5. 应用进程启动binder线程池、运行ActivityThread类的main函数、启动Looper循环
+
+    ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6631644fc5c7402cb5363a5a65e8f009~tplv-k3u1fbpfcp-watermark.awebp)
+
+    
+
+    * 参考资料
+      * [图解 | 一图摸清Android应用进程的启动](https://juejin.cn/post/6887431834041483271)
 
   * Activity扮演的角色（作用）
 
