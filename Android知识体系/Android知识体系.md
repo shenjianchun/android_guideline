@@ -1534,7 +1534,6 @@
            }
            ```
 
-           
 * 参考资料
   * [Animations -  CodePath - 使用篇](https://guides.codepath.com/android/Animations)
   * [Android动画中篇（插值器、估值器）](https://www.jianshu.com/p/676bb3b4d71d)
@@ -2776,5 +2775,311 @@
 ### LeakCanary
 
 * 知识点
+
+  1. LeakCanary检测内存泄漏的原理与基本流程
+
+     * 1.1 内存泄露原理
+
+       引用链来自于垃圾回收器的可达性分析算法：当一个对象到`GC Roots` 没有任何引用链相连时，则证明此对象是不可用的。如图：
+        ![img](https://raw.githubusercontent.com/shenzhen2017/newImage/master/blog11/p3.jpg)
+        对象`object5`、`object6`、`object7` 虽然互相有关联，但是它们到 `GC Roots` 是不可达的，所以它们将会被判定为是可回收的对象。
+        在`Java`语言中，可作为`GC Roots`的对象包括下面几种：
+
+       - 虚拟机栈（栈帧中的本地变量表）中引用的对象。
+       - 方法区中静态属性引用的对象。
+       - 方法区中常量引用的对象。
+       - 本地方法栈中JNI（即一般说的Native方法）引用的对象。
+
+     * 1.2 LeakCanary检测内存泄漏的基本流程
+
+       知道了内存泄漏的原理，我们可以推测到`LeakCanary`的基本流程大概是怎样的
+        1.在页面关闭后触发检测(不再需要的对象)
+        2.触发`GC`，然后获取仍然存在的对象，这些是可能泄漏的
+        3.`dump heap`然后分析`hprof`文件，构建可能泄漏的对象与`GCRoot`间的引用链,如果存在则证明泄漏
+        4.存储结果并使用通知提醒用户存在泄漏
+
+       总体流程图如下所示：
+        ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1673c300751d483c982d421907b007e0~tplv-k3u1fbpfcp-watermark.awebp)
+
+       - 1.`ObjectWatcher` 创建了一个`KeyedWeakReference`来监视对象.
+       - 2.稍后，在后台线程中，延时检查引用是否已被清除，如果没有则触发`GC`
+       - 3.如果引用一直没有被清除，它会`dumps the heap` 到一个`.hprof` 文件中，然后将`.hprof` 文件存储到文件系统。
+       - 4.分析过程主要在`HeapAnalyzerService`中进行，`Leakcanary2.0`中使用`Shark`来解析`hprof`文件。
+       - 5.`HeapAnalyzer` 获取`hprof`中的所有`KeyedWeakReference`，并获取`objectId`
+       - 6.`HeapAnalyzer`计算`objectId`到`GC Root`的最短强引用链路径来确定是否有泄漏，然后构建导致泄漏的引用链。
+       - 7.将分析结果存储在数据库中，并显示泄漏通知。
+
+
+       
+
+  2. LeakCanary是如何自动安装的？
+
+     `LeakCanary`的使用非常方便，只需要添加依赖便可以自动初始化，这是如何实现的呢？
+      我们看一下源码，其实主要是通过`ContentProvider`实现的
+
+     ```kotlin
+     internal sealed class AppWatcherInstaller : ContentProvider() {
+     
+       /**
+        * [MainProcess] automatically sets up the LeakCanary code that runs in the main app process.
+        */
+       internal class MainProcess : AppWatcherInstaller()
+     
+       /**
+        * When using the `leakcanary-android-process` artifact instead of `leakcanary-android`,
+        * [LeakCanaryProcess] automatically sets up the LeakCanary code
+        */
+       internal class LeakCanaryProcess : AppWatcherInstaller()
+     
+       override fun onCreate(): Boolean {
+         val application = context!!.applicationContext as Application
+         AppWatcher.manualInstall(application)
+         return true
+       }
+     }  
+     ```
+
+     当我们启动`App`时，一般启动顺序为：`Application`->`attachBaseContext` =====>`ContentProvider`->`onCreate` =====>`Application`->`onCreate`
+      `ContentProvider`会在`Application.onCreate`前初始化，这样就调用到了`LeakCanary`的初始化方法
+      实现了免手动初始化
+
+     
+
+     * 跨进程初始化
+
+       注意,`AppWatcherInstaller`有两个子类,`MainProcess`与`LeakCanaryProcess`
+        其中默认使用`MainProcess`,会在`App`进程初始化
+        有时我们考虑到`LeakCanary`比较耗内存，需要在独立进程初始化
+        使用`leakcanary-android-process`模块的时候，会在一个新的进程中去开启`LeakCanary`
+
+     * LeakCanary2.0手动初始化的方法
+
+       `LeakCanary`在检测内存泄漏时比较耗时，同时会打断`App`操作，在不需要检测时的体验并不太好
+        所以虽然`LeakCanary`可以自动初始化，但我们有时其实还是需要手动初始化
+
+       `LeakCanary`的自动初始化可以手动关闭
+
+       ```xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <resources>
+             <bool name="leak_canary_watcher_auto_install">false</bool>
+        </resources>
+       ```
+
+       1.然后在需要初始化的时候，调用`AppWatcher.manualInstall`即可
+        2.是否开始`dump`与分析开头：`LeakCanary.config = LeakCanary.config.copy(dumpHeap = false)`
+        3.桌面图标开头：重写`R.bool.leak_canary_add_launcher_icon`或者调用`LeakCanary.showLeakDisplayActivityLauncherIcon(false)`
+
+     
+
+  3. LeakCanary如何检测内存泄漏?
+
+     * 3.1 初始化的时候做了什么？（AppWatcher.manualInstall）
+
+       ```kotlin
+         @JvmOverloads
+         fun manualInstall(
+           application: Application,
+           retainedDelayMillis: Long = TimeUnit.SECONDS.toMillis(5),
+           watchersToInstall: List<InstallableWatcher> = appDefaultWatchers(application)
+         ) {
+           ....
+           watchersToInstall.forEach {
+             it.install()
+           }
+         }
+       
+         fun appDefaultWatchers(
+           application: Application,
+           reachabilityWatcher: ReachabilityWatcher = objectWatcher
+         ): List<InstallableWatcher> {
+           return listOf(
+             ActivityWatcher(application, reachabilityWatcher),
+             FragmentAndViewModelWatcher(application, reachabilityWatcher),
+             RootViewWatcher(reachabilityWatcher),
+             ServiceWatcher(reachabilityWatcher)
+           )
+         }
+       
+       ```
+
+       可以看出，初始化时即安装了一些`Watcher`，即在默认情况下，我们只会观察`Activity`,`Fragment`,`RootView`,`Service`这些对象是否泄漏
+       如果需要观察其他对象，需要手动添加并处理
+
+     * 3.2 LeakCanary如何触发检测?
+
+       如上文所述，在初始化时会安装一些`Watcher`，我们以`ActivityWatcher`为例
+
+       ```kotlin
+       class ActivityWatcher(
+         private val application: Application,
+         private val reachabilityWatcher: ReachabilityWatcher
+       ) : InstallableWatcher {
+       
+         private val lifecycleCallbacks =
+           object : Application.ActivityLifecycleCallbacks by noOpDelegate() {
+             override fun onActivityDestroyed(activity: Activity) {
+               reachabilityWatcher.expectWeaklyReachable(
+                 activity, "${activity::class.java.name} received Activity#onDestroy() callback"
+               )
+             }
+           }
+       
+         override fun install() {
+           application.registerActivityLifecycleCallbacks(lifecycleCallbacks)
+         }
+       
+         override fun uninstall() {
+           application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks)
+         }
+       }
+       ```
+
+       可以看到在`Activity.onDestory`时，就会触发检测内存泄漏
+
+       
+
+     * 3.3 LeakCanary如何检测可能泄漏的对象?
+
+       从上面可以看出，`Activity`关闭后会调用到`ObjectWatcher.expectWeaklyReachable`
+
+       ```kotlin
+       @Synchronized override fun expectWeaklyReachable(
+           watchedObject: Any,
+           description: String
+         ) {
+           if (!isEnabled()) {
+             return
+           }
+           removeWeaklyReachableObjects()
+           val key = UUID.randomUUID()
+             .toString()
+           val watchUptimeMillis = clock.uptimeMillis()
+           val reference =
+             KeyedWeakReference(watchedObject, key, description, watchUptimeMillis, queue)
+           SharkLog.d {
+             "Watching " +
+               (if (watchedObject is Class<*>) watchedObject.toString() else "instance of ${watchedObject.javaClass.name}") +
+               (if (description.isNotEmpty()) " ($description)" else "") +
+               " with key $key"
+           }
+       
+           watchedObjects[key] = reference
+           checkRetainedExecutor.execute {
+             moveToRetained(key)
+           }
+         }
+       
+       private fun removeWeaklyReachableObjects() {
+           // WeakReferences are enqueued as soon as the object to which they point to becomes weakly
+           // reachable. This is before finalization or garbage collection has actually happened.
+           var ref: KeyedWeakReference?
+           do {
+             ref = queue.poll() as KeyedWeakReference?
+             if (ref != null) {
+               watchedObjects.remove(ref.key)
+             }
+           } while (ref != null)
+         }  
+       ```
+
+       可以看出
+
+       1. 传入的观察对象都会被存储在`watchedObjects`中
+       2. 会为每个`watchedObject`生成一个`KeyedWeakReference`弱引用对象并与一个`queue`关联，当对象被回收时，该弱引用对象将进入`queue`当中
+       3. 在检测过程中，我们会调用多次`removeWeaklyReachableObjects`,将已回收对象从`watchedObjects`中移除
+       4. 如果`watchedObjects`中没有移除对象，证明它没有被回收，那么就会调用`moveToRetained`。
+
+       
+
+     * 3.4 LeakCanary触发堆快照，生成hprof文件
+
+       `moveToRetained`之后会调用到`HeapDumpTrigger.checkRetainedInstances`方法
+        `checkRetainedInstances()` 方法是确定泄露的最后一个方法了。
+        这里会确认引用是否真的泄露，如果真的泄露，则发起 `heap dump`，分析 `dump` 文件，找到引用链
+
+       ```kotlin
+       private fun checkRetainedObjects() {
+           var retainedReferenceCount = objectWatcher.retainedObjectCount
+       
+           if (retainedReferenceCount > 0) {
+             gcTrigger.runGc()
+             retainedReferenceCount = objectWatcher.retainedObjectCount
+           }
+       
+           if (checkRetainedCount(retainedReferenceCount, config.retainedVisibleThreshold)) return
+       
+           val now = SystemClock.uptimeMillis()
+           val elapsedSinceLastDumpMillis = now - lastHeapDumpUptimeMillis
+           if (elapsedSinceLastDumpMillis < WAIT_BETWEEN_HEAP_DUMPS_MILLIS) {
+             onRetainInstanceListener.onEvent(DumpHappenedRecently)
+             ....
+             return
+           }
+       
+           dismissRetainedCountNotification()
+           val visibility = if (applicationVisible) "visible" else "not visible"
+           dumpHeap(
+             retainedReferenceCount = retainedReferenceCount,
+             retry = true,
+             reason = "$retainedReferenceCount retained objects, app is $visibility"
+           ) 
+       }
+       
+         private fun dumpHeap(
+           retainedReferenceCount: Int,
+           retry: Boolean,
+           reason: String
+         ) {
+            ....
+         	 heapDumper.dumpHeap()
+         	 ....
+            lastDisplayedRetainedObjectCount = 0
+            lastHeapDumpUptimeMillis = SystemClock.uptimeMillis()
+            objectWatcher.clearObjectsWatchedBefore(heapDumpUptimeMillis)
+            HeapAnalyzerService.runAnalysis(
+              context = application,
+              heapDumpFile = heapDumpResult.file,
+              heapDumpDurationMillis = heapDumpResult.durationMillis,
+              heapDumpReason = reason
+            )
+        }
+       }
+       复制代码
+       ```
+
+       1.如果`retainedObjectCount`数量大于0，则进行一次`GC`,避免额外的`Dump`
+        2.默认情况下，如果`retainedReferenceCount<5`，不会进行`Dump`，节省资源
+        3.如果两次`Dump`之间时间少于60s，也会直接返回，避免频繁`Dump`
+        4.调用`heapDumper.dumpHeap()`进行真正的`Dump`操作
+        5.`Dump`之后，要删除已经处理过了的引用
+        6.调用`HeapAnalyzerService.runAnalysis`对结果进行分析
+
+       
+
+     * 3.5 LeakCanary如何分析hprof文件
+
+       分析`hprof`文件的工作主要是在`HeapAnalyzerService`类中完成的.
+
+       解析流程如下所示:
+        ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a9c48844833244c4957fe5a6eb04508c~tplv-k3u1fbpfcp-watermark.awebp)
+        简要说下流程：
+        1.解析文件头信息，得到解析开始位置
+        2.根据头信息创建`Hprof`文件对象
+        3.构建内存索引
+        4.使用`hprof`对象和索引构建`Graph`对象
+        5.查找可能泄漏的对象与`GCRoot`间的引用链来判断是否存在泄漏(使用广度优先算法在`Graph`中查找)
+
+     
+
+  4. 为什么LeakCanary不能用于线上?
+
+     * 每次内存泄漏以后，都会生成一个`.hprof`文件，然后解析，并将结果写入`.hprof.result`。增加手机负担，引起手机卡顿等问题。
+     * 多次调用`GC`，可能会对线上性能产生影响
+     * 同样的泄漏问题，会重复生成 `.hprof` 文件，重复分析并写入磁盘。
+     * `.hprof`文件较大，信息回捞成问题。
+
 * 参考资料
+  
+  * [【带着问题学】关于LeakCanary2.0你应该知道的知识点](https://juejin.cn/post/6968084138125590541)
   * [看完这篇 LeakCanary 原理分析，又可以虐面试官了！](https://mp.weixin.qq.com/s/1jFY_22hoWgCw3CDo2rpOA)
