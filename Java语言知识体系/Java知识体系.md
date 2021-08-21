@@ -1841,8 +1841,29 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 
 ### Java 文件 I/O(采用 NIO.2)
 
+* 知识点
+  * Path类 - 
+  * Files类 - 
+  * 随机访问文件
+  * FileVisitor，使用Files.walkFileTree(Path, FileVisitor)遍历文件树 
 * 参考资料
   * [文件 I/O(采用 NIO.2) - Java Tutorials 中文版](https://pingfangx.github.io/java-tutorials/essential/io/fileio.html)
+
+
+
+### 编码与解码
+
+编码就是把字符转换为字节，而解码是把字节重新组合成字符。
+
+如果编码和解码过程使用不同的编码方式那么就出现了乱码。
+
+- GBK 编码中，中文字符占 2 个字节，英文字符占 1 个字节；
+- UTF-8 编码中，中文字符占 3 个字节，英文字符占 1 个字节；
+- UTF-16be 编码中，中文字符和英文字符都占 2 个字节。
+
+UTF-16be 中的 be 指的是 Big Endian，也就是大端。相应地也有 UTF-16le，le 指的是 Little Endian，也就是小端。
+
+Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持这一种编码方式，而是说 char 这种类型使用 UTF-16be 进行编码。char 类型占 16 位，也就是两个字节，Java 使用这种双字节编码是为了让一个中文或者一个英文都能使用一个 char 来存储。
 
 
 
