@@ -2712,11 +2712,114 @@
 ### EventBus 事件总线
 
 * 知识点
+
+  <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/26/16ea6f0d941cb61c~tplv-t2oaga2asx-watermark.awebp" style="zoom: 67%;" />
+
   * 使用
-  * 5种线程模型、3种事件类型
-  * 观察者模式解耦
+
+    1. 定义事件
+
+       ```java
+       public class SayHelloEvent {
+           private String message;
+       
+           public void sayHellow(String message) {
+               this.message = message;
+           }
+       }
+       ```
+
+    2. 准备订阅者
+
+       ```java
+       
+       @Subscribe(threadMode = ThreadMode.MAIN)
+       public void onMessageEvent(SayHelloEvent event) {
+           String message = event.getMessage();
+           ...
+       }
+       
+       @Override
+       public void onStart() {
+           super.onStart();
+           EventBus.getDefault().register(this);
+       }
+        
+       @Override
+       public void onStop() {
+           EventBus.getDefault().unregister(this);
+           super.onStop();
+       }
+       ```
+
+       创建时需要订阅者是调用`EventBus.getDefault().register(this)`方法进行注册，在适当的位置调用`EventBus.getDefault().unregister(this)`方法进行解注册。同时创建一个接收事件的方法`onMessageEvent`方法，使用注解`@Subscribe`进行标示，同时生命事件接收的线程为主线程。
+
+    3. 发送事件
+
+       ```java
+       EventBus.getDefault().post(new SayHelloEvent("Hello,EventBus！！！"));
+       ```
+
+       在需要发送事件的地方调用`EventBus.getDefault().post`方法，将第一步创建的事件对象传入即可。
+
+       
+
+  * 5种线程模型
+
+    线程模型是指事件订阅者所在线程和发布事件者所在线程的关系。
+
+    ### POSTING
+
+    事件的订阅和事件的发布处于同一线程。这是默认设置。事件传递意味着最少的开销，因为它完全避免了线程切换。因此，对于已知在非常短的时间内完成而不需要主线程的简单任务，这是推荐的模式。使用此模式的事件处理程序必须快速返回，以避免阻塞可能是主线程的发布线程。
+
+    ### MAIN
+
+    在`Android`上，用户将在`Android`的主线程（`UI`线程）中被调用。如果发布线程是主线程，则将直接调用订阅方方法，从而阻塞发布线程。否则，事件将排队等待传递（非阻塞）。使用此模式的订阅服务器必须快速返回，以避免阻塞主线程。如果不在`Android`上，则行为与`POSTING`相同。
+
+    ### MAIN_ORDERED
+
+    在`Android`上，用户将在`Android`的主线程（`UI`线程）中被调用。与{`@link#MAIN`}不同，事件将始终排队等待传递。这确保了`post`调用是非阻塞的。
+
+    ### BACKGROUND
+
+    在`Android`上，用户将在后台线程中被调用。如果发布线程不是主线程，则将在发布线程中直接调用订阅方方法。如果发布线程是主线程，则`EventBus`使用单个后台线程，该线程将按顺序传递其所有事件。使用此模式的订阅服务器应尝试快速返回，以避免阻塞后台线程。如果不在`Android`上，则始终使用后台线程。
+
+    ### ASYNC
+
+    订阅服务器将在单独的线程中调用这始终独立于发布线程和主线程。发布事件从不等待使用此模式的订阅服务器方法。如果订户方法的执行可能需要一些时间（例如，用于网络访问），则应使用此模式。避免同时触发大量长时间运行的异步订阅服务器方法来限制并发线程的数量。`EventBus`使用线程池有效地重用来自已完成的异步订阅服务器通知的线程。
+
+
+    
+
+  * 3种事件类型
+
+    ### 普通事件
+
+    普通事件是指已有的事件订阅者能够收到事件发送者发送的事件，在事件发送之后注册的事件接收者将无法收到事件。发送普通事件可以调用`EventBus.getDefault().post()`方法进行发送。
+
+    ### 粘性事件
+
+    粘性事件是指，不管是在事件发送之前注册的事件接收者还是在事件发送之后注册的事件接收者都能够收到事件。这里于普通事件的区别之处在于事件接收处需要定义事件接收类型，它可以通过`@Subscribe(threadMode = xxx, sticky = true)`的方式进行声明；在事件发送时需要调用`EventBus.getDefault().postSticky()`方法进行发送。事件类型默认为普通事件。
+
+    ### 事件优先级
+
+    订阅者优先级以影响事件传递顺序。在同一传递线程`ThreadMode`中，优先级较高的订阅者将在优先级较低的其他订阅者之前接收事件。默认优先级为`0`。注意：优先级不影响具有不同`ThreadMode`的订阅服务器之间的传递顺序！
+
+    
+
+  * 源码分析
+
+    * EventBus.getDefault()创建EventBus对象
+    * EventBus.getDefault().register(Object subscriber)的过程
+    * EventBus.getDefault().unregister(Object subscriber)的过程
+    * EventBus.getDefault().post(Object event)的过程
+    * EventBus.getDefault().postSticky(Object event)的过程
+    * EventBus是如何进行线程间切换的？
+    * EventBus 索引
+
 * 参考资料
   * [EventBus源码解析](https://juejin.cn/post/6844904007199113229)
+  * [EventBus3.0 性能提升之添加索引](https://blog.csdn.net/kaifa1321/article/details/79761507)
 
 
 
@@ -2810,7 +2913,7 @@
        - 7.将分析结果存储在数据库中，并显示泄漏通知。
 
 
-       
+​       
 
   2. LeakCanary是如何自动安装的？
 
