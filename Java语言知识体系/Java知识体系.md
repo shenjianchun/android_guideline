@@ -1790,32 +1790,78 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 
 ## Java IO / NIO / NIO.2
 
+
+
+### Java IO模型
+
+* 知识点
+
+  * 五大IO模型
+
+    * **阻塞IO模型**
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e5723181b~tplv-t2oaga2asx-watermark.awebp)
+
+    * **非阻塞IO模型**
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e699d0713~tplv-t2oaga2asx-watermark.awebp)
+
+    * **IO复用模型**
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e6e6da275~tplv-t2oaga2asx-watermark.awebp)
+
+    * **信号驱动IO模型**
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e6c6552e2~tplv-t2oaga2asx-watermark.awebp)
+
+    * **异步IO模型**
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e70ade864~tplv-t2oaga2asx-watermark.awebp)
+
+  * <font color=red>文件描述符</font>
+
+  * select、poll，epoll
+
+    * 
+
+* 参考资料
+
+  * [漫话：如何给女朋友解释什么是Linux的五种IO模型？](https://juejin.cn/post/6844903687626686472)
+  * [Linux IO模式及 select、poll、epoll详解](https://juejin.cn/post/6844903488170786824#heading-15)
+
+
+
 ### Java IO
 
 * 知识点
-  
-  ![分类帮助记忆](https://user-gold-cdn.xitu.io/2018/5/14/1635daccc4d2bce3?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
-  
+
   * [一、概览](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#一概览)
+
+    ![分类帮助记忆](https://user-gold-cdn.xitu.io/2018/5/14/1635daccc4d2bce3?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
   * [二、磁盘操作](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#二磁盘操作)
+
   * 三、字节操作
     - [实现文件复制](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#实现文件复制)
     - [装饰者模式](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#装饰者模式)
+    
   * 四、字符操作
     - [编码与解码](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#编码与解码)
     - [String 的编码方式](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#string-的编码方式)
     - [Reader 与 Writer](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#reader-与-writer)
     - [实现逐行输出文本文件的内容](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#实现逐行输出文本文件的内容)
+    
   * 五、对象操作
     - [序列化](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#序列化)
     - [Serializable](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#serializable)
     - [transient](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#transient)
+    
   * 六、网络操作
     - [InetAddress](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#inetaddress)
     - [URL](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#url)
     - [Sockets](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#sockets)
     - [Datagram](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#datagram)
-  
+
 * 参考资料
   
   * [Java IO使用总结](https://blog.csdn.net/Siobhan/article/details/51306200)
@@ -1825,16 +1871,187 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 ### Java NIO
 
 * 知识点
-  * [流与块](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#流与块)
-  * [通道与缓冲区](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#通道与缓冲区)
-  * [缓冲区状态变量](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#缓冲区状态变量)
+  * **流与块**
+
+    可简单认为：**IO是面向流的处理，NIO是面向块(缓冲区)的处理**
+
+    - 面向流的I/O 系统**一次一个字节地处理数据**。
+    - 一个面向块(缓冲区)的I/O系统**以块的形式处理数据**。
+
+  * **NIO的三个核心组成部分**
+
+    1. **buffer缓冲区 与 Channel通道**
+
+       简单理解，Channel管道比作成铁路，buffer缓冲区比作成火车(运载着货物。Channel不与数据打交道，它只负责运输数据。与数据打交道的是Buffer缓冲区
+
+       - **Channel-->运输，双向的** 
+       - **Buffer-->数据**
+
+       
+
+       1.1 缓冲区实质上是一个数组，但它不仅仅是一个数组。缓冲区提供了对数据的结构化访问，而且还可以跟踪系统的读/写进程。
+
+       缓冲区包括以下类型：
+
+       - ByteBuffer
+       - CharBuffer
+       - ShortBuffer
+       - IntBuffer
+       - LongBuffer
+       - FloatBuffer
+       - DoubleBuffer
+
+       
+
+       Buffer类维护了4个核心变量属性来提供**关于其所包含的数组的信息**。它们是：
+
+       - 容量Capacity
+
+         **缓冲区能够容纳的数据元素的最大数量**。容量在缓冲区创建时被设定，并且永远不能被改变。(不能被改变的原因也很简单，底层是数组嘛)
+
+       - 上界Limit
+
+         **缓冲区里的数据的总数**，代表了当前缓冲区中一共有多少数据。
+
+       - 位置Position
+
+         **下一个要被读或写的元素的位置**。Position会自动由相应的 `get( )`和 `put( )`函数更新。
+
+       - 标记Mark
+
+         一个备忘位置。**用于记录上一次读写的位置**。
+
+
+       1.2 通道 Channel 是对原 I/O 包中的流的模拟，可以通过它读取和写入数据。
+
+       通道与流的不同之处在于，流只能在一个方向上移动(一个流必须是 InputStream 或者 OutputStream 的子类)，而通道是双向的，可以用于读、写或者同时用于读写。
+
+       通道包括以下类型：
+
+       - FileChannel：从文件中读写数据；
+       - DatagramChannel：通过 UDP 读写网络中数据；
+       - SocketChannel：通过 TCP 读写网络中数据；
+       - ServerSocketChannel：可以监听新进来的 TCP 连接，对每一个新进来的连接都会创建一个 SocketChannel。
+
+       
+
+       FileChannel通道的核心要点
+
+       1. 使用**FileChannel配合缓冲区**实现文件复制的功能
+       2. 使用**内存映射文件**的方式实现**文件复制**的功能(直接操作缓冲区)
+       3. 通道之间通过`transfer()`实现数据的传输(直接操作缓冲区)
+
+       
+
+    2. **Selector选择器**
+
+       NIO 常常被叫做非阻塞 IO，主要是因为 NIO 在网络通信中的非阻塞特性被广泛使用。
+
+       NIO 实现了 IO 多路复用中的 Reactor 模型，一个线程 Thread 使用一个选择器 Selector 通过轮询的方式去监听多个通道 Channel 上的事件，从而让一个线程就可以处理多个事件。
+
+       通过配置监听的通道 Channel 为非阻塞，那么当 Channel 上的 IO 事件还未到达时，就不会进入阻塞状态一直等待，而是继续轮询其它 Channel，找到 IO 事件已经到达的 Channel 执行。
+
+       因为创建和切换线程的开销很大，因此使用一个线程来处理多个事件而不是一个线程处理一个事件，对于 IO 密集型的应用具有很好地性能。
+
+       应该注意的是，只有套接字 Channel 才能配置为非阻塞，而 FileChannel 不能，为 FileChannel 配置非阻塞也没有意义。
+
+       [![img](https://camo.githubusercontent.com/4eec44e1b8f88753fa417f39fbf92050179499c0f08513e2f7d50a051aad1f32/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f30393366396535372d343239632d343133612d383365652d6336383962613539366365662e706e67)](https://camo.githubusercontent.com/4eec44e1b8f88753fa417f39fbf92050179499c0f08513e2f7d50a051aad1f32/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f30393366396535372d343239632d343133612d383365652d6336383962613539366365662e706e67)
+
+       
+
+       #### 1. 创建选择器
+
+       ```
+       Selector selector = Selector.open();
+       ```
+
+       #### 2. 将通道注册到选择器上
+
+       ```
+       ServerSocketChannel ssChannel = ServerSocketChannel.open();
+       ssChannel.configureBlocking(false);
+       ssChannel.register(selector, SelectionKey.OP_ACCEPT);
+       ```
+
+       通道必须配置为非阻塞模式，否则使用选择器就没有任何意义了，因为如果通道在某个事件上被阻塞，那么服务器就不能响应其它事件，必须等待这个事件处理完毕才能去处理其它事件，显然这和选择器的作用背道而驰。
+
+       在将通道注册到选择器上时，还需要指定要注册的具体事件，主要有以下几类：
+
+       - SelectionKey.OP_CONNECT
+       - SelectionKey.OP_ACCEPT
+       - SelectionKey.OP_READ
+       - SelectionKey.OP_WRITE
+
+       它们在 SelectionKey 的定义如下：
+
+       ```
+       public static final int OP_READ = 1 << 0;
+       public static final int OP_WRITE = 1 << 2;
+       public static final int OP_CONNECT = 1 << 3;
+       public static final int OP_ACCEPT = 1 << 4;
+       ```
+
+       可以看出每个事件可以被当成一个位域，从而组成事件集整数。例如：
+
+       ```
+       int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+       ```
+
+       #### 3. 监听事件
+
+       ```
+       int num = selector.select();
+       ```
+
+       使用 select() 来监听到达的事件，它会一直阻塞直到有至少一个事件到达。
+
+       #### 4. 获取到达的事件
+
+       ```
+       Set<SelectionKey> keys = selector.selectedKeys();
+       Iterator<SelectionKey> keyIterator = keys.iterator();
+       while (keyIterator.hasNext()) {
+           SelectionKey key = keyIterator.next();
+           if (key.isAcceptable()) {
+               // ...
+           } else if (key.isReadable()) {
+               // ...
+           }
+           keyIterator.remove();
+       }
+       ```
+
+       #### 5. 事件循环
+
+       因为一次 select() 调用不能处理完所有的事件，并且服务器端有可能需要一直监听事件，因此服务器端处理事件的代码一般会放在一个死循环内。
+
+       ```
+       while (true) {
+           int num = selector.select();
+           Set<SelectionKey> keys = selector.selectedKeys();
+           Iterator<SelectionKey> keyIterator = keys.iterator();
+           while (keyIterator.hasNext()) {
+               SelectionKey key = keyIterator.next();
+               if (key.isAcceptable()) {
+                   // ...
+               } else if (key.isReadable()) {
+                   // ...
+               }
+               keyIterator.remove();
+           }
+       }
+       ```
+
+    
+
   * [文件 NIO 实例](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#文件-nio-实例)
-  * [选择器](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#选择器)
+
   * [套接字 NIO 实例](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#套接字-nio-实例)
+
   * [内存映射文件](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#内存映射文件)
-  * [对比](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#对比)
 
 * 参考资料
+  
   * [JDK10都发布了，nio你了解多少？](https://juejin.cn/post/6844903605669986317#heading-0)
 
 
@@ -1844,7 +2061,7 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 * 知识点
   * Path类 - 
   * Files类 - 
-  * 随机访问文件
+  * 随机访问文件 -  SeekableByteChannel 
   * FileVisitor，使用Files.walkFileTree(Path, FileVisitor)遍历文件树 
 * 参考资料
   * [文件 I/O(采用 NIO.2) - Java Tutorials 中文版](https://pingfangx.github.io/java-tutorials/essential/io/fileio.html)

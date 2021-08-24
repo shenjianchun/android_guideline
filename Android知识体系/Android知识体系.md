@@ -2870,8 +2870,318 @@
 ### 体积优化
 
 * 知识点
+
+  * 体积过大对APP性能的影响
+
+    1）、**安装时间**：比如 **文件拷贝、Library 解压，并且，在编译 ODEX 的时候，特别是对于 Android 5.0 和 6.0 系统来说，耗费的时间比较久，而 Android 7.0 之后有了 混合编译，所以还可以接受。最后，App 变大后，其 签名校验 的时间也会变长**。
+
+    2）、**运行时内存：Resource 资源、Library 以及 Dex 类加载都会占用应用的一部分内存**。
+
+    3）、**ROM 空间**：如果应用的安装包大小为 **50MB**，那么启动解压之后很可能就已经超过 **100MB** 了。并且，如果 **闪存空间不足，很可能出现“写入放大”的情况**，它是闪存和固态硬盘（SSD）中一种不良的现象，闪存在可重新写入数据前必须先擦除，而擦除操作的粒度与写入操作相比低得多，执行这些操作就会多次移动（或改写）用户数据和元数据。因此，要改写数据，就需要读取闪存某些已使用的部分，更新它们，并写入到新的位置，如果新位置在之前已被使用过，还需连同先擦除；**由于闪存的这种工作方式，必须擦除改写的闪存部分比新数据实际需要的大得多。即最终可能导致实际写入的物理资料量是写入资料量的多倍**。
+
+    
+
+  * APK的组成
+
+    我们都知道，**Android** 项目最终会编译成一个 **.apk** 后缀的文件，实际上它就是一个 **压缩包**。因此，它内部还有很多不同类型的文件，这些文件，按照大小，共分为如下四类：
+
+    - 1）、**代码相关**：**classes.dex**，我们在项目中所编写的 **java** 文件，经过编译之后会生成一个 **.class** 文件，而这些所有的 **.class** 文件呢，它最终会经过 **dx** 工具编译生成一个 **classes.dex**。
+    - 2）、**资源相关**：**res**、**assets**、编译后的二进制资源文件 **resources.arsc** 和 清单文件 等等。**res** 和 **assets** 的不同在于 **res** 目录下的文件会在 **.R** 文件中生成对应的资源 **ID**，而 **assets** 不会自动生成对应的 **ID**，而是通过 **AssetManager** 类的接口来获取。此外，每当在 **res** 文件夹下放一个文件时，**aapt** 就会自动生成对应的 **id** 并保存在 **.R** 文件中，**但 .R 文件仅仅只是保证编译程序不会报错，实际上在应用运行时，系统会根据 ID 寻找对应的资源路径，而 resources.arsc 文件就是用来记录这些 ID 和 资源文件位置对应关系 的文件**。
+    - 3）、**So 相关**：**lib** 目录下的文件，这块文件的优化空间其实非常大。
+
+    此外，还有 **META-INF**，它存放了应用的 **签名信息**，其中主要有 **3个文件**，如下所示：
+
+    - 1）、**MANIFEST.MF**：其中每一个资源文件都有一个对应的 **SHA-256-Digest（SHA1)** 签名，**MANIFEST.MF** 文件的 **SHA256（SHA1）** 经过 **base64** 编码的结果即为 **CERT.SF** 中的 **SHA256（SHA1）-Digest-Manifest** 值。
+    - 2）、**CERT.SF**：除了开头处定义的 **SHA256（SHA1）-Digest-Manifest** 值，后面几项的值是对 **MANIFEST.MF** 文件中的每项再次 **SHA256（SHA1）** 经过 **base64** 编码后的值。
+    - 3）、**CERT.RSA：其中包含了公钥、加密算法等信息。首先，对前一步生成的 CERT.SF 使用了 SHA256（SHA1）生成了数字摘要并使用了 RSA 加密，接着，利用了开发者私钥进行签名。然后，在安装时使用公钥解密。最后，将其与未加密的摘要信息（MANIFEST.MF文件）进行对比，如果相符，则表明内容没有被修改。**
+
+    
+
+  * APK瘦身方案
+
+    * 代码瘦身方案探索
+
+      1. **ProGuard**
+
+         混淆器的 **作用** 不仅仅是 **保护代码**，它也有 **精简编译后程序大小** 的作用，其 **通过缩短变量和函数名以及丢失部分无用信息等方式，能使得应用包体积减小**。
+
+         
+
+         在 **Android SDK** 里面集成了一个工具 — **Proguard**，它是一个免费的 **Java** 类文件 **压缩、优化、混淆、预先校验** 的工具。它的 **主要作用** 大概可以概括为 **两点**，如下所示：
+
+         - 1）、**瘦身：它可以检测并移除未使用到的类、方法、字段以及指令、冗余代码，并能够对字节码进行深度优化。最后，它还会将类中的字段、方法、类的名称改成简短无意义的名字**。
+         - 2）、**安全：增加代码被反编译的难度，一定程度上保证代码的安全**。
+
+         
+
+         
+
+      2. **D8 与 R8 优化**
+
+         D8 的 **优化效果** 总的来说可以归结为如下 **四点**：
+
+         - 1）、**Dex的编译时间更短**。
+         - 2）、**.dex文件更小**。
+         - 3）、**D8 编译的 .dex 文件拥有更好的运行时性能**。
+         - 4）、**包含 Java 8 语言支持的处理**。
+
+         
+
+         **R8 是 Proguard 压缩与优化部分的替代品**，并且它仍然使用与 **Proguard** 一样的 **keep** 规则。**ProGuard** 和 **R8** 都应用了基本名称混淆：它们 **都使用简短，无意义的名称重命名类，字段和方法**。他们还可以 **删除调试属性**。但是，**R8 在 inline 内联容器类中更有效，并且在删除未使用的类，字段和方法上则更具侵略性**。
+
+         
+
+      3. 去除 debug 信息与行号信息
+
+      4. Dex 分包优化
+
+      5. 使用 XZ Utils 进行 Dex 压缩
+
+      6. **三方库处理**
+
+         1）将三方库进行统一
+
+         2）在选择第三方 **SDK** 的时候，我们可以将包大小作为选择的指标之一，我们应该 **尽可能地选择那些比较小的库来实现相同的功能**
+
+         3）如果我们引入三方库的时候，可以 **只引入部分需要的代码**，而不是将整个包的代码都引入进来。
+
+         
+
+      7. **移除无用代码**
+
+         1）使用 Lint 检测无效代码
+
+         2）移除无用代码。有一个很好的方法可以 **准确地判断哪些类在线上环境下用户肯定不会用到了**。我们可以通过 **AOP** 的方式来做，对于 **Activity** 来说，其实非常简单，我们只需要 **在每个 Activity 的 onCreate 当中加上统计** 即可，然后**到了线上之后，如果这个 Activity 被统计了，就说明它还在被使用**。而对于那些 **不是 Activity 的类**，我们可以 **利用 AOP 来切它们的构造函数**，一个类如果它被使用，那它的构造函数肯定会被调用到。
+
+         
+
+      8. 避免产生 Java access 方法
+
+      9. 利用 ByteX Gradle 插件平台中的代码优化插件
+
+    * 资源瘦身方案探索
+
+      1. **冗余资源优化**
+
+         1.1 使用 Lint 的 Remove Unused Resource
+
+         ​		**APK** 的资源主要包括图片、**XML**，与冗余代码一样，它也可能遗留了很多旧版本当中使用而新版本中不使用的资源，这点在快速开发的 **App** 中更可能出现。**Android Lint 不会分析 assets 文件夹下的资源，因为 assets 文件可以通过文件名直接访问，不需要通过具体的引用，Lint 无法判断资源是否被用到**。
+
+         
+
+         1.2 优化 shrinkResources 流程真正去除无用资源
+
+         ​		shrinkResources 用来开启删除无用资源，也就是没有被引用的文件（经过实测是drawable,layout，实际并不是彻底删除，而是保留文件名，但是没有内容，等等），但是因为需要知道是否被引用所以需要配合mififyEnable使用，只有当两者都为true的时候才会起到真正的删除无效代码和无引用资源的目的
+
+         
+
+      2. **重复资源优化**
+
+         一个 **App** 一般会有多个业务团队进行开发，其中每个业务团队在资源提交时的资源名称可能会有重复的，这将会 **引发资源覆盖的问题**，因此，每个业务团队都会为自己的 **资源文件名添加前缀**。这样就导致了这些资源文件虽然 **内容相同**，但因为 **名称的不同而不能被覆盖**，最终都会被集成到 **APK** 包中。这里，我们还是可以 **在 Android 构建工具执行 package${flavorName}Task 之前通过修改 Compiled Resources 来实现重复资源的去除**，具体放入实现原理可细分为如下三个步骤：
+
+         - 1）、首先，**通过资源包中的每个ZipEntry的CRC-32 checksum来筛选出重复的资源**。
+         - 2）、然后，**通过[android-chunk-utils](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmadisp%2Fandroid-chunk-utils)修改resources.arsc，把这些重复的资源都重定向到同一个文件上**。
+         - 3）、最后，**把其它重复的资源文件从资源包中删除，仅保留第一份资源**。
+
+         
+
+      3. 图片压缩
+
+         对于图片压缩，我们可以在 [tinypng](https://link.juejin.cn?target=https%3A%2F%2Ftingpng.com%2F) 这个网站进行图片压缩，但是如果 **App** 的图片过多，一个个压缩也是很麻烦的。因此，我们可以 **使用 [McImage](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FsmallSohoSolo%2FMcImage%2Fblob%2Fmaster%2FREADME-CN.md)、[TinyPngPlugin](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FDeemonser%2FTinyPngPlugin) 或 [TinyPIC_Gradle_Plugin](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmeili%2FTinyPIC_Gradle_Plugin%2Fblob%2Fmaster%2FREADME.zh-cn.md) 来对图片进行自动化批量压缩**。但是，需要注意的是，**在 Android 的构建流程中，AAPT 会使用内置的压缩算法来优化 res/drawable/ 目录下的 PNG 图片，但这可能会导致本来已经优化过的图片体积变大**，因此，可以通过在 **build.gradle** 中 **设置 cruncherEnabled 来禁止 AAPT 来优化 PNG 图片**，代码如下所示：
+
+         ```
+         aaptOptions {
+             cruncherEnabled = false
+         }
+         ```
+
+         
+
+      4. **使用针对性的图片格式**
+
+         。首先，**如果能用 VectorDrawable 来表示的话，则优先使用 VectorDrawable；否则，看是否支持 WebP，支持则优先用 WebP；如果也不能使用 WebP，则优先使用 PNG，而 PNG 主要用在展示透明或者简单的图片，对于其它场景可以使用 JPG 格式**。简单来说可以归结为如下套路：
+
+         ```
+         VD（纯色icon）->WebP（非纯色icon）->Png（更好效果） ->jpg（若无alpha通道）
+         ```
+
+         用 **图形化** 的形式如下所示：
+
+         ![image](https:////p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a6eaa9bb40544b4ca512e336ad6384f2~tplv-k3u1fbpfcp-watermark.awebp)
+
+         使用矢量图片之后，它能够有效的减少应用中图片所占用的大小，**矢量图形在 Android 中表示为 VectorDrawable 对象**。它 **仅仅需100字节的文件即可以生成屏幕大小的清晰图像**，但是，**Android 系统渲染每个 VectorDrawable 对象需要大量的时间，而较大的图像需要更长的时间**。 因此，建议 **只有在显示纯色小 icon 时才考虑使用矢量图形**。（我们可以利用这个 [在线工具](https://link.juejin.cn?target=http%3A%2F%2Finloop.github.io%2Fsvg2android%2F) 将矢量图转换成 VectorDrawable）。
+
+         最后，如果要在项目中使用 VD，则以下几点需要着重注意：
+
+         - 1）、**必须通过 app:arcCompat 属性来使用 svg，如果通过 src，则在低版本手机上会出现不兼容的问题**。
+
+         - 2）、可能会**不兼容selector**，在 **Activity** 中手动兼容即可，兼容代码如下所示：
+
+           ```java
+            static {                           
+                AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)    
+            }
+           ```
+
+           
+
+         - 3）、**不兼容第三方库**。
+
+         - 4）、**性能问题：当Vector比较简单时，效率肯定比Bitmap高，复杂则效率会不如Bitmap**。
+
+         - 5）、**不便于管理：建议原则为同目录多类型文件，以前缀区别，不同目录相同类型文件，以意义区分**。
+
+         
+
+      5. **资源混淆**
+
+         同代码混淆类似，资源混淆将 **资源路径混淆成单个资源的路径**，这里我们可以使用 **AndroidResGuard**，它可以使冗余的资源路径变短，例如将 **res/drawable/wechat** 变为 **r/d/a**。
+
+         [AndroidResGuard 项目地址](https://link.juejin.cn/?target=https%3A%2F%2Fgithub.com%2Fshwenzhang%2FAndResGuard%2Fblob%2Fmaster%2FREADME.zh-cn.md)
+
+         
+
+      6. **R Field 的内联优化**
+
+         我们可以通过内联 **R Field** 来进一步对代码进行瘦身，此外，它也**解决了 R Field 过多导致 MultiDex 65536 的问题**。要想实现内联 **R Field**，我们需要 **通过 Javassist 或者 ASM 字节码工具在构建流程中内联 R Field**
+
+         
+
+         可以 **直接使用蘑菇街的 [ThinRPlugin](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmeili%2FThinRPlugin%2Fblob%2Fmaster%2FREADME.zh-cn.md)**。它的实现原理为：**android 中的 R 文件，除了 styleable 类型外，所有字段都是 int 型变量/常量，且在运行期间都不会改变。所以可以在编译时，记录 R 中所有字段名称及对应值，然后利用 ASM 工具遍历所有 Class，将除 R$styleable.class 以外的所有 R.class 删除掉，并且在引用的地方替换成对应的常量**，从而达到缩减包大小和减少 **Dex** 个数的效果。此外，最近 **ByteX** 也增加了 [shrink_r_class](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fbytedance%2FByteX%2Fblob%2Fmaster%2Fshrink-r-plugin%2FREADME-zh.md) 的 **gradle** 插件，它不仅可以在编译阶段对 **R** 文件常量进行内联，而且还可以 **针对 App 中无用 Resource 和无用 assets 的资源进行检查**。
+         
+
+      7. 资源合并方案
+
+         我们可以把所有的资源文件合并成一个大文件，而 **一个大资源文件就相当于换肤方案中的一套皮肤**。它的效果 **比资源混淆的效果会更好**，但是，在此之前，必须要解决 **解析资源** 与 **管理资源** 的问题。
+
+         
+
+      8. **资源文件最少化配置**
+
+         我们需要 **根据 App 目前所支持的语言版本去选用合适的语言资源**，例如使用了 **AppCompat**，如果不做任何配置的话，最终 **APK** 包中会包含 **AppCompat** 中所有已翻译语言字符串，无论应用的其余部分是否翻译为同一语言。对此，我们可以 **通过 resConfig 来配置使用哪些语言，从而让构建工具移除指定语言之外的所有资源**。同理，也可以**使用 resConfigs 去配置你应用需要的图片资源文件类，如 "xhdpi"、"xxhdpi" 等等**，代码如下所示：
+
+         ```
+         android {
+             ...
+             defaultConfig {
+         	    ...
+                 resConfigs "zh", "zh-rCN"
+                 resConfigs "nodpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
+             }
+             ...
+         }    
+         复制代码
+         ```
+
+         此外，我们还以 **利用 Density Splits 来选择应用应兼容的屏幕尺寸大小**，代码如下所示：
+
+         ```
+         android {
+             ...
+             splits {
+                 density {
+                     enable true
+                     exclude "ldpi", "tvdpi", "xxxhdpi"
+                     compatibleScreens 'small', 'normal', 'large', 'xlarge'
+                 }
+             }
+             ...
+         }
+         ```
+
+         
+
+      9. **尽量每张图片只保留一份**
+
+         比如说，我们统一只把图片放到 **xhdpi** 这个目录下，那么 **在不同的分辨率下它会做自动的适配**，即 **等比例地拉伸或者是缩小**。
+
+      10. **资源在线化**
+
+          可以 **将一些图片资源放在服务器**，然后 **结合图片预加载** 的技术手段，这些 **既可以满足产品的需要，同时可以减小包大小**。
+
+      11. 统一应用风格
+
+          如设定统一的 **字体、尺寸、颜色和按钮按压效果、分割线 shape、selector 背景** 等等。
+
+          
+
+    * So 瘦身方案探索
+
+      1. So 移除方案
+
+         。理论上来说，**对应架构的 CPU 它的执行效率是最高的**，但是这样会导致 **在 lib 目录下会多存放了各个平台架构的 So 文件**，所以 **App** 的体积自然也就更大了。
+
+         因此，我们就需要对 **lib** 目录进行缩减，我们 **在 build.gradle 中配置这个 abiFiliters 去设置 App 支持的 So 架构**，其配置代码如下所示：
+
+         ```
+         defaultConfig {
+             ndk {
+                 abiFilters "armeabi"
+             }
+         }
+         复制代码
+         ```
+
+         **一般情况下，应用都不需要用到 neon 指令集，我们只需留下 armeabi 目录就可以了**。因为 **armeabi 目录下的 So 可以兼容别的平台上的 So**，相当于是一个万金油，都可以使用。但是，这样 **别的平台使用时性能上就会有所损耗，失去了对特定平台的优化**。
+
+         
+
+      2. So 移除方案优化版
+
+         上面我们说到了想要完美支持所有类型的设备代价太大，那么，我们能不能采取一个 **折中的方案**，就是 **对于性能敏感的模块，它使用到的 So，我们都放在 armeabi 目录当中随着 Apk 发出去，然后我们在代码中来判断一下当前设备所属的 CPU 类型，根据不同设备 CPU 类型来加载对应架构的 So 文件**。这里我们举一个小栗子，比如说我们 **armeabi** 目录下也加上了 **armeabi-v7** 对应的 **So**，然后我们就可以在代码当中做判断，如果你是 **armeabi-v7** 架构的手机，那我们就直接加载这个 **So**，以此达到最佳的性能，这样包体积其实也没有增加多少，同时也实现了高性能的目的，比如 **微信和腾讯视频 App** 里面就使用了这种方式，如下图所示：
+
+         ![image](https:////p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95614c97a6d141509abd4b9ac5de3f06~tplv-k3u1fbpfcp-watermark.awebp)
+
+         看到上图中的 **libimagepipeline_x86.so**，下面我们就以这个 so 为例来写写加载它的伪代码，如下所示：
+
+         ```
+         String abi = "";
+         // 获取当前手机的CPU架构类型
+         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+             abi = Buildl.CPU_ABI;
+         } else {
+             abi = Build.SUPPORTED_ABIS[0];
+         }
+         
+         if (TextUtils.equals(abi, "x86")) {
+             // 加载特定平台的So
+             
+         } else {
+             // 正常加载
+             
+         }
+         ```
+
+         
+
+      3. 使用 XZ Utils 对 Native Library 进行压缩
+
+      4. 对 Native Library 进行合并
+
+      5. 删除 Native Library 中无用的导出 symbol
+
+      6. So 动态下载
+
+         可以 **将部分 So 文件使用动态下发的形式进行加载**。也就是在业务代码操作之前，我们可以先从服务器下载下来 So，接下来再使用，这样包体积肯定会减少不小。但是，如果要把这项技术 **稳定落地到实际生产项目中需要解决一些问题**，具体的 so  动态化关键技术点和需要避免的坑可以参见 [动态下发 so 库在 Android APK 安装包瘦身方面的应用 ](https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FX58fK02imnNkvUMFt23OAg)。
+
+         
+
+    * 其它优化方案
+
+      1. 插件化
+      2. 业务梳理
+      3. 转变开发模式
+
+  * 六、包体积监控
+
+  * 七、瘦身优化常见问题
+
 * 参考资料
+  
   * [深入探索 Android 包体积优化（匠心制作-上）](https://juejin.cn/post/6844904103131234311)
+  * [深入探索 Android 包体积优化（匠心制作-下）](https://juejin.cn/post/6872920643797680136#heading-41)
+  * [缩减、混淆处理和优化应用](https://developer.android.com/studio/build/shrink-code)
+  * [Android机型适配终极篇](https://zhuanlan.zhihu.com/p/92083368)
 
 
 
