@@ -88,9 +88,10 @@
 84.   238.除自身以外数组的乘积 [数组] [解决方案：左右乘积] [2021/8/8] [中等]  -  https://leetcode-cn.com/problems/product-of-array-except-self/
 85.   152.乘积最大子数组 [数组] [解决方案：动态规划] [2021/8/17] [中等]  -  https://leetcode-cn.com/problems/maximum-product-subarray/
 86.  461.汉明距离 [二进制] [解决方案：异或，遍历最后一位] [2021/8/18] [简单]  -  https://leetcode-cn.com/problems/hamming-distance/ 
-87.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
-88.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
-89.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+87.   208.实现 Trie (前缀树)  [前缀树|字典树] [解决方案：字典树] [2021/8/24] [中等]  -  https://leetcode-cn.com/problems/implement-trie-prefix-tree/
+88.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
+89.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
+90.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 
 
 
@@ -122,6 +123,7 @@
 10.  剑指 Offer 05. 替换空格 [] [] [] [简单]  -  https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
 11.  剑指 Offer 31. 栈的压入、弹出序列  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/
 12.  剑指 Offer 35. 复杂链表的复制 [链表] [解决方案：哈希表 | 复制出来的节点放到被复制的后面] [2021/8/16] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
+13. 剑指 Offer 10- II. 青蛙跳台阶问题  [斐波那契（Fibonacci）数列] [解决方案：] [] [简单] - https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/
 
  
 
