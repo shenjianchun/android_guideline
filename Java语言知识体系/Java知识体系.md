@@ -404,9 +404,9 @@
 
       1. Class 提供了4种方法获得给定类的 Field
 
-      - - getDeclaredField(String name)   
+      - getDeclaredField(String name)   
 
-          获取指定的变量（只要是声明的变量都能获得，包括 private）
+        获取指定的变量（只要是声明的变量都能获得，包括 private）
 
         - getField(String name)    
 
@@ -489,19 +489,19 @@
 
          Class 依然提供了4种方法获取 Method:
 
-         - - getDeclaredMethod(String name, Class<?>... parameterTypes)
+         - getDeclaredMethod(String name, Class<?>... parameterTypes)
 
-             根据方法名获得指定的方法， 参数 name 为方法名，参数 parameterTypes 为方法的参数类型，如 getDeclaredMethod(“eat”, String.class)
+           根据方法名获得指定的方法， 参数 name 为方法名，参数 parameterTypes 为方法的参数类型，如 getDeclaredMethod(“eat”, String.class)
 
-           - getMethod(String name, Class<?>... parameterTypes)
+         - getMethod(String name, Class<?>... parameterTypes)
 
              根据方法名获取指定的 public 方法，其它同上
 
-           - getDeclaredMethods()
+         - getDeclaredMethods()
 
              获取所有声明的方法
 
-           - getMethods()
+         - getMethods()
 
              获取所有的 public 方法
 
@@ -516,28 +516,25 @@
          >
          > - getReturnType()返回类型为 Class，getGenericReturnType() 返回类型为 Type; Class 实现 Type。
          >
-         > - 返回值为普通简单类型如 Object, int, String 等，getGenericReturnType() 返回值和 getReturnType() 一样
+         > - 返回值为普通简单类型如 Object, int, String 等，getGenericReturnType() 返回值和 getReturnType() 一样，例如 public String function1()，那么各自返回值为：
          >
-         >   例如 public String function1()，那么各自返回值为：
-         >
-         > - - getReturnType() : class java.lang.String
+         >   - getReturnType() : class java.lang.String
          >   - getGenericReturnType() : class java.lang.String
          >
-         > - 返回值为泛型
+         > - 返回值为泛型，例如 public T function2()，那么各自返回值为：
          >
-         >   例如 public T function2()，那么各自返回值为：
-         >
-         > - - getReturnType() : class java.lang.Object
+         >   - getReturnType() : class java.lang.Object
          >   - getGenericReturnType() : T
          >
          > - 返回值为参数化类型
          >
          >   例如public Class<String> function3()，那么各自返回值为：
          >
-         > - - getReturnType() : class java.lang.Class
+         >   * getReturnType() : class java.lang.Class
+         >
          >   - getGenericReturnType() : java.lang.Class<java.lang.String>
          >
-         > 其实反射中所有形如 getGenericXXX()的方法规则都与上面所述类似。
+         > **其实反射中所有形如 getGenericXXX()的方法规则都与上面所述类似。**
 
          
 
@@ -689,12 +686,372 @@
 
 ### [异常](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 基础.md#八异常)
 
-Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： **Error** 和 **Exception**。其中 Error 用来表示 JVM 无法处理的错误，Exception 分为两种：
+* 知识点
 
-- **受检异常** ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
-- **非受检异常** ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复。
+  Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： **Error** 和 **Exception**。其中 Error 用来表示 JVM 无法处理的错误，Exception 分为两种：
+
+  * **受检异常** ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
+  * **非受检异常（运行时）** ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复。
+
+  ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/8/10/165242e52c2beee2~tplv-t2oaga2asx-watermark.awebp)
+
+
+
+* 参考
+  * [Java提高篇——Java 异常处理](https://www.cnblogs.com/Qian123/p/5715402.html)
+  * [深入理解Java异常](https://juejin.cn/post/6844903657478029326#heading-0)
 
 ### [泛型](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 基础.md#九泛型)
+
+* 知识点
+
+  1. **泛型的概述**
+
+     * 泛型的由来
+
+       根据《Java编程思想》中的描述，泛型出现的动机：有很多原因促成了泛型的出现，而最引人注意的一个原因，就是为了创建容器类。
+
+     * 基本概述
+
+       - 泛型的本质就是"参数化类型"。一提到参数，最熟悉的就是定义方法的时候需要形参，调用方法的时候，需要传递实参。那"参数化类型"就是将原来具体的类型参数化
+       - 泛型的出现避免了强转的操作，在编译器完成类型转化，也就避免了运行的错误。
+
+  2. **泛型的使用**
+
+     泛型的三种使用方式：**泛型类**，**泛型方法**，**泛型接口**
+
+     2.1 泛型类
+
+     * 泛型类概述：把泛型定义在类上
+     * 定义格式：
+
+     ```java
+     public class 类名 <泛型类型1,...> {
+         
+     }
+     ```
+
+     * 注意事项：泛型类型必须是引用类型（非基本数据类型）
+
+       
+
+     2.2 泛型方法
+
+     - 泛型方法概述：把泛型定义在方法上
+     - 定义格式：
+
+     ```java
+     public <泛型类型> 返回类型 方法名（泛型类型 变量名） {
+         
+     }
+     ```
+
+     - 注意要点：
+
+       方法声明中定义的形参只能在该方法里使用，而接口、类声明中定义的类型形参则可以在整个接口、类中使用。当调用fun()方法时，根据传入的实际对象，编译器就会判断出类型形参T所代表的实际类型。
+
+     
+
+     2.3 泛型接口
+
+     - 泛型接口概述：把泛型定义在接口
+     - 定义格式：
+
+     ```java
+     public interface 接口名<泛型类型> {
+         
+     }
+     ```
+
+     
+
+     2.5 泛型类派生子类
+
+     **父类派生子类的时候不能在包含类型形参，需要传入具体的类型**
+
+     - 错误的方式：
+
+     ```
+     public class A extends Container<K, V> {}
+     ```
+
+     - 正确的方式：
+
+     ```
+     public class A extends Container<Integer, String> {}
+     ```
+
+     - 也可以不指定具体的类型，系统就会把K,V形参当成Object类型处理
+
+     ```
+     public class A extends Container {}
+     ```
+
+     
+
+     2.6 高级通配符
+
+     * <? extends T> 上界通配符
+
+       上界通配符顾名思义，<? extends T>表示的是类型的上界【包含自身】，因此通配的参数化类型可能是T或T的子类。
+
+       - 正因为无法确定具体的类型是什么，add方法受限（可以添加null，因为null表示任何类型），但可以从列表中获取元素后赋值给父类型。如上图中的第一个例子，第三个add()操作会受限，原因在于List和List是List<? extends Animal>的子类型。
+
+       ```
+       它表示集合中的所有元素都是Animal类型或者其子类
+        List<? extends Animal>
+       ```
+
+       这就是所谓的上限通配符，使用关键字extends来实现，实例化时，指定类型实参只能是extends后类型的子类或其本身。
+
+       - 例如：
+       - 这样就确定集合中元素的类型，虽然不确定具体的类型，但最起码知道其父类。然后进行其他操作。
+
+       ```
+       //Cat是其子类
+           List<? extends Animal> list = new ArrayList<Cat>();
+       ```
+
+       
+
+     * <? super T> 下界通配符
+
+       下界通配符<? super T>表示的是参数化类型是T的超类型（包含自身），层层至上，直至Object
+
+       - 编译器无从判断get()返回的对象的类型是什么，因此get()方法受限。但是可以进行add()方法，add()方法可以添加T类型和T类型的子类型，如第二个例子中首先添加了一个Cat类型对象，然后添加了两个Cat子类类型的对象，这种方法是可行的，但是如果添加一个Animal类型的对象，显然将继承的关系弄反了，是不可行的。
+
+       ```
+        它表示集合中的所有元素都是Cat类型或者其父类
+        List <? super Cat>   
+       ```
+
+       这就是所谓的下限通配符，使用关键字super来实现，实例化时，指定类型实参只能是extends后类型的子类或其本身
+
+       - 例如
+
+       ```
+       //Animal是其父类
+       List<? super Cat> list = new ArrayList<Animal>();
+       ```
+
+       
+
+     * <?> 无界通配符
+
+       任意类型，如果没有明确，那么就是Object以及任意的Java类了
+
+       无界通配符用<?>表示，?代表了任何的一种类型，能代表任何一种类型的只有null（Object本身也算是一种类型，但却不能代表任何一种类型，所以List<>和List的含义是不同的，前者类型是Object，也就是继承树的最上层，而后者的类型完全是未知的）
+
+     
+
+  3. **泛型擦除**
+
+     编译器编译带类型说明的集合时会去掉类型信息。
+
+     ```java
+     public class GenericTest {
+         public static void main(String[] args) {
+             new GenericTest().testType();
+         }
+     
+         public void testType(){
+             ArrayList<Integer> collection1 = new ArrayList<Integer>();
+             ArrayList<String> collection2= new ArrayList<String>();
+             
+             System.out.println(collection1.getClass()==collection2.getClass());
+             //两者class类型一样,即字节码一致
+             
+             System.out.println(collection2.getClass().getName());
+             //class均为java.util.ArrayList,并无实际类型参数信息
+         }
+     }
+     复制代码
+     ```
+
+     - 输出结果：
+
+     ```
+     true
+     java.util.ArrayList
+     ```
+
+     - 分析：
+
+       - 这是因为不管为泛型的类型形参传入哪一种类型实参，对于Java来说，它们依然被当成同一类处理，在内存中也只占用一块内存空间。从Java泛型这一概念提出的目的来看，其只是作用于代码编译阶段，在编译过程中，对于正确检验泛型结果后，会将泛型的相关信息擦出，也就是说，成功编译过后的class文件中是不包含任何泛型信息的。泛型信息不会进入到运行时阶段。
+
+       - **在静态方法、静态初始化块或者静态变量的声明和初始化中不允许使用类型形参。由于系统中并不会真正生成泛型类，所以instanceof运算符后不能使用泛型类**
+
+         
+
+  4. **泛型与反射**
+
+     - 把泛型变量当成方法的参数，利用Method类的getGenericParameterTypes方法来获取泛型的实际类型参数
+     - 例子：
+
+     ```
+     public class GenericTest {
+     
+         public static void main(String[] args) throws Exception {
+             getParamType();
+         }
+         
+          /*利用反射获取方法参数的实际参数类型*/
+         public static void getParamType() throws NoSuchMethodException{
+             Method method = GenericTest.class.getMethod("applyMap",Map.class);
+             //获取方法的泛型参数的类型
+             Type[] types = method.getGenericParameterTypes();
+             System.out.println(types[0]);
+             //参数化的类型
+             ParameterizedType pType  = (ParameterizedType)types[0];
+             //原始类型
+             System.out.println(pType.getRawType());
+             //实际类型参数
+             System.out.println(pType.getActualTypeArguments()[0]);
+             System.out.println(pType.getActualTypeArguments()[1]);
+         }
+     
+         /*供测试参数类型的方法*/
+         public static void applyMap(Map<Integer,String> map){
+     
+         }
+     }
+     复制代码
+     ```
+
+     - 输出结果：
+
+     ```
+     java.util.Map<java.lang.Integer, java.lang.String>
+     interface java.util.Map
+     class java.lang.Integer
+     class java.lang.String
+     复制代码
+     ```
+
+     - 通过反射绕开编译器对泛型的类型限制
+
+     ```
+     public static void main(String[] args) throws Exception {
+     		//定义一个包含int的链表
+     		ArrayList<Integer> al = new ArrayList<Integer>();
+     		al.add(1);
+     		al.add(2);
+     		//获取链表的add方法，注意这里是Object.class，如果写int.class会抛出NoSuchMethodException异常
+     		Method m = al.getClass().getMethod("add", Object.class);
+     		//调用反射中的add方法加入一个string类型的元素，因为add方法的实际参数是Object
+     		m.invoke(al, "hello");
+     		System.out.println(al.get(2));
+     	}
+     ```
+
+     
+
+  5. **泛型的限制**
+
+     * 模糊性错误
+
+       对于泛型类User<K,V>而言，声明了两个泛型类参数。在类中根据不同的类型参数重载show方法。
+
+       ```
+       public class User<K, V> {
+           
+           public void show(K k) { // 报错信息：'show(K)' clashes with 'show(V)'; both methods have same erasure
+               
+           }
+           public void show(V t) {
+       
+           }
+       }
+       复制代码
+       ```
+
+       由于泛型擦除，二者本质上都是Obejct类型。方法是一样的，所以编译器会报错。
+
+       换一个方式：
+
+       ```
+       public class User<K, V> {
+       
+           public void show(String k) {
+       
+           }
+           public void show(V t) {
+       
+           }
+       }
+       ```
+
+       
+
+     * 不能实例化类型参数
+
+       编译器也不知道该创建那种类型的对象
+
+       ```
+       public class User<K, V> {
+       
+           private K key = new K(); // 报错：Type parameter 'K' cannot be instantiated directly
+       
+       }
+       ```
+
+       
+
+     * 对静态成员的限制
+
+       静态方法无法访问类上定义的泛型；如果静态方法操作的类型不确定，必须要将泛型定义在方法上。
+
+       **如果静态方法要使用泛型的话，必须将静态方法定义成泛型方法**。
+
+       ```
+       public class User<T> {
+       
+           //错误
+           private static T t;
+       
+           //错误
+           public static T getT() {
+               return t;
+           }
+       
+           //正确
+           public static <K> void test(K k) {
+       
+           }
+       }
+       ```
+
+       
+
+     * 对泛型数组的限制
+
+       不能实例化元素类型为类型参数的数组，但是可以将数组指向类型兼容的数组的引用
+
+       ```
+       public class User<T> {
+       
+           private T[] values;
+       
+           public User(T[] values) {
+               //错误，不能实例化元素类型为类型参数的数组
+               this.values = new T[5];
+               //正确，可以将values 指向类型兼容的数组的引用
+               this.values = values;
+           }
+       }
+       ```
+
+
+       
+
+     * 对泛型异常的限制
+
+       泛型类不能扩展 Throwable，意味着不能创建泛型异常类 [答案链接](https://link.juejin.cn/?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F501277%2Fwhy-doesnt-java-allow-generic-subclasses-of-throwable)
+
+* 参考资料
+
+  * [java 泛型全解 - 绝对最详细](https://juejin.cn/post/6844903925666021389)
+  * [Java泛型详解](https://www.cnblogs.com/Blue-Keroro/p/8875898.html)
 
 
 
@@ -1923,90 +2280,93 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 
 
        1.2 通道 Channel 是对原 I/O 包中的流的模拟，可以通过它读取和写入数据。
-
+    
        通道与流的不同之处在于，流只能在一个方向上移动(一个流必须是 InputStream 或者 OutputStream 的子类)，而通道是双向的，可以用于读、写或者同时用于读写。
-
+    
        通道包括以下类型：
-
+    
        - FileChannel：从文件中读写数据；
        - DatagramChannel：通过 UDP 读写网络中数据；
        - SocketChannel：通过 TCP 读写网络中数据；
        - ServerSocketChannel：可以监听新进来的 TCP 连接，对每一个新进来的连接都会创建一个 SocketChannel。
 
-       
+
+​       
 
        FileChannel通道的核心要点
-
+    
        1. 使用**FileChannel配合缓冲区**实现文件复制的功能
        2. 使用**内存映射文件**的方式实现**文件复制**的功能(直接操作缓冲区)
        3. 通道之间通过`transfer()`实现数据的传输(直接操作缓冲区)
 
-       
+
+​       
 
     2. **Selector选择器**
-
+    
        NIO 常常被叫做非阻塞 IO，主要是因为 NIO 在网络通信中的非阻塞特性被广泛使用。
-
+    
        NIO 实现了 IO 多路复用中的 Reactor 模型，一个线程 Thread 使用一个选择器 Selector 通过轮询的方式去监听多个通道 Channel 上的事件，从而让一个线程就可以处理多个事件。
-
+    
        通过配置监听的通道 Channel 为非阻塞，那么当 Channel 上的 IO 事件还未到达时，就不会进入阻塞状态一直等待，而是继续轮询其它 Channel，找到 IO 事件已经到达的 Channel 执行。
-
+    
        因为创建和切换线程的开销很大，因此使用一个线程来处理多个事件而不是一个线程处理一个事件，对于 IO 密集型的应用具有很好地性能。
-
+    
        应该注意的是，只有套接字 Channel 才能配置为非阻塞，而 FileChannel 不能，为 FileChannel 配置非阻塞也没有意义。
-
+    
        [![img](https://camo.githubusercontent.com/4eec44e1b8f88753fa417f39fbf92050179499c0f08513e2f7d50a051aad1f32/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f30393366396535372d343239632d343133612d383365652d6336383962613539366365662e706e67)](https://camo.githubusercontent.com/4eec44e1b8f88753fa417f39fbf92050179499c0f08513e2f7d50a051aad1f32/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f30393366396535372d343239632d343133612d383365652d6336383962613539366365662e706e67)
 
-       
+
+​       
 
        #### 1. 创建选择器
-
+    
        ```
        Selector selector = Selector.open();
        ```
-
+    
        #### 2. 将通道注册到选择器上
-
+    
        ```
        ServerSocketChannel ssChannel = ServerSocketChannel.open();
        ssChannel.configureBlocking(false);
        ssChannel.register(selector, SelectionKey.OP_ACCEPT);
        ```
-
+    
        通道必须配置为非阻塞模式，否则使用选择器就没有任何意义了，因为如果通道在某个事件上被阻塞，那么服务器就不能响应其它事件，必须等待这个事件处理完毕才能去处理其它事件，显然这和选择器的作用背道而驰。
-
+    
        在将通道注册到选择器上时，还需要指定要注册的具体事件，主要有以下几类：
-
+    
        - SelectionKey.OP_CONNECT
        - SelectionKey.OP_ACCEPT
        - SelectionKey.OP_READ
        - SelectionKey.OP_WRITE
-
+    
        它们在 SelectionKey 的定义如下：
-
+    
        ```
        public static final int OP_READ = 1 << 0;
        public static final int OP_WRITE = 1 << 2;
        public static final int OP_CONNECT = 1 << 3;
        public static final int OP_ACCEPT = 1 << 4;
        ```
-
+    
        可以看出每个事件可以被当成一个位域，从而组成事件集整数。例如：
-
+    
        ```
        int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
        ```
-
+    
        #### 3. 监听事件
-
+    
        ```
        int num = selector.select();
        ```
-
+    
        使用 select() 来监听到达的事件，它会一直阻塞直到有至少一个事件到达。
-
+    
        #### 4. 获取到达的事件
-
+    
        ```
        Set<SelectionKey> keys = selector.selectedKeys();
        Iterator<SelectionKey> keyIterator = keys.iterator();
@@ -2020,11 +2380,11 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
            keyIterator.remove();
        }
        ```
-
+    
        #### 5. 事件循环
-
+    
        因为一次 select() 调用不能处理完所有的事件，并且服务器端有可能需要一直监听事件，因此服务器端处理事件的代码一般会放在一个死循环内。
-
+    
        ```
        while (true) {
            int num = selector.select();
@@ -2042,7 +2402,8 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
        }
        ```
 
-    
+
+​    
 
   * [文件 NIO 实例](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#文件-nio-实例)
 

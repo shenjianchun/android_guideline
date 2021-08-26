@@ -247,7 +247,7 @@
 
 
 
-## APP组件知识
+## 2. APP组件知识
 
 ### Activity
 
@@ -550,7 +550,7 @@
 
 
 
-## 交互与布局
+## 3. 交互与布局
 
 
 
@@ -2158,7 +2158,17 @@
 
 
 
-## 动画
+### 屏幕适配
+
+* 知识点
+  * 
+* 参考资料
+  * [Android机型适配终极篇](https://zhuanlan.zhihu.com/p/92083368) 
+  * [支持不同的像素密度 - Android官网](https://developer.android.google.cn/training/multiscreen/screendensities?hl=zh-cn)
+
+
+
+## 4. 动画
 
 * 知识点
   * **动画类型（PropertyAnimation、Layout、Drawable、Fragment、Activity（overridePendingTransition、Transitions）**
@@ -2322,7 +2332,7 @@
 
 
 
-## APP 后台任务
+## 5. APP 后台任务
 
 * 知识点
   * 决策树
@@ -2336,7 +2346,7 @@
 
 
 
-## APP 存储&持久化
+## 6. APP 存储&持久化
 
 ### 应用数据和文件
 
@@ -2467,7 +2477,7 @@
 
 
 
-## APP 网络操作
+## 7. APP 网络操作
 
 ### 网络基础
 
@@ -2518,7 +2528,7 @@
 
 
 
-## APP架构
+## 8. APP架构
 
 ### 综合知识
 
@@ -2634,7 +2644,7 @@
 
 
 
-## APP性能优化 & 稳定性
+## 9. APP性能优化 & 稳定性
 
 
 
@@ -3049,18 +3059,17 @@
 
          可以 **直接使用蘑菇街的 [ThinRPlugin](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmeili%2FThinRPlugin%2Fblob%2Fmaster%2FREADME.zh-cn.md)**。它的实现原理为：**android 中的 R 文件，除了 styleable 类型外，所有字段都是 int 型变量/常量，且在运行期间都不会改变。所以可以在编译时，记录 R 中所有字段名称及对应值，然后利用 ASM 工具遍历所有 Class，将除 R$styleable.class 以外的所有 R.class 删除掉，并且在引用的地方替换成对应的常量**，从而达到缩减包大小和减少 **Dex** 个数的效果。此外，最近 **ByteX** 也增加了 [shrink_r_class](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fbytedance%2FByteX%2Fblob%2Fmaster%2Fshrink-r-plugin%2FREADME-zh.md) 的 **gradle** 插件，它不仅可以在编译阶段对 **R** 文件常量进行内联，而且还可以 **针对 App 中无用 Resource 和无用 assets 的资源进行检查**。
          
-
-      7. 资源合并方案
-
-         我们可以把所有的资源文件合并成一个大文件，而 **一个大资源文件就相当于换肤方案中的一套皮肤**。它的效果 **比资源混淆的效果会更好**，但是，在此之前，必须要解决 **解析资源** 与 **管理资源** 的问题。
-
-         
-
-      8. **资源文件最少化配置**
-
-         我们需要 **根据 App 目前所支持的语言版本去选用合适的语言资源**，例如使用了 **AppCompat**，如果不做任何配置的话，最终 **APK** 包中会包含 **AppCompat** 中所有已翻译语言字符串，无论应用的其余部分是否翻译为同一语言。对此，我们可以 **通过 resConfig 来配置使用哪些语言，从而让构建工具移除指定语言之外的所有资源**。同理，也可以**使用 resConfigs 去配置你应用需要的图片资源文件类，如 "xhdpi"、"xxhdpi" 等等**，代码如下所示：
-
-         ```
+7. 资源合并方案
+   
+   我们可以把所有的资源文件合并成一个大文件，而 **一个大资源文件就相当于换肤方案中的一套皮肤**。它的效果 **比资源混淆的效果会更好**，但是，在此之前，必须要解决 **解析资源** 与 **管理资源** 的问题。
+   
+   
+   
+8. **资源文件最少化配置**
+   
+   我们需要 **根据 App 目前所支持的语言版本去选用合适的语言资源**，例如使用了 **AppCompat**，如果不做任何配置的话，最终 **APK** 包中会包含 **AppCompat** 中所有已翻译语言字符串，无论应用的其余部分是否翻译为同一语言。对此，我们可以 **通过 resConfig 来配置使用哪些语言，从而让构建工具移除指定语言之外的所有资源**。同理，也可以**使用 resConfigs 去配置你应用需要的图片资源文件类，如 "xhdpi"、"xxhdpi" 等等**，代码如下所示：
+   
+   ```
          android {
              ...
              defaultConfig {
@@ -3071,11 +3080,11 @@
              ...
          }    
          复制代码
-         ```
-
-         此外，我们还以 **利用 Density Splits 来选择应用应兼容的屏幕尺寸大小**，代码如下所示：
-
-         ```
+   ```
+   
+   此外，我们还以 **利用 Density Splits 来选择应用应兼容的屏幕尺寸大小**，代码如下所示：
+   
+   ```
          android {
              ...
              splits {
@@ -3087,54 +3096,54 @@
              }
              ...
          }
-         ```
-
-         
-
-      9. **尽量每张图片只保留一份**
-
-         比如说，我们统一只把图片放到 **xhdpi** 这个目录下，那么 **在不同的分辨率下它会做自动的适配**，即 **等比例地拉伸或者是缩小**。
-
-      10. **资源在线化**
-
-          可以 **将一些图片资源放在服务器**，然后 **结合图片预加载** 的技术手段，这些 **既可以满足产品的需要，同时可以减小包大小**。
-
-      11. 统一应用风格
-
-          如设定统一的 **字体、尺寸、颜色和按钮按压效果、分割线 shape、selector 背景** 等等。
-
-          
-
-    * So 瘦身方案探索
-
-      1. So 移除方案
-
-         。理论上来说，**对应架构的 CPU 它的执行效率是最高的**，但是这样会导致 **在 lib 目录下会多存放了各个平台架构的 So 文件**，所以 **App** 的体积自然也就更大了。
-
-         因此，我们就需要对 **lib** 目录进行缩减，我们 **在 build.gradle 中配置这个 abiFiliters 去设置 App 支持的 So 架构**，其配置代码如下所示：
-
-         ```
+   ```
+   
+   
+   
+9. **尽量每张图片只保留一份**
+   
+   比如说，我们统一只把图片放到 **xhdpi** 这个目录下，那么 **在不同的分辨率下它会做自动的适配**，即 **等比例地拉伸或者是缩小**。
+   
+10. **资源在线化**
+    
+    可以 **将一些图片资源放在服务器**，然后 **结合图片预加载** 的技术手段，这些 **既可以满足产品的需要，同时可以减小包大小**。
+    
+11. 统一应用风格
+    
+    如设定统一的 **字体、尺寸、颜色和按钮按压效果、分割线 shape、selector 背景** 等等。
+    
+    
+    
+* So 瘦身方案探索
+  
+  1. So 移除方案
+    
+     。理论上来说，**对应架构的 CPU 它的执行效率是最高的**，但是这样会导致 **在 lib 目录下会多存放了各个平台架构的 So 文件**，所以 **App** 的体积自然也就更大了。
+    
+     因此，我们就需要对 **lib** 目录进行缩减，我们 **在 build.gradle 中配置这个 abiFiliters 去设置 App 支持的 So 架构**，其配置代码如下所示：
+    
+     ```
          defaultConfig {
              ndk {
                  abiFilters "armeabi"
              }
          }
          复制代码
-         ```
-
-         **一般情况下，应用都不需要用到 neon 指令集，我们只需留下 armeabi 目录就可以了**。因为 **armeabi 目录下的 So 可以兼容别的平台上的 So**，相当于是一个万金油，都可以使用。但是，这样 **别的平台使用时性能上就会有所损耗，失去了对特定平台的优化**。
-
-         
-
-      2. So 移除方案优化版
-
-         上面我们说到了想要完美支持所有类型的设备代价太大，那么，我们能不能采取一个 **折中的方案**，就是 **对于性能敏感的模块，它使用到的 So，我们都放在 armeabi 目录当中随着 Apk 发出去，然后我们在代码中来判断一下当前设备所属的 CPU 类型，根据不同设备 CPU 类型来加载对应架构的 So 文件**。这里我们举一个小栗子，比如说我们 **armeabi** 目录下也加上了 **armeabi-v7** 对应的 **So**，然后我们就可以在代码当中做判断，如果你是 **armeabi-v7** 架构的手机，那我们就直接加载这个 **So**，以此达到最佳的性能，这样包体积其实也没有增加多少，同时也实现了高性能的目的，比如 **微信和腾讯视频 App** 里面就使用了这种方式，如下图所示：
-
-         ![image](https:////p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95614c97a6d141509abd4b9ac5de3f06~tplv-k3u1fbpfcp-watermark.awebp)
-
-         看到上图中的 **libimagepipeline_x86.so**，下面我们就以这个 so 为例来写写加载它的伪代码，如下所示：
-
-         ```
+     ```
+    
+     **一般情况下，应用都不需要用到 neon 指令集，我们只需留下 armeabi 目录就可以了**。因为 **armeabi 目录下的 So 可以兼容别的平台上的 So**，相当于是一个万金油，都可以使用。但是，这样 **别的平台使用时性能上就会有所损耗，失去了对特定平台的优化**。
+    
+     
+    
+  2. So 移除方案优化版
+    
+     上面我们说到了想要完美支持所有类型的设备代价太大，那么，我们能不能采取一个 **折中的方案**，就是 **对于性能敏感的模块，它使用到的 So，我们都放在 armeabi 目录当中随着 Apk 发出去，然后我们在代码中来判断一下当前设备所属的 CPU 类型，根据不同设备 CPU 类型来加载对应架构的 So 文件**。这里我们举一个小栗子，比如说我们 **armeabi** 目录下也加上了 **armeabi-v7** 对应的 **So**，然后我们就可以在代码当中做判断，如果你是 **armeabi-v7** 架构的手机，那我们就直接加载这个 **So**，以此达到最佳的性能，这样包体积其实也没有增加多少，同时也实现了高性能的目的，比如 **微信和腾讯视频 App** 里面就使用了这种方式，如下图所示：
+    
+     ![image](https:////p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95614c97a6d141509abd4b9ac5de3f06~tplv-k3u1fbpfcp-watermark.awebp)
+    
+     看到上图中的 **libimagepipeline_x86.so**，下面我们就以这个 so 为例来写写加载它的伪代码，如下所示：
+    
+     ```
          String abi = "";
          // 获取当前手机的CPU架构类型
          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -3150,32 +3159,32 @@
              // 正常加载
              
          }
-         ```
-
-         
-
-      3. 使用 XZ Utils 对 Native Library 进行压缩
-
-      4. 对 Native Library 进行合并
-
-      5. 删除 Native Library 中无用的导出 symbol
-
-      6. So 动态下载
-
-         可以 **将部分 So 文件使用动态下发的形式进行加载**。也就是在业务代码操作之前，我们可以先从服务器下载下来 So，接下来再使用，这样包体积肯定会减少不小。但是，如果要把这项技术 **稳定落地到实际生产项目中需要解决一些问题**，具体的 so  动态化关键技术点和需要避免的坑可以参见 [动态下发 so 库在 Android APK 安装包瘦身方面的应用 ](https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FX58fK02imnNkvUMFt23OAg)。
-
-         
-
-    * 其它优化方案
-
-      1. 插件化
+     ```
+    
+     
+    
+  3. 使用 XZ Utils 对 Native Library 进行压缩
+    
+  4. 对 Native Library 进行合并
+    
+  5. 删除 Native Library 中无用的导出 symbol
+    
+  6. So 动态下载
+    
+     可以 **将部分 So 文件使用动态下发的形式进行加载**。也就是在业务代码操作之前，我们可以先从服务器下载下来 So，接下来再使用，这样包体积肯定会减少不小。但是，如果要把这项技术 **稳定落地到实际生产项目中需要解决一些问题**，具体的 so  动态化关键技术点和需要避免的坑可以参见 [动态下发 so 库在 Android APK 安装包瘦身方面的应用 ](https://link.juejin.cn?target=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2FX58fK02imnNkvUMFt23OAg)。
+    
+     
+  
+* 其它优化方案
+  
+  1. 插件化
       2. 业务梳理
       3. 转变开发模式
-
-  * 六、包体积监控
-
-  * 七、瘦身优化常见问题
-
+  
+* 六、包体积监控
+  
+* 七、瘦身优化常见问题
+  
 * 参考资料
   
   * [深入探索 Android 包体积优化（匠心制作-上）](https://juejin.cn/post/6844904103131234311)
@@ -3195,7 +3204,7 @@
 
 
 
-## Android安全
+## 10. Android安全
 
 
 
@@ -3206,17 +3215,160 @@
 
 
 
-## Android JNI
+## 11. Android JNI
 
 * 知识点
+
+  * **so库存放**
+
+    * **ABI是什么以及作用**
+
+      ABI是英文Application Binary Interface的缩写，及应用二进制接口。
+
+      不同Android设备，使用的CPU架构可能不同，因此支持不同的指令集。 CPU 与指令集的每种组合都有其自己的应用二进制界面（或 ABI）,ABI非常精确地定义了应用程序的机器代码应如何在运行时与系统交互。您必须为要与您的应用程序一起使用的每种CPU架构指定一个ABI（Application Binary Interface）。
+
+      ABI 包含以下信息：
+
+      - 可使用的 CPU 指令集（和扩展指令集）。
+      - 运行时内存存储和加载的字节顺序。Android 始终是 little-endian。
+      - 在应用和系统之间传递数据的规范（包括对齐限制），以及系统调用函数时如何使用堆栈和寄存器。
+      - 可执行二进制文件（例如程序和共享库）的格式，以及它们支持的内容类型。Android 始终使用 ELF。
+      - 如何重整 C++ 名称。
+
+      Android目前支持以下7种ABIs:
+
+      ```
+      mips, mips64, X86, X86–64, arm64-v8a, armeabi, armeabi-v7a
+      ```
+
+      
+
+      对于CPU来说，不同的架构并不意味着一定互不兼容，根据目前Android共支持七种不同类型的CPU架构，其兼容特点可总结如下：
+
+      - armeabi设备只兼容armeabi；
+      - armeabi-v7a设备兼容armeabi-v7a、armeabi；
+      - arm64-v8a设备兼容arm64-v8a、armeabi-v7a、armeabi；
+      - X86设备兼容X86、armeabi；
+      - X86_64设备兼容X86_64、X86、armeabi；
+      - mips64设备兼容mips64、mips；
+      - mips只兼容mips；
+
+      根据以上的兼容总结，我们还可以得到一些规律：
+
+      - armeabi的SO文件基本上可以说是万金油，它能运行在除了mips和mips64的设备上，但在非armeabi设备上运行性能还是有所损耗；
+      - 64位的CPU架构总能向下兼容其对应的32位指令集，如：x86_64兼容X86，arm64-v8a兼容armeabi-v7a，mips64兼容mips；
+
+      
+
+    * **ABI是如何工作的？**
+
+      * Android 系统在运行时知道它支持哪些 ABI，因为版本特定的系统属性会指示：
+
+        - 设备的主要 ABI，与系统映像本身使用的机器代码对应。
+        - （可选）与系统映像也支持的其他 ABI 对应的辅助 ABI。
+
+        此机制确保系统在安装时从软件包提取最佳机器代码。
+
+      ##### 主辅助ABI具体适配流程
+
+      前面说了ABI的工作原理，一个Android设备支持主辅ABI,那么他们具体是如何工作的呢？我们以`arm64-v8a`架构的手机为例：
+
+      <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/5/3/171dafefbaac1c42~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom: 80%;" />
+
+      对于一个cpu是arm64-v8a架构的手机，它运行app时，进入jnilibs去读取库文件时，先看有没有arm64-v8a文件夹，如果没有该文件夹，去找armeabi-v7a文件夹，如果没有，再去找armeabi文件夹，如果连这个文件夹也没有，就抛出异常；
+
+      如果有arm64-v8a文件夹，那么就去找特定名称的.so文件，注意：如果没有找到想要的`.so`文件，不会再往下（armeabi-v7a文件夹）找了，而是直接抛出异常。
+
+      ```
+      Exception:Java.lang.UnsatisfiedLinkError: dlopen failed: library “/***.so” not found 
+      ```
+
+      特别需要注意的情况是在命中了文件夹，而未命中so文件这种情况：
+
+      - 比如命中了`arm64-v8a`文件夹，没有找到需要的so文件，就不会再往下（armeabi-v7a文件夹）找了，而是直接抛出异常。
+      - 如果你的项目用到了第三方依赖，如果只保留一个ABI的时候，建议在Build中加入ndk.abiFilters
+      - 例如：第三方aar文件，如果这个sdk对abi的支持比较全，可能会包含armeabi、armeabi-v7a、x86、arm64-v8a、x86_64五种abi，而你应用的其它so只支持armeabi、armeabi-v7a、x86三种，直接引用sdk的aar，会自动编译出支持5种abi的包。但是应用的其它so缺少对其它两种abi的支持，那么如果应用运行于arm64-v8a、x86_64为首选abi的设备上时，就会==crash==了哦。
+
+      因此，我们需要在我们的app中配置 abiFilter 配置，来避免一些未知的错误。
+
+      ```
+      defaultConfig {  
+          ndk {  
+              abiFilters "armeabi"// 指定ndk需要兼容的ABI(这样其他依赖包里x86,armeabi,arm-v8之类的so会被过滤掉) 
+          }  
+      }
+      ```
+
+
+      
+
+    * 项目中该如何适配
+
+      `Q1`： 只适配了`armeabi-v7a`,那如果APP装在其他架构的手机上，如`arm64-v8a`上，会蹦吗？
+
+      `A:` 不会，但是反过来会。
+
+      因为`armeabi-v7a`和`arm64-v8a`会向下兼容：
+
+      - 只适配`armeabi`的APP可以跑在`armeabi`,`x86`,`x86_64`,`armeabi-v7a`,`arm64-v8`上
+      - 只适配`armeabi-v7a`可以运行在`armeabi-v7a`和`arm64-v8a`
+      - 只适配`arm64-v8a` 可以运行在`arm64-v8a`上
+
+      那我们该如何适配呢？给出如下几个方案：
+
+      ```
+      方案一`：只适配`armeabi
+      ```
+
+      - `优点:`基本上适配了全部CPU架构（除了淘汰的mips和mips_64）
+      - `缺点：`性能低，相当于在绝大多数手机上都是需要辅助ABI或动态转码来兼容
+
+      ```
+      方案二`：只适配 `armeabi-v7a
+      ```
+
+      同理方案一，只是又筛掉了一部分老旧设备,在性能和兼容二者中比较平衡
+
+      ```
+      方案三:` 只适配 `arm64-v8
+      ```
+
+      - `优点:` 性能最佳
+      - `缺点：` 只能运行在`arm64-v8`上，要放弃部分老旧设备用户
+
+      这三种方案都是可以的，现在的大厂APP适配中，这三种都有，大部分是前2种方案。具体选哪一种就看自己的考量了，以性能换兼容就`arm64-v8`,以兼容换性能`armeabi`,二者稍微平衡一点的就`armeabi-v7a`。
+
+      
+
+    * 性能+兼容能否兼得
+
+      为每个CPU架构单独打一个APK，该apk 中就只包含一个平台，多APK上传。
+
+      
+
+  * **so库加载和使用**
+
+    Android加载so文件的方式有两种：
+
+    1. System.load。 参数必须为库文件的绝对路径。
+    2. System.loadLibrary 。 参数为库文件名，不包含库文件的扩展名，必须是在JVM属性Java.library.path所指向的路径中，路径可以通过System.getProperty(‘java.library.path’)获得。
+
+    
+
+    从两种加载方式可以分为 静态加载 和 动态加载，静态加载就是把so直接放到apk中，动态加载就是so文件不打包进apk,在安装完应用打开app的时候通过后台下载so库，将下载下来的so文件再写入到app里面。
+
+    
+
 * 参考资料
+  
   * [为何大厂APP如微信、支付宝、淘宝、手Q等只适配了armeabi-v7a/armeabi？](https://juejin.im/post/5eae6f86e51d454ddb0b3dc6)
-  * [关于Android的.so文件你所需要知道的](http://www.jianshu.com/p/cb05698a1968ß)
-  * [Android深入理解JNI - 刘望舒](http://liuwangshu.cn/framework/jni/2-signature-jnienv.html)
+  * [Android - JNI 开发你所需要知道的基础](https://juejin.cn/post/6844904192780271630)
+  * [Android SO 文件的兼容和适配](https://juejin.cn/post/6844903477164900365)
+  * [Android——JNI加载so两种方式](https://blog.csdn.net/iliupp/article/details/70765891)
 
 
 
-## Andorid系统源码分析
+## 12. Andorid系统源码分析
 
 ### Android 系统启动
 
@@ -3796,7 +3948,7 @@
 
 
 
-## Android 三方开源库
+## 13. Android 三方开源库
 
 ### EventBus 事件总线
 

@@ -123,7 +123,10 @@
 10.  剑指 Offer 05. 替换空格 [] [] [] [简单]  -  https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
 11.  剑指 Offer 31. 栈的压入、弹出序列  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/
 12.  剑指 Offer 35. 复杂链表的复制 [链表] [解决方案：哈希表 | 复制出来的节点放到被复制的后面] [2021/8/16] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
-13. 剑指 Offer 10- II. 青蛙跳台阶问题  [斐波那契（Fibonacci）数列] [解决方案：] [] [简单] - https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/
+13. 剑指 Offer 10- II. 青蛙跳台阶问题  [斐波那契（Fibonacci）数列] [解决方案：] [2021/8/25] [简单] - https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/
+14. **剑指 Offer 10- I. 斐波那契数列** [斐波那契（Fibonacci）数列]] [解决方案：动态规划] [2021/8/25] [简单]  -  https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/
+15. 剑指 Offer 06. 从尾到头打印链表 [链表] [解决方案：栈] [2021/8、25] [简单] -  https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/
+16. 剑指 Offer 12. 矩阵中的路径   [二维数组] [解决方案：回溯] [2021/8/2] [中等]   - https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/   (同：79.单词搜索   -  https://leetcode-cn.com/problems/word-search/)
 
  
 
