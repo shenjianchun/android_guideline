@@ -127,6 +127,7 @@
 14. **剑指 Offer 10- I. 斐波那契数列** [斐波那契（Fibonacci）数列]] [解决方案：动态规划] [2021/8/25] [简单]  -  https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/
 15. 剑指 Offer 06. 从尾到头打印链表 [链表] [解决方案：栈] [2021/8、25] [简单] -  https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/
 16. 剑指 Offer 12. 矩阵中的路径   [二维数组] [解决方案：回溯] [2021/8/2] [中等]   - https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/   (同：79.单词搜索   -  https://leetcode-cn.com/problems/word-search/)
+17. 剑指 Offer 32 - I. 从上到下打印二叉树 [][] [二叉树] [解决方法：BFS | 队列] [2021/7/15] [中等]   - https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/  （同：102.二叉树的层序遍历 -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))）
 
  
 

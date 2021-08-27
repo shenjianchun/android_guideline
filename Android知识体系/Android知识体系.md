@@ -3300,51 +3300,53 @@
       ```
 
 
-      
+​      
 
     * 项目中该如何适配
-
+    
       `Q1`： 只适配了`armeabi-v7a`,那如果APP装在其他架构的手机上，如`arm64-v8a`上，会蹦吗？
-
+    
       `A:` 不会，但是反过来会。
-
+    
       因为`armeabi-v7a`和`arm64-v8a`会向下兼容：
-
+    
       - 只适配`armeabi`的APP可以跑在`armeabi`,`x86`,`x86_64`,`armeabi-v7a`,`arm64-v8`上
       - 只适配`armeabi-v7a`可以运行在`armeabi-v7a`和`arm64-v8a`
       - 只适配`arm64-v8a` 可以运行在`arm64-v8a`上
-
+    
       那我们该如何适配呢？给出如下几个方案：
-
+    
       ```
       方案一`：只适配`armeabi
       ```
-
+    
       - `优点:`基本上适配了全部CPU架构（除了淘汰的mips和mips_64）
       - `缺点：`性能低，相当于在绝大多数手机上都是需要辅助ABI或动态转码来兼容
-
+    
       ```
       方案二`：只适配 `armeabi-v7a
       ```
-
+    
       同理方案一，只是又筛掉了一部分老旧设备,在性能和兼容二者中比较平衡
-
+    
       ```
       方案三:` 只适配 `arm64-v8
       ```
-
+    
       - `优点:` 性能最佳
       - `缺点：` 只能运行在`arm64-v8`上，要放弃部分老旧设备用户
-
+    
       这三种方案都是可以的，现在的大厂APP适配中，这三种都有，大部分是前2种方案。具体选哪一种就看自己的考量了，以性能换兼容就`arm64-v8`,以兼容换性能`armeabi`,二者稍微平衡一点的就`armeabi-v7a`。
 
-      
+
+​      
 
     * 性能+兼容能否兼得
-
+    
       为每个CPU架构单独打一个APK，该apk 中就只包含一个平台，多APK上传。
 
-      
+
+​      
 
   * **so库加载和使用**
 
@@ -4067,14 +4069,197 @@
 ### RxJava 
 
 * 知识点
+  * 简介
+
+    * Observable/Observer
+
+      ![img](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/afb793854f364a34a5321de53daa1361~tplv-k3u1fbpfcp-watermark.awebp)
+
+    * Flowable/Subscriber/FlowableEmitter
+
+      ```java
+      Flowable.create(new FlowableOnSubscribe<Integer>() {
+                  @Override
+                  public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                      Log.d(TAG, "emit 1");
+                      emitter.onNext(1);
+                      Log.d(TAG, "emit 2");
+                      emitter.onNext(2);
+                      Log.d(TAG, "emit 3");
+                      emitter.onNext(3);
+                      Log.d(TAG, "emit complete");
+                      emitter.onComplete();
+                  }
+              }, BackpressureStrategy.ERROR).subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(new Subscriber<Integer>() {
+      
+                          @Override
+                          public void onSubscribe(Subscription s) {
+                              Log.d(TAG, "onSubscribe");
+                              mSubscription = s;  
+                              s.request(1);
+                          }
+      
+                          @Override
+                          public void onNext(Integer integer) {
+                              Log.d(TAG, "onNext: " + integer);
+                              mSubscription.request(1);
+                          }
+      
+                          @Override
+                          public void onError(Throwable t) {
+                              Log.w(TAG, "onError: ", t);
+                          }
+      
+                          @Override
+                          public void onComplete() {
+                              Log.d(TAG, "onComplete");
+                          }
+                      });
+      ```
+
+      
+
+    * Disposable / CompositeDisposable - 断连
+
+    * 其他观察者
+
+      在 RxJava2.x 中还有三种类型的Observables：Single、Completable、Maybe。
+
+      | 类型          | 描述                                                         |
+      | ------------- | ------------------------------------------------------------ |
+      | Observable<T> | 能够发射0或n个数据，并以成功或错误事件终止。                 |
+      | Flowable<T>   | 能够发射0或n个数据，并以成功或错误事件终止。 支持Backpressure，可以控制数据源发射的速度。 |
+      | Single<T>     | 只发射单个数据或错误事件。                                   |
+      | Completable   | 它从来不发射数据，只处理 onComplete 和 onError 事件。可以看成是Rx的Runnable。 |
+      | Maybe<T>      | 能够发射0或者1个数据，要么成功，要么失败。有点类似于Optional |
+
+      
+
   * 常用操作符
+
+    * 分类
+
+      * 创建操作符：https://www.jianshu.com/p/e19f8ed863b1
+
+      * 变换操作符：https://www.jianshu.com/p/904c14d253ba
+
+      * 组合/合并操作符：https://www.jianshu.com/p/c2a7c03da16d
+
+      * 功能操作符：https://www.jianshu.com/p/b0c3669affdb
+
+      * 过滤操作符：https://www.jianshu.com/p/c3a930a03855
+
+      * 条件/布尔操作符：https://www.jianshu.com/p/954426f90325
+
+        
+
+    * 常用
+
   * 线程调度
+
+    * subscribeOn / observeOn
+
+    * 多次指定上游的线程只有第一次指定的有效, 也就是说多次调用`subscribeOn()` 只有第一次的有效, 其余的会被忽略.
+
+      多次指定下游的线程是可以的, 也就是说每调用一次`observeOn()` , 下游的线程就会切换一次.
+
+    * 线程类型
+
+      | 类型                           | 含义                  | 应用场景                         |
+      | ------------------------------ | --------------------- | -------------------------------- |
+      | Schedulers.immediate()         | 当前线程 = 不指定线程 | 默认                             |
+      | AndroidSchedulers.mainThread() | Android主线程         | 操作UI                           |
+      | Schedulers.newThread()         | 常规新线程            | 耗时等操作                       |
+      | Schedulers.io()                | io操作线程            | 网络请求、读写文件等io密集型操作 |
+      | Schedulers.computation()       | CPU计算操作线程       | 大量计算操作                     |
+
+      
+
   * 异常处理
+
   * Flowable背压
+
+    一种 控制事件流速 的策略。在 **异步订阅关系** 中，控制事件发送 & 接收的速度，解决了 因被观察者发送事件速度 与 观察者接收事件速度 不匹配（一般是前者 快于 后者），从而导致观察者无法及时响应 / 处理所有 被观察者发送事件 的问题。
+
+    
+
+    **背压策略**
+
+    ![img](https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0NDM2NS00N2I1NWVkZWMyOTlmYWVhLnBuZz9pbWFnZU1vZ3IyL2F1dG8tb3JpZW50L3N0cmlwJTdDaW1hZ2VWaWV3Mi8yL3cvMTI0MA)
+
+    **模式1：BackpressureStrategy.ERROR**
+
+    - 问题：发送事件速度 ＞ 接收事件 速度，即流速不匹配
+
+      > 具体表现：出现当缓存区大小存满（默认缓存区大小 = 128）、被观察者仍然继续发送下1个事件时
+
+    - 处理方式：直接抛出异常`MissingBackpressureException`
+
+    
+
+    **模式2：BackpressureStrategy.MISSING**
+
+    - 问题：发送事件速度 ＞ 接收事件 速度，即流速不匹配
+
+      > 具体表现是：出现当缓存区大小存满（默认缓存区大小 = 128）、被观察者仍然继续发送下1个事件时
+
+    - 处理方式：友好提示：缓存区满了，会调用OnError（）
+
+    
+
+    **模式3：BackpressureStrategy.BUFFER**
+
+    * 问题：发送事件速度 ＞ 接收事件 速度，即流速不匹配
+
+      > 具体表现是：出现当缓存区大小存满（默认缓存区大小 = 128）、被观察者仍然继续发送下1个事件时
+
+    * 处理方式：将缓存区大小设置成无限大
+
+      > 即 被观察者可无限发送事件 观察者，但实际上是存放在缓存区
+      > 但要注意内存情况，防止出现OOM
+
+    
+
+    **模式4： BackpressureStrategy.DROP**
+
+    * 问题：发送事件速度 ＞ 接收事件 速度，即流速不匹配
+
+      > 具体表现是：出现当缓存区大小存满（默认缓存区大小 = 128）、被观察者仍然继续发送下1个事件时
+
+    * 处理方式：超过缓存区大小（128）的事件丢弃
+
+      > 如发送了150个事件，仅保存第1 - 第128个事件，第129 -第150事件将被丢弃
+
+      
+
+    **模式5：BackpressureStrategy.LATEST**
+
+    * 问题：发送事件速度 ＞ 接收事件 速度，即流速不匹配
+
+      > 具体表现是：出现当缓存区大小存满（默认缓存区大小 = 128）、被观察者仍然继续发送下1个事件时
+
+    * 处理方式：只保存最新（最后）事件，超过缓存区大小（128）的事件丢弃
+
+      > 即如果发送了150个事件，缓存区里会保存129个事件（第1-第128 + 第150事件）
+
+    
+
+  * 源码分析 - 查看次文章 [详解 RxJava 的消息订阅和线程切换原理](https://juejin.cn/post/6844903619947397134#heading-0)
+
+    * 消息订阅
+    * 切断消息
+    * 线程切换
+
+    
 * 参考资料
-  * [RxJava2 只看这一篇文章就够了](https://juejin.cn/post/6844903617124630535#heading-211)
-  * [给初学者的RxJava2.0教程](https://www.jianshu.com/p/8818b98c44e2)
-  * [史上最简单的 RxJava 源码分析](https://zhuanlan.zhihu.com/p/129889972)
+  * [使用 - RxJava2 只看这一篇文章就够了](https://juejin.cn/post/6844903617124630535#heading-0)
+  * [使用 - 给初学者的RxJava2.0教程](https://www.jianshu.com/c/299d0a51fdd4)
+  * [RxJava 详细教程](https://blog.csdn.net/carson_ho/category_7227390.html)
+  * [详解 RxJava 的消息订阅和线程切换原理](https://juejin.cn/post/6844903619947397134#heading-0)
+  * [源码 - 史上最简单的 RxJava 源码分析](https://zhuanlan.zhihu.com/p/129889972)
+  * [源码 - RxJava面经一，拿去，不谢!](https://juejin.cn/post/6900870262062120967) 
 
 
 
