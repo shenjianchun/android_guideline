@@ -3371,6 +3371,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     ![img](https://camo.githubusercontent.com/2dea3a33076fa2b7b8b55127ed7ff8b0e59f8b93a1156c3213af9d8d1f179384/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f65343266313838662d663461392d346536662d383866632d3435663436383230373266622e706e67)
 
 * 参考资料
+  
   * [Java Fork/Join 框架](https://www.cnblogs.com/cjsblog/p/9078341.html)
 
 
@@ -3379,10 +3380,235 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 
 * 知识点
 
-  - 主内存与工作内存
-  - 内存间交互操作
-  - 内存模型三大特性
-  - 先行发生原则
+  Java 内存模型试图屏蔽各种硬件和操作系统的内存访问差异，以实现让 Java 程序在各种平台下都能达到一致的内存访问效果。
+  
+  - **主内存与工作内存**
+  
+    处理器上的寄存器的读写的速度比内存快几个数量级，为了解决这种速度矛盾，在它们之间加入了高速缓存。
+  
+    加入高速缓存带来了一个新的问题：缓存一致性。如果多个缓存共享同一块主内存区域，那么多个缓存的数据可能会不一致，需要一些协议来解决这个问题。
+  
+    ![img](https://camo.githubusercontent.com/7df4b55b854db759d86b9f23d514ccdb8b8e28c55316fdc50048e8b9013b622e/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f39343263613064322d396435632d343561342d383963622d3566643839623631393133662e706e67)
+  
+    
+  
+    所有的变量都存储在主内存中，每个线程还有自己的工作内存，工作内存存储在高速缓存或者寄存器中，保存了该线程使用的变量的主内存副本拷贝。
+  
+    线程只能直接操作工作内存中的变量，不同线程之间的变量值传递需要通过主内存来完成。
+  
+    [![img](https://camo.githubusercontent.com/0306fdc0e9fd98a72dbd96e84fba9ec578f3e81814bc42ee96ed4c5854e11cac/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f31353835313535352d356162632d343937642d616433342d6566656431306634336136622e706e67)](https://camo.githubusercontent.com/0306fdc0e9fd98a72dbd96e84fba9ec578f3e81814bc42ee96ed4c5854e11cac/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f31353835313535352d356162632d343937642d616433342d6566656431306634336136622e706e67)
+  
+  - **内存间交互操作**
+  
+    Java 内存模型定义了 8 个操作来完成主内存和工作内存的交互操作。
+  
+    ![img](https://camo.githubusercontent.com/eef382ee00242697145ffb3eec7bef5f7babd95a0500e4a43096854ea67ca9ae/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f38623765626261642d393630342d343337352d383465332d6634313230393964313730632e706e67)
+  
+    
+  
+    - read：把一个变量的值从主内存传输到工作内存中
+    - load：在 read 之后执行，把 read 得到的值放入工作内存的变量副本中
+    - use：把工作内存中一个变量的值传递给执行引擎
+    - assign：把一个从执行引擎接收到的值赋给工作内存的变量
+    - store：把工作内存的一个变量的值传送到主内存中
+    - write：在 store 之后执行，把 store 得到的值放入主内存的变量中
+    - lock：作用于主内存的变量
+    - unlock
+  
+    
+  
+  - **内存模型三大特性**
+  
+    #### 1. 原子性
+  
+    Java 内存模型保证了 read、load、use、assign、store、write、lock 和 unlock 操作具有原子性，例如对一个 int 类型的变量执行 assign 赋值操作，这个操作就是原子性的。但是 Java 内存模型允许虚拟机将没有被 volatile 修饰的 64 位数据（long，double）的读写操作划分为两次 32 位的操作来进行，即 load、store、read 和 write 操作可以不具备原子性。
+  
+    有一个错误认识就是，int 等原子性的类型在多线程环境中不会出现线程安全问题。前面的线程不安全示例代码中，cnt 属于 int 类型变量，1000 个线程对它进行自增操作之后，得到的值为 997 而不是 1000。
+  
+    为了方便讨论，将内存间的交互操作简化为 3 个：load、assign、store。
+  
+    下图演示了两个线程同时对 cnt 进行操作，load、assign、store 这一系列操作整体上看不具备原子性，那么在 T1 修改 cnt 并且还没有将修改后的值写入主内存，T2 依然可以读入旧值。可以看出，这两个线程虽然执行了两次自增运算，但是主内存中 cnt 的值最后为 1 而不是 2。因此对 int 类型读写操作满足原子性只是说明 load、assign、store 这些单个操作具备原子性。
+  
+    ![img](https://camo.githubusercontent.com/f8ea9713621160394929ed10092d22ca9a72940f15c23722c14cb409465dfee9/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f32373937613630392d363864622d346437622d383730312d3431616339613334623134662e6a7067)
+  
+    AtomicInteger 能保证多个线程修改的原子性。
+  
+    ![img](https://camo.githubusercontent.com/6a12b545df7c5274334649b2a703d47c57afa4b4fd57eab2510dccaa3aeefbcc/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f64643536333033372d666361612d346264382d383362362d6233396439336131326337372e6a7067)
+  
+    
+  
+    使用 AtomicInteger 重写之前线程不安全的代码之后得到以下线程安全实现：
+  
+    ```java
+    public class AtomicExample {
+        private AtomicInteger cnt = new AtomicInteger();
+    
+        public void add() {
+            cnt.incrementAndGet();
+        }
+    
+        public int get() {
+            return cnt.get();
+        }
+    }
+    ```
+  
+    ```java
+    public static void main(String[] args) throws InterruptedException {
+        final int threadSize = 1000;
+        AtomicExample example = new AtomicExample(); // 只修改这条语句
+        final CountDownLatch countDownLatch = new CountDownLatch(threadSize);
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        for (int i = 0; i < threadSize; i++) {
+            executorService.execute(() -> {
+                example.add();
+                countDownLatch.countDown();
+            });
+        }
+        countDownLatch.await();
+        executorService.shutdown();
+        System.out.println(example.get());
+    }
+    
+    1000
+    ```
+  
+    
+  
+    除了使用原子类之外，也可以使用 synchronized 互斥锁来保证操作的原子性。它对应的内存间交互操作为：lock 和 unlock，在虚拟机实现上对应的字节码指令为 monitorenter 和 monitorexit。
+  
+    ```java
+    public class AtomicSynchronizedExample {
+        private int cnt = 0;
+    
+        public synchronized void add() {
+            cnt++;
+        }
+    
+        public synchronized int get() {
+            return cnt;
+        }
+    }
+    
+    ```
+  
+    
+  
+    ```java
+    public static void main(String[] args) throws InterruptedException {
+        final int threadSize = 1000;
+        AtomicSynchronizedExample example = new AtomicSynchronizedExample();
+        final CountDownLatch countDownLatch = new CountDownLatch(threadSize);
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        for (int i = 0; i < threadSize; i++) {
+            executorService.execute(() -> {
+                example.add();
+                countDownLatch.countDown();
+            });
+        }
+        countDownLatch.await();
+        executorService.shutdown();
+        System.out.println(example.get());
+    }
+    
+    1000
+    ```
+  
+    
+  
+    #### 2. 可见性
+  
+    可见性指当一个线程修改了共享变量的值，其它线程能够立即得知这个修改。Java 内存模型是通过在变量修改后将新值同步回主内存，在变量读取前从主内存刷新变量值来实现可见性的。
+  
+    主要有三种实现可见性的方式：
+  
+    - volatile
+    - synchronized，对一个变量执行 unlock 操作之前，必须把变量值同步回主内存。
+    - final，被 final 关键字修饰的字段在构造器中一旦初始化完成，并且没有发生 this 逃逸（其它线程通过 this 引用访问到初始化了一半的对象），那么其它线程就能看见 final 字段的值。
+  
+    对前面的线程不安全示例中的 cnt 变量使用 volatile 修饰，不能解决线程不安全问题，因为 volatile 并不能保证操作的原子性。
+  
+    #### 3. 有序性
+  
+    有序性是指：在本线程内观察，所有操作都是有序的。在一个线程观察另一个线程，所有操作都是无序的，无序是因为发生了指令重排序。在 Java 内存模型中，允许编译器和处理器对指令进行重排序，重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。
+  
+    volatile 关键字通过添加内存屏障的方式来禁止指令重排，即重排序时不能把后面的指令放到内存屏障之前。
+  
+    也可以通过 synchronized 来保证有序性，它保证每个时刻只有一个线程执行同步代码，相当于是让线程顺序执行同步代码。
+  
+  
+  
+  - **先行发生原则**
+  
+    上面提到了可以用 volatile 和 synchronized 来保证有序性。除此之外，JVM 还规定了先行发生原则，让一个操作无需控制就能先于另一个操作完成。
+  
+    #### 1. 单一线程原则
+  
+    > Single Thread rule
+  
+    在一个线程内，在程序前面的操作先行发生于后面的操作。
+  
+    [![img](https://camo.githubusercontent.com/e127e9f81ad74b7b70caab174b90b58ba21b2580d7ebab162e2624d39b8910a4/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f38373462336666372d376335632d346537612d623861622d6138326133653033386432302e706e67)](https://camo.githubusercontent.com/e127e9f81ad74b7b70caab174b90b58ba21b2580d7ebab162e2624d39b8910a4/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f38373462336666372d376335632d346537612d623861622d6138326133653033386432302e706e67)
+  
+    
+  
+    #### 2. 管程锁定规则
+  
+    > Monitor Lock Rule
+  
+    一个 unlock 操作先行发生于后面对同一个锁的 lock 操作。
+  
+    [![img](https://camo.githubusercontent.com/f1b9eff827102f0f43ac288fdb53a92c61ce9b61cb00e723bfe3a4b4b2f2c2bf/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f38393936613533372d376334612d346563382d613362372d3765663137393865616532362e706e67)](https://camo.githubusercontent.com/f1b9eff827102f0f43ac288fdb53a92c61ce9b61cb00e723bfe3a4b4b2f2c2bf/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f38393936613533372d376334612d346563382d613362372d3765663137393865616532362e706e67)
+  
+    
+  
+    #### 3. volatile 变量规则
+  
+    > Volatile Variable Rule
+  
+    对一个 volatile 变量的写操作先行发生于后面对这个变量的读操作。
+  
+    [![img](https://camo.githubusercontent.com/d07656ed0d1a5766b0f17d9caaf5b4f2c945dfb316cd1150a7e117313029ad9b/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f39343266333363392d386164392d343938372d383336662d3030376465346332316465302e706e67)](https://camo.githubusercontent.com/d07656ed0d1a5766b0f17d9caaf5b4f2c945dfb316cd1150a7e117313029ad9b/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f39343266333363392d386164392d343938372d383336662d3030376465346332316465302e706e67)
+  
+    
+  
+    #### 4. 线程启动规则
+  
+    > Thread Start Rule
+  
+    Thread 对象的 start() 方法调用先行发生于此线程的每一个动作。
+  
+    [![img](https://camo.githubusercontent.com/b4a2ee9c41bda349f8b45a93f9c36a9d20639ed50deee7a5a289856b65c284c0/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f36323730633231362d376563302d346462372d393464652d3030303362636533376364322e706e67)](https://camo.githubusercontent.com/b4a2ee9c41bda349f8b45a93f9c36a9d20639ed50deee7a5a289856b65c284c0/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f36323730633231362d376563302d346462372d393464652d3030303362636533376364322e706e67)
+  
+    
+  
+    #### 5. 线程加入规则
+  
+    > Thread Join Rule
+  
+    Thread 对象的结束先行发生于 join() 方法返回。
+  
+    ![img](https://camo.githubusercontent.com/43d37a01276be3333f44e6fdc91aafce84a29d53d5c0d7146854df71151869f5/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f32333366386438392d333164372d343133662d396330322d3034326631396334366261312e706e67)
+  
+    
+  
+    #### 6. 线程中断规则
+  
+    > Thread Interruption Rule
+  
+    对线程 interrupt() 方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过 interrupted() 方法检测到是否有中断发生。
+  
+    #### 7. 对象终结规则
+  
+    > Finalizer Rule
+  
+    一个对象的初始化完成（构造函数执行结束）先行发生于它的 finalize() 方法的开始。
+  
+    #### 8. 传递性
+  
+    > Transitivity
+  
+    如果操作 A 先行发生于操作 B，操作 B 先行发生于操作 C，那么操作 A 先行发生于操作 C。
 
 
 
@@ -3390,10 +3616,49 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 
 * 知识点
 
-  - 不可变
-  - 互斥同步
-  - 非阻塞同步
-  - 无同步方案
+  多个线程不管以何种方式访问某个类，并且在主调代码中不需要进行同步，都能表现正确的行为。
+
+  线程安全有以下几种实现方式：**不可变、互斥同步、非阻塞同步、无同步方案**。
+
+  - **不可变**
+
+    不可变（Immutable）的对象一定是线程安全的，不需要再采取任何的线程安全保障措施。只要一个不可变的对象被正确地构建出来，永远也不会看到它在多个线程之中处于不一致的状态。多线程环境下，应当尽量使对象成为不可变，来满足线程安全。
+
+    不可变的类型：
+
+    - final 关键字修饰的基本数据类型
+    - String
+    - 枚举类型
+    - Number 部分子类，如 Long 和 Double 等数值包装类型，BigInteger 和 BigDecimal 等大数据类型。但同为 Number 的原子类 AtomicInteger 和 AtomicLong 则是可变的。
+
+    对于集合类型，可以使用 Collections.unmodifiableXXX() 方法来获取一个不可变的集合。
+
+    ```
+    public class ImmutableExample {
+        public static void main(String[] args) {
+            Map<String, Integer> map = new HashMap<>();
+            Map<String, Integer> unmodifiableMap = Collections.unmodifiableMap(map);
+            unmodifiableMap.put("a", 1);
+        }
+    }
+    Exception in thread "main" java.lang.UnsupportedOperationException
+        at java.util.Collections$UnmodifiableMap.put(Collections.java:1457)
+        at ImmutableExample.main(ImmutableExample.java:9)
+    ```
+
+    Collections.unmodifiableXXX() 先对原始的集合进行拷贝，需要对集合进行修改的方法都直接抛出异常。
+
+    ```
+    public V put(K key, V value) {
+        throw new UnsupportedOperationException();
+    }
+    ```
+
+  - **互斥同步**
+
+  - **非阻塞同步**
+
+  - **无同步方案**
 
 
 
@@ -3401,15 +3666,18 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 
 * 知识点
 
+  - Java锁类型：悲观锁、乐观锁、可重入/不可重入锁 
   - 自旋锁
   - 锁消除
   - 锁粗化
   - 轻量级锁
   - 偏向锁
+* 参考资料
+  * [《蹲坑也能进大厂》多线程系列 - 悲观锁、乐观锁、可重入/不可重入锁 详解](https://juejin.cn/post/6978131721845899295)
 
 
 
-### [十三、多线程开发良好的实践](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#十三多线程开发良好的实践)
+### [多线程开发良好的实践](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#十三多线程开发良好的实践)
 
 
 
