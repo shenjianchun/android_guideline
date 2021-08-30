@@ -235,13 +235,87 @@
 ### 编译&打包
 
 * 知识点
-  * Gradle
-  * 编译
-  * 混淆
-  * 签名
+  * 构建流程总览
+
+    <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/5/23/16ae50ae0b37d1d4~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:50%;" />
+
+    ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/5/23/16ae50ac45a2cda9~tplv-t2oaga2asx-watermark.awebp)
+
+    如图所示apk打包流程主要分为以下几个阶段：
+
+    1. aapt阶段，打包资源文件，生成R.java文件
+    2. aidl阶段，处理aidl文件，生成相应的.java文件
+    3. Java Compiler阶段，编译工程源码，生成相应的class文件
+    4. dex阶段，转换所有的class文件，生成classes.dex文件
+    5. apkbuilder阶段，打包生成apk
+    6. Jarsigner阶段，对apk文件进行签名
+    7. zipalign阶段，对签名后的apk进行对齐处理，这个过程一般是release包条件下。
+       
+
+    每一个阶段，都对应一个工具：
+
+    ![apk打包所需工具](https://img-blog.csdnimg.cn/20210331234314164.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpMDk3OA==,size_16,color_FFFFFF,t_70#pic_center)
+
+    
+
+    **proguard 、D8 、 RB** 在将class转化为dex的过程。
+
+    
+
+    
+
+  * **Android  apk 运行的过程**
+
+    * Dalvik （Interpreter & JIT）
+
+      `APK`安装文件一般包含了所有的资源文件（图片，图标和布局等）和代码文件，安装时系统会把这些资源存储到内存中。当用户点击应用图标时，手机会启动一个`Dalvik`进程，然后将该`app`的`dex`文件加载到内存，同时`Dalvik`虚拟机将会把`dex`字节码通过`Interpreter`或`JIT`翻译成机器码，最终这款`app`运行在了你手机上。
+
+      ![APP 运行过程](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/running.png)
+
+    * ART （AOT）
+
+      `ART`使用`AOT（Ahead of Time）`编译器来将字节码翻译成`.oat`文件。`APP`被安装时，`ART`将`Dex`字节码预编译成`.oat`文件，每次启动`APP`时系统直接读取`.oat`文件运行即可，不再使用`JIT`以及`Interpreter`这种即时翻译的工具，大大提升了运行流畅度。
+
+      这样看起来好像`AOT`好像没什么毛病，`Google`当初也觉得自己找到了终极解决方式，但实际上`AOT`还是会有一些问题：
+
+      - `AOT`在安装过程中进行预编译行为，这样安装和更新`APP`时间相比原来就会大大增加。另外，升级`Android`系统时，系统会把所有程序重新安装一次，想想那么多`APP`要重新安装编译成`.oat`文件，头都大了。
+      - 空间大小。`AOT`将整个`.dex`文件都翻译为`.oat`文件，包括那种很少使用或者根本不会被使用到的代码（比如第一次打开`APP`的设置向导或者开屏界面）。根据`Google`相关的数据，常用的代码大概占所有代码的`15~20%`左右，这样就浪费了很大一部分空间，在一些小存储容量的低端机上这个问题尤其明显。
+
+      
+
+      既然这也不好，那也不好，那就集中两种方式的优点就好了。`Google`工程师想出了一个新点子：`Interpreter + JIT + AOT`混合编译，具体方案如下：
+
+      1. 安装的时候不进行预编译，也即不生成`.oat`文件。`app`第一次启动时，`ART`使用`Interpreter`来实时翻译`.dex`文件。
+      2. 当出现`Hot Code`时，使用`JIT`进行翻译，并将翻译后的机器码存入缓存（内存）中，之后调用`Hot Code`时直接从缓存中取。
+      3. 当设备空闲时，比如锁屏，`Hot Code`会被`AOT`编译器编译成`oat`文件存入本地存储空间。
+      4. `app`再次启动时，如果存在`.oat`文件，那么直接使用`.oat`文件，否则从步骤1开始。
+
+      ![AOT 运行过程](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/oatRun.png)
+
+      AOT 运行过程
+
+      国内的厂商会有“基于用户操作习惯进行学习，APP打开速度不断提高
+      ”的说法，有一部分是这个混合编译方案的功劳。
+
+      
+
+    * PGO
+
+      在说`AOT`混合编译的时候系统会生成一个`profile`，这个`profile`记录了`hotcode`的信息，哪些类和哪些方法会被经常调用。而对于大多数人来说，同一个`APP`的`hotcode`区别不大，其实可以共用，因此`Google`在`2018 Google I/O`大会上提出了`Cloud Profiles`的方案。具体原理如下：
+
+      ![共享](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/share.png)
+
+      
+
+      这个方案依赖`Google Play`来完成。当一个设备为空闲状态并且连接到`WiFi`时，`Google Play Service`会将编译后的文件共享，之后如果有一样的手机从`Googole Play`中下载这个`APP`时，终端会收到其他人的`hotcode`信息，这样用户在第一次使用时就能获得良好的体验。
+
+      但实际上，一个人的`hotcode`无法代表所有人的`hotcode`信息，那么需要多少个样本才能拿到一个比较稳定的`hotcode profile`呢？根据官方的数据，这个数字还挺小的。
+
+      
 * 参考资料
   * [浅谈Android打包流程](https://juejin.cn/post/6844903850453762055)
-  * [Android APK打包流程](https://juejin.cn/post/6844903838894260238)
+  * [浅谈Android编译打包流程](https://blog.csdn.net/li0978/article/details/115364193)
+  * [谈谈Android编译运行过程](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/)
   * [配置构建 - Android官网](https://developer.android.google.cn/studio/build/)
   * [Android 代码混淆，到底做了什么？](https://mp.weixin.qq.com/s/zi3K7lXfSodHj6tUTLKxgg)
 
@@ -4252,7 +4326,6 @@
     * 切断消息
     * 线程切换
 
-    
 * 参考资料
   * [使用 - RxJava2 只看这一篇文章就够了](https://juejin.cn/post/6844903617124630535#heading-0)
   * [使用 - 给初学者的RxJava2.0教程](https://www.jianshu.com/c/299d0a51fdd4)

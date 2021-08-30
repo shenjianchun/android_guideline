@@ -3609,6 +3609,18 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     > Transitivity
   
     如果操作 A 先行发生于操作 B，操作 B 先行发生于操作 C，那么操作 A 先行发生于操作 C。
+    
+    
+    
+  - **Volatile**
+  
+  
+  
+* 参考资料
+
+  * [彻底理解volatile](https://juejin.cn/post/6844903601064640525)
+  * [volatile关键字的作用、原理](https://juejin.cn/post/6844903502418804743)
+  * [面试官没想到一个Volatile，我都能跟他扯半小时](https://juejin.cn/post/6844904149536997384)
 
 
 
@@ -4048,7 +4060,72 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
     ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtbOicPuR6jWEmnE86ysW1JFvm0qiaAqkI2AB95tOHaFT8UE0uqXTmbsjg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
   
-  - 线程池的工作流程
+    
+  
+  - **ThreadPoolExecutor的参数说明**
+  
+    上一小节中，我们使用ThreadPoolExecutor的构造方法来创建了一个线程池。其实在ThreadPoolExecutor中有多个构造方法，但是最终都调用到了下边代码中的这一个构造方法：
+  
+    
+  
+    ```java
+    public class ThreadPoolExecutor extends AbstractExecutorService {
+    
+        public ThreadPoolExecutor(int corePoolSize,
+                                  int maximumPoolSize,
+                                  long keepAliveTime,
+                                  TimeUnit unit,
+                                  BlockingQueue<Runnable> workQueue,
+                                  ThreadFactory threadFactory,
+                                  RejectedExecutionHandler handler) {
+            // ...省略校验相关代码
+    
+            this.corePoolSize = corePoolSize;
+            this.maximumPoolSize = maximumPoolSize;
+            this.workQueue = workQueue;
+            this.keepAliveTime = unit.toNanos(keepAliveTime);
+            this.threadFactory = threadFactory;
+            this.handler = handler;
+        }
+    
+        // ...    
+    
+    }
+    ```
+  
+    
+  
+    这个构造方法中有7个参数之多，我们逐个来看每个参数所代表的含义：
+  
+    
+  
+    - corePoolSize 表示线程池的核心线程数。当有任务提交到线程池时，如果线程池中的线程数小于corePoolSize,那么则直接创建新的线程来执行任务。
+    - workQueue 任务队列，它是一个阻塞队列，用于存储来不及执行的任务的队列。当有任务提交到线程池的时候，如果线程池中的线程数大于等于corePoolSize，那么这个任务则会先被放到这个队列中，等待执行。
+    - maximumPoolSize 表示线程池支持的最大线程数量。当一个任务提交到线程池时，线程池中的线程数大于corePoolSize,并且workQueue已满，那么则会创建新的线程执行任务，但是线程数要小于等于maximumPoolSize。
+    - keepAliveTime 非核心线程空闲时保持存活的时间。非核心线程即workQueue满了之后，再提交任务时创建的线程，因为这些线程不是核心线程，所以它空闲时间超过keepAliveTime后则会被回收。
+    - unit 非核心线程空闲时保持存活的时间的单位
+    - threadFactory 创建线程的工厂，可以在这里统一处理创建线程的属性
+    - handler 拒绝策略，当线程池中的线程达到maximumPoolSize线程数后且workQueue已满的情况下，再向线程池提交任务则执行对应的拒绝策略
+  
+    
+  
+  - **线程池的拒绝策略**
+  
+    如果线程池中的线程数达到了maximumPoolSize，并且workQueue队列存储满的情况下，线程池会执行对应的拒绝策略。在JDK中提供了RejectedExecutionHandler接口来执行拒绝操作。实现RejectedExecutionHandler的类有四个，对应了四种拒绝策略。分别如下：
+  
+    
+  
+    - DiscardPolicy 当提交任务到线程池中被拒绝时，线程池会丢弃这个被拒绝的任务
+  
+    - DiscardOldestPolicy 当提交任务到线程池中被拒绝时，线程池会丢弃等待队列中最老的任务。
+  
+    - CallerRunsPolicy 当提交任务到线程池中被拒绝时，会在线程池当前正在运行的Thread线程中处理被拒绝的任务。即哪个线程提交的任务哪个线程去执行。
+  
+    - AbortPolicy 当提交任务到线程池中被拒绝时，直接抛出RejectedExecutionException异常。
+  
+      
+  
+  - **线程池的工作流程**
   
     线程池提交任务是从execute方法开始的，我们可以从execute方法来分析线程池的工作流程。
   
@@ -4106,67 +4183,9 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
     ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtBX7L7HMVibtoYbCLGsY3012bGhQYVcXjMMV82gGTP4PsO3ic3fbILZzA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
   
-    
+  - **源码分析**
   
-  - **ThreadPoolExecutor的参数说明**
   
-    上一小节中，我们使用ThreadPoolExecutor的构造方法来创建了一个线程池。其实在ThreadPoolExecutor中有多个构造方法，但是最终都调用到了下边代码中的这一个构造方法：
-  
-    
-  
-    ```java
-    public class ThreadPoolExecutor extends AbstractExecutorService {
-    
-        public ThreadPoolExecutor(int corePoolSize,
-                                  int maximumPoolSize,
-                                  long keepAliveTime,
-                                  TimeUnit unit,
-                                  BlockingQueue<Runnable> workQueue,
-                                  ThreadFactory threadFactory,
-                                  RejectedExecutionHandler handler) {
-            // ...省略校验相关代码
-    
-            this.corePoolSize = corePoolSize;
-            this.maximumPoolSize = maximumPoolSize;
-            this.workQueue = workQueue;
-            this.keepAliveTime = unit.toNanos(keepAliveTime);
-            this.threadFactory = threadFactory;
-            this.handler = handler;
-        }
-    
-        // ...    
-    
-    }
-    ```
-  
-    
-  
-    这个构造方法中有7个参数之多，我们逐个来看每个参数所代表的含义：
-  
-    
-  
-    - corePoolSize 表示线程池的核心线程数。当有任务提交到线程池时，如果线程池中的线程数小于corePoolSize,那么则直接创建新的线程来执行任务。
-    - workQueue 任务队列，它是一个阻塞队列，用于存储来不及执行的任务的队列。当有任务提交到线程池的时候，如果线程池中的线程数大于等于corePoolSize，那么这个任务则会先被放到这个队列中，等待执行。
-    - maximumPoolSize 表示线程池支持的最大线程数量。当一个任务提交到线程池时，线程池中的线程数大于corePoolSize,并且workQueue已满，那么则会创建新的线程执行任务，但是线程数要小于等于maximumPoolSize。
-    - keepAliveTime 非核心线程空闲时保持存活的时间。非核心线程即workQueue满了之后，再提交任务时创建的线程，因为这些线程不是核心线程，所以它空闲时间超过keepAliveTime后则会被回收。
-    - unit 非核心线程空闲时保持存活的时间的单位
-    - threadFactory 创建线程的工厂，可以在这里统一处理创建线程的属性
-    - handler 拒绝策略，当线程池中的线程达到maximumPoolSize线程数后且workQueue已满的情况下，再向线程池提交任务则执行对应的拒绝策略
-  
-    
-  
-  - **线程池的拒绝策略**
-  
-    如果线程池中的线程数达到了maximumPoolSize，并且workQueue队列存储满的情况下，线程池会执行对应的拒绝策略。在JDK中提供了RejectedExecutionHandler接口来执行拒绝操作。实现RejectedExecutionHandler的类有四个，对应了四种拒绝策略。分别如下：
-  
-    
-  
-    - DiscardPolicy 当提交任务到线程池中被拒绝时，线程池会丢弃这个被拒绝的任务
-    - DiscardOldestPolicy 当提交任务到线程池中被拒绝时，线程池会丢弃等待队列中最老的任务。
-    - CallerRunsPolicy 当提交任务到线程池中被拒绝时，会在线程池当前正在运行的Thread线程中处理被拒绝额任务。即哪个线程提交的任务哪个线程去执行。
-    - AbortPolicy 当提交任务到线程池中被拒绝时，直接抛出RejectedExecutionException异常。
-  
-    
 
 * 参考资料
   * [ThreadPoolExecutor 官方使用说明](https://blog.csdn.net/Siobhan/article/details/51282570?ops_request_misc=%7B%22request%5Fid%22%3A%22162195034216780271552440%22%2C%22scm%22%3A%2220140713.130102334.pc%5Fblog.%22%7D&request_id=162195034216780271552440&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-1-51282570.pc_v2_rank_blog_default&utm_term=线程池&spm=1018.2226.3001.4450)
