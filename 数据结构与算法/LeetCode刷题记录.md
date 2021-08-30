@@ -129,6 +129,7 @@
 16. 剑指 Offer 12. 矩阵中的路径   [二维数组] [解决方案：回溯] [2021/8/2] [中等]   - https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/   (同：79.单词搜索   -  https://leetcode-cn.com/problems/word-search/)
 17. 剑指 Offer 32 - I. 从上到下打印二叉树 [][] [二叉树] [解决方法：BFS | 队列] [2021/7/15] [中等]   - https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/  （同：102.二叉树的层序遍历 -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))）
 18.  剑指 Offer 38. 字符串的排列 [字符串] [回溯] [2021/8/28] [中等] -  https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/  （同：46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/）
+19. 剑指 Offer 34. 二叉树中和为某一值的路径 [二叉树] [前序遍历、回溯] [2021/8/30] [中等]   - https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/
 
  
 
