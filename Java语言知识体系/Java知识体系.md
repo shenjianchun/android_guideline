@@ -3654,51 +3654,529 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     }
     ```
 
+    
+
   - **互斥同步**
 
+    synchronized 和 ReentrantLock。
+  
+    
+  
   - **非阻塞同步**
-
+  
+    互斥同步最主要的问题就是线程阻塞和唤醒所带来的性能问题，因此这种同步也称为阻塞同步。
+  
+    互斥同步属于一种悲观的并发策略，总是认为只要不去做正确的同步措施，那就肯定会出现问题。无论共享数据是否真的会出现竞争，它都要进行加锁（这里讨论的是概念模型，实际上虚拟机会优化掉很大一部分不必要的加锁）、用户态核心态转换、维护锁计数器和检查是否有被阻塞的线程需要唤醒等操作。
+  
+    随着硬件指令集的发展，我们可以使用基于冲突检测的乐观并发策略：先进行操作，如果没有其它线程争用共享数据，那操作就成功了，否则采取补偿措施（不断地重试，直到成功为止）。这种乐观的并发策略的许多实现都不需要将线程阻塞，因此这种同步操作称为非阻塞同步。
+  
+    #### 1. CAS
+  
+    乐观锁需要操作和冲突检测这两个步骤具备原子性，这里就不能再使用互斥同步来保证了，只能靠硬件来完成。硬件支持的原子性操作最典型的是：比较并交换（Compare-and-Swap，CAS）。CAS 指令需要有 3 个操作数，分别是内存地址 V、旧的预期值 A 和新值 B。当执行操作时，只有当 V 的值等于 A，才将 V 的值更新为 B。
+  
+    
+  
+    #### 2. AtomicInteger
+  
+    J.U.C 包里面的整数原子类 AtomicInteger 的方法调用了 Unsafe 类的 CAS 操作。
+  
+    以下代码使用了 AtomicInteger 执行了自增的操作。
+  
+    ```
+    private AtomicInteger cnt = new AtomicInteger();
+    
+    public void add() {
+        cnt.incrementAndGet();
+    }
+    ```
+  
+    以下代码是 incrementAndGet() 的源码，它调用了 Unsafe 的 getAndAddInt() 。
+  
+    ```
+    public final int incrementAndGet() {
+        return unsafe.getAndAddInt(this, valueOffset, 1) + 1;
+    }
+    ```
+  
+    以下代码是 getAndAddInt() 源码，var1 指示对象内存地址，var2 指示该字段相对对象内存地址的偏移，var4 指示操作需要加的数值，这里为 1。通过 getIntVolatile(var1, var2) 得到旧的预期值，通过调用 compareAndSwapInt() 来进行 CAS 比较，如果该字段内存地址中的值等于 var5，那么就更新内存地址为 var1+var2 的变量为 var5+var4。
+  
+    可以看到 getAndAddInt() 在一个循环中进行，发生冲突的做法是不断的进行重试。
+  
+    ```java
+    public final int getAndAddInt(Object var1, long var2, int var4) {
+        int var5;
+        do {
+            var5 = this.getIntVolatile(var1, var2);
+        } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
+    
+        return var5;
+    }
+    ```
+  
+    
+  
+    #### 3. ABA
+  
+    如果一个变量初次读取的时候是 A 值，它的值被改成了 B，后来又被改回为 A，那 CAS 操作就会误认为它从来没有被改变过。
+  
+    J.U.C 包提供了一个带有标记的原子引用类 AtomicStampedReference 来解决这个问题，它可以通过控制变量值的版本来保证 CAS 的正确性。大部分情况下 ABA 问题不会影响程序并发的正确性，如果需要解决 ABA 问题，改用传统的互斥同步可能会比原子类更高效。
+  
+    
+  
   - **无同步方案**
+  
+    要保证线程安全，并不是一定就要进行同步。如果一个方法本来就不涉及共享数据，那它自然就无须任何同步措施去保证正确性。
+  
+    #### 1. 栈封闭
+  
+    多个线程访问同一个方法的局部变量时，不会出现线程安全问题，因为局部变量存储在虚拟机栈中，属于线程私有的。
+  
+    ```
+    public class StackClosedExample {
+        public void add100() {
+            int cnt = 0;
+            for (int i = 0; i < 100; i++) {
+                cnt++;
+            }
+            System.out.println(cnt);
+        }
+    }
+    public static void main(String[] args) {
+        StackClosedExample example = new StackClosedExample();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(() -> example.add100());
+        executorService.execute(() -> example.add100());
+        executorService.shutdown();
+    }
+    100
+    100
+    ```
+  
+    #### 2. 线程本地存储（Thread Local Storage）
+  
+    如果一段代码中所需要的数据必须与其他代码共享，那就看看这些共享数据的代码是否能保证在同一个线程中执行。如果能保证，我们就可以把共享数据的可见范围限制在同一个线程之内，这样，无须同步也能保证线程之间不出现数据争用的问题。
+  
+    符合这种特点的应用并不少见，大部分使用消费队列的架构模式（如“生产者-消费者”模式）都会将产品的消费过程尽量在一个线程中消费完。其中最重要的一个应用实例就是经典 Web 交互模型中的“一个请求对应一个服务器线程”（Thread-per-Request）的处理方式，这种处理方式的广泛应用使得很多 Web 服务端应用都可以使用线程本地存储来解决线程安全问题。
+  
+    可以使用 java.lang.ThreadLocal 类来实现线程本地存储功能。
+  
+    对于以下代码，thread1 中设置 threadLocal 为 1，而 thread2 设置 threadLocal 为 2。过了一段时间之后，thread1 读取 threadLocal 依然是 1，不受 thread2 的影响。
+  
+    ```
+    public class ThreadLocalExample {
+        public static void main(String[] args) {
+            ThreadLocal threadLocal = new ThreadLocal();
+            Thread thread1 = new Thread(() -> {
+                threadLocal.set(1);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(threadLocal.get());
+                threadLocal.remove();
+            });
+            Thread thread2 = new Thread(() -> {
+                threadLocal.set(2);
+                threadLocal.remove();
+            });
+            thread1.start();
+            thread2.start();
+        }
+    }
+    1
+    ```
+  
+    为了理解 ThreadLocal，先看以下代码：
+  
+    ```
+    public class ThreadLocalExample1 {
+        public static void main(String[] args) {
+            ThreadLocal threadLocal1 = new ThreadLocal();
+            ThreadLocal threadLocal2 = new ThreadLocal();
+            Thread thread1 = new Thread(() -> {
+                threadLocal1.set(1);
+                threadLocal2.set(1);
+            });
+            Thread thread2 = new Thread(() -> {
+                threadLocal1.set(2);
+                threadLocal2.set(2);
+            });
+            thread1.start();
+            thread2.start();
+        }
+    }
+    ```
+  
+    它所对应的底层结构图为：
+  
+    [![img](https://camo.githubusercontent.com/4b220b71849a86d4fecc7f3894f081d40ecf11d2276e24d1d0d750c11f179d0f/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f36373832363734632d316266652d343837392d616633392d6539643732326139356433392e706e67)](https://camo.githubusercontent.com/4b220b71849a86d4fecc7f3894f081d40ecf11d2276e24d1d0d750c11f179d0f/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f36373832363734632d316266652d343837392d616633392d6539643732326139356433392e706e67)
+  
+    
+  
+    每个 Thread 都有一个 ThreadLocal.ThreadLocalMap 对象。
+  
+    ```
+    /* ThreadLocal values pertaining to this thread. This map is maintained
+     * by the ThreadLocal class. */
+    ThreadLocal.ThreadLocalMap threadLocals = null;
+    ```
+  
+    当调用一个 ThreadLocal 的 set(T value) 方法时，先得到当前线程的 ThreadLocalMap 对象，然后将 ThreadLocal->value 键值对插入到该 Map 中。
+  
+    ```
+    public void set(T value) {
+        Thread t = Thread.currentThread();
+        ThreadLocalMap map = getMap(t);
+        if (map != null)
+            map.set(this, value);
+        else
+            createMap(t, value);
+    }
+    ```
+  
+    get() 方法类似。
+  
+    ```
+    public T get() {
+        Thread t = Thread.currentThread();
+        ThreadLocalMap map = getMap(t);
+        if (map != null) {
+            ThreadLocalMap.Entry e = map.getEntry(this);
+            if (e != null) {
+                @SuppressWarnings("unchecked")
+                T result = (T)e.value;
+                return result;
+            }
+        }
+        return setInitialValue();
+    }
+    ```
+  
+    ThreadLocal 从理论上讲并不是用来解决多线程并发问题的，因为根本不存在多线程竞争。
+  
+    在一些场景 (尤其是使用线程池) 下，由于 ThreadLocal.ThreadLocalMap 的底层数据结构导致 ThreadLocal 有内存泄漏的情况，应该尽可能在每次使用 ThreadLocal 后手动调用 remove()，以避免出现 ThreadLocal 经典的内存泄漏甚至是造成自身业务混乱的风险。
+  
+    #### 3. 可重入代码（Reentrant Code）
+  
+    这种代码也叫做纯代码（Pure Code），可以在代码执行的任何时刻中断它，转而去执行另外一段代码（包括递归调用它本身），而在控制权返回后，原来的程序不会出现任何错误。
+  
+    可重入代码有一些共同的特征，例如不依赖存储在堆上的数据和公用的系统资源、用到的状态量都由参数中传入、不调用非可重入的方法等。
 
 
 
-### [锁优化](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#十二锁优化)
+### 锁类型
 
 * 知识点
 
-  - Java锁类型：悲观锁、乐观锁、可重入/不可重入锁 
-  - 自旋锁
-  - 锁消除
-  - 锁粗化
-  - 轻量级锁
-  - 偏向锁
+  * 阅读 [不可不说的Java“锁”事](https://tech.meituan.com/2018/11/15/java-lock.html)  即可
+
+  ![img](https://awps-assets.meituan.net/mit-x/blog-images-bundle-2018b/7f749fc8.png)
+
 * 参考资料
+
+  * [不可不说的Java“锁”事](https://tech.meituan.com/2018/11/15/java-lock.html)
   * [《蹲坑也能进大厂》多线程系列 - 悲观锁、乐观锁、可重入/不可重入锁 详解](https://juejin.cn/post/6978131721845899295)
 
 
 
+### 锁优化
+
+* 知识点
+
+  这里的锁优化主要是指 JVM 对 synchronized 的优化。
+
+  
+
+  - **自旋锁**
+
+    互斥同步进入阻塞状态的开销都很大，应该尽量避免。在许多应用中，共享数据的锁定状态只会持续很短的一段时间。自旋锁的思想是让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。
+
+    自旋锁虽然能避免进入阻塞状态从而减少开销，但是它需要进行忙循环操作占用 CPU 时间，它只适用于共享数据的锁定状态很短的场景。
+
+    在 JDK 1.6 中引入了自适应的自旋锁。自适应意味着自旋的次数不再固定了，而是由前一次在同一个锁上的自旋次数及锁的拥有者的状态来决定。
+
+    
+
+  - **锁消除**
+
+    锁消除是指对于被检测出不可能存在竞争的共享数据的锁进行消除。
+
+    锁消除主要是通过逃逸分析来支持，如果堆上的共享数据不可能逃逸出去被其它线程访问到，那么就可以把它们当成私有数据对待，也就可以将它们的锁进行消除。
+
+    对于一些看起来没有加锁的代码，其实隐式的加了很多锁。例如下面的字符串拼接代码就隐式加了锁：
+
+    ```
+    public static String concatString(String s1, String s2, String s3) {
+        return s1 + s2 + s3;
+    }
+    ```
+
+    String 是一个不可变的类，编译器会对 String 的拼接自动优化。在 JDK 1.5 之前，会转化为 StringBuffer 对象的连续 append() 操作：
+
+    ```
+    public static String concatString(String s1, String s2, String s3) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(s1);
+        sb.append(s2);
+        sb.append(s3);
+        return sb.toString();
+    }
+    ```
+
+    每个 append() 方法中都有一个同步块。虚拟机观察变量 sb，很快就会发现它的动态作用域被限制在 concatString() 方法内部。也就是说，sb 的所有引用永远不会逃逸到 concatString() 方法之外，其他线程无法访问到它，因此可以进行消除。
+
+    
+
+  - **锁粗化**
+
+    如果一系列的连续操作都对同一个对象反复加锁和解锁，频繁的加锁操作就会导致性能损耗。
+
+    上一节的示例代码中连续的 append() 方法就属于这类情况。如果虚拟机探测到由这样的一串零碎的操作都对同一个对象加锁，将会把加锁的范围扩展（粗化）到整个操作序列的外部。对于上一节的示例代码就是扩展到第一个 append() 操作之前直至最后一个 append() 操作之后，这样只需要加锁一次就可以了。
+
+    
+
+  - **轻量级锁**
+
+    JDK 1.6 引入了偏向锁和轻量级锁，从而让锁拥有了四个状态：无锁状态（unlocked）、偏向锁状态（biasble）、轻量级锁状态（lightweight locked）和重量级锁状态（inflated）。
+
+    以下是 HotSpot 虚拟机对象头的内存布局，这些数据被称为 Mark Word。其中 tag bits 对应了五个状态，这些状态在右侧的 state 表格中给出。除了 marked for gc 状态，其它四个状态已经在前面介绍过了。
+
+    ![img](https://camo.githubusercontent.com/244b36284e8af2b9991999bc998ce6ec787bc1d606d02fb3c480c078830af57e/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f62623661343962652d303066322d346632372d613063652d3465643736346263363035632e706e67)
+
+    
+
+    下图左侧是一个线程的虚拟机栈，其中有一部分称为 Lock Record 的区域，这是在轻量级锁运行过程创建的，用于存放锁对象的 Mark Word。而右侧就是一个锁对象，包含了 Mark Word 和其它信息。
+
+    ![img](https://camo.githubusercontent.com/0d43ae0c3a70eac2641a88726e815ec1f49e04ef567767f23f5478fc26b971bd/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f30353165343336632d306534362d346335392d386636372d3532643839643635363138322e706e67)
+
+    
+
+    轻量级锁是相对于传统的重量级锁而言，它使用 CAS 操作来避免重量级锁使用互斥量的开销。对于绝大部分的锁，在整个同步周期内都是不存在竞争的，因此也就不需要都使用互斥量进行同步，可以先采用 CAS 操作进行同步，如果 CAS 失败了再改用互斥量进行同步。
+
+    当尝试获取一个锁对象时，如果锁对象标记为 0 01，说明锁对象的锁未锁定（unlocked）状态。此时虚拟机在当前线程的虚拟机栈中创建 Lock Record，然后使用 CAS 操作将对象的 Mark Word 更新为 Lock Record 指针。如果 CAS 操作成功了，那么线程就获取了该对象上的锁，并且对象的 Mark Word 的锁标记变为 00，表示该对象处于轻量级锁状态。
+
+    ![img](https://camo.githubusercontent.com/910c1d1e3463d96ca4875a2d4db5156ed7533136d5eca07e1190258964f161ea/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f62616161363831662d376335322d343139382d613561652d3330336239333836636634372e706e67)
+
+    
+
+    如果 CAS 操作失败了，虚拟机首先会检查对象的 Mark Word 是否指向当前线程的虚拟机栈，如果是的话说明当前线程已经拥有了这个锁对象，那就可以直接进入同步块继续执行，否则说明这个锁对象已经被其他线程线程抢占了。如果有两条以上的线程争用同一个锁，那轻量级锁就不再有效，要膨胀为重量级锁。
+
+    
+
+  - **偏向锁**
+
+    偏向锁的思想是偏向于让第一个获取锁对象的线程，这个线程在之后获取该锁就不再需要进行同步操作，甚至连 CAS 操作也不再需要。
+
+    当锁对象第一次被线程获得的时候，进入偏向状态，标记为 1 01。同时使用 CAS 操作将线程 ID 记录到 Mark Word 中，如果 CAS 操作成功，这个线程以后每次进入这个锁相关的同步块就不需要再进行任何同步操作。
+
+    当有另外一个线程去尝试获取这个锁对象时，偏向状态就宣告结束，此时撤销偏向（Revoke Bias）后恢复到未锁定状态或者轻量级锁状态。
+
+    ![img](https://camo.githubusercontent.com/95d0ad9a48474178e9ab5fcfc994d768a904d1e53fce6c144a58340a6f71dc22/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f33393063393133622d356633312d343434662d626264622d3262383862363838653763652e6a7067)
+
+* 参考资料
+  
+  * [锁优化](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20%E5%B9%B6%E5%8F%91.md#%E5%8D%81%E4%BA%8C%E9%94%81%E4%BC%98%E5%8C%96)
+
+
+
 ### [多线程开发良好的实践](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#十三多线程开发良好的实践)
+
+- 给线程起个有意义的名字，这样可以方便找 Bug。
+- 缩小同步范围，从而减少锁争用。例如对于 synchronized，应该尽量使用同步块而不是同步方法。
+- 多用同步工具少用 wait() 和 notify()。首先，CountDownLatch, CyclicBarrier, Semaphore 和 Exchanger 这些同步类简化了编码操作，而用 wait() 和 notify() 很难实现复杂控制流；其次，这些同步类是由最好的企业编写和维护，在后续的 JDK 中还会不断优化和完善。
+- 使用 BlockingQueue 实现生产者消费者问题。
+- 多用并发集合少用同步集合，例如应该使用 ConcurrentHashMap 而不是 Hashtable。
+- 使用本地变量和不可变类来保证线程安全。
+- 使用线程池而不是直接创建线程，这是因为创建线程代价很高，线程池可以有效地利用有限的线程来启动任务。
 
 
 
 ### 线程池
 
 * 知识点
-  - 线程池的使用
-  - 线程池的生命周期
+  - **线程池的使用**
+  
+    1. 使用线程池工具类Executors来快捷的创建线程池
+  
+       ```java
+       // 实例化一个单线程的线程池
+       ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
+       // 创建固定线程个数的线程池
+       ExecutorService fixedExecutor = Executors.newFixedThreadPool(10);
+       // 创建一个可重用固定线程数的线程池
+       ExecutorService executorService2 = Executors.newCachedThreadPool();
+       ```
+  
+       
+  
+    2. 通过ThreadPoolExecutor的构造方法来实例化出一个线程池。创建好线程池后直接调用execute方法或submit方法并传入一个Runnable参数即可将任务交给线程池执行，通过shutdown/shutdownNow方法可以关闭线程池。
+  
+       ```java
+       // 实例化一个线程池
+       ThreadPoolExecutor executor = new ThreadPoolExecutor(3, 10, 60,
+               TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
+       // 使用线程池执行一个任务        
+       executor.execute(() -> {
+           // Do something
+       });
+       // 关闭线程池,会阻止新任务提交，但不影响已提交的任务
+       executor.shutdown();
+       // 关闭线程池，阻止新任务提交，并且中断当前正在运行的线程
+       executor.showdownNow();
+       ```
+  
+    
+  
+  - **线程池的生命周期**
+  
+    线程池从诞生到死亡，中间会经历RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED五个生命周期状态。
+  
+    
+  
+    - RUNNING 表示线程池处于运行状态，能够接受新提交的任务且能对已添加的任务进行处理。RUNNING状态是线程池的初始化状态，线程池一旦被创建就处于RUNNING状态。
+    - SHUTDOWN 线程处于关闭状态，不接受新任务，但可以处理已添加的任务。RUNNING状态的线程池调用shutdown后会进入SHUTDOWN状态。
+    - STOP 线程池处于停止状态，不接收任务，不处理已添加的任务，且会中断正在执行任务的线程。RUNNING状态的线程池调用了shutdownNow后会进入STOP状态。
+    - TIDYING 当所有任务已终止，且任务数量为0时，线程池会进入TIDYING。当线程池处于SHUTDOWN状态时，阻塞队列中的任务被执行完了，且线程池中没有正在执行的任务了，状态会由SHUTDOWN变为TIDYING。当线程处于STOP状态时，线程池中没有正在执行的任务时则会由STOP变为TIDYING。
+    - TERMINATED 线程终止状态。处于TIDYING状态的线程执行terminated()后进入TERMINATED状态。
+  
+    
+  
+    根据上述线程池生命周期状态的描述，可以画出如下所示的线程池生命周期状态流程示意图。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtbOicPuR6jWEmnE86ysW1JFvm0qiaAqkI2AB95tOHaFT8UE0uqXTmbsjg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
   - 线程池的工作流程
-  - ThreadPoolExecutor的参数说明
-  - 线程池的拒绝策略
+  
+    线程池提交任务是从execute方法开始的，我们可以从execute方法来分析线程池的工作流程。
+  
+    
+  
+    （1）当execute方法提交一个任务时，如果线程池中线程数小于corePoolSize,那么不管线程池中是否有空闲的线程，都会创建一个新的线程来执行任务。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dt8qWDDT24p6YzLnbuqiaeibuicF6iciah8Ftvaboaia4dXTgvG2FL1boE8Ykg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    （2）当execute方法提交一个任务时，线程池中的线程数已经达到了corePoolSize,且此时没有空闲的线程，那么则会将任务存储到workQueue中。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dt45xa0iaVHMd9mehR4TlIYpjDUoKp6NcBvmNdjrTN7pDGsKPRibofhuLA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    
+  
+    （3）如果execute提交任务时线程池中的线程数已经到达了corePoolSize,并且workQueue已满，那么则会创建新的线程来执行任务，但总线程数应该小于maximumPoolSize。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtG9K6cNxlQ3gHay42kYF5bzFql9qx9tzZrk2vYZG2sbwASYPydbuptQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    
+  
+    （4）如果线程池中的线程执行完了当前的任务，则会尝试从workQueue中取出第一个任务来执行。如果workQueue为空则会阻塞线程。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dt3HUtwjEqyo0zQFvBrRbd8AYXyPG28jy6OxULNGO7micON4HSMQgia1zw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    
+  
+    （5）如果execute提交任务时，线程池中的线程数达到了maximumPoolSize，且workQueue已满，此时会执行拒绝策略来拒绝接受任务。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtEIX1Z1SPibmGpbA8CX6E4o9q64x51mvjrW8l2V7AH7vpVvwuEaPtfTA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    
+  
+    （6）如果线程池中的线程数超过了corePoolSize，那么空闲时间超过keepAliveTime的线程会被销毁，但程池中线程个数会保持为corePoolSize。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtuyRBicAEsqM9ysniciak3Q5Q1L3OBAb8FXialxQ5KHqibBWdnnoAEhEkLXA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    
+  
+    （7）如果线程池存在空闲的线程，并且设置了allowCoreThreadTimeOut为true。那么空闲时间超过keepAliveTime的线程都会被销毁。
+  
+    
+  
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/v1LbPPWiaSt6H8321dHpzCuKh3L53K1dtBX7L7HMVibtoYbCLGsY3012bGhQYVcXjMMV82gGTP4PsO3ic3fbILZzA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+  
+    
+  
+  - **ThreadPoolExecutor的参数说明**
+  
+    上一小节中，我们使用ThreadPoolExecutor的构造方法来创建了一个线程池。其实在ThreadPoolExecutor中有多个构造方法，但是最终都调用到了下边代码中的这一个构造方法：
+  
+    
+  
+    ```java
+    public class ThreadPoolExecutor extends AbstractExecutorService {
+    
+        public ThreadPoolExecutor(int corePoolSize,
+                                  int maximumPoolSize,
+                                  long keepAliveTime,
+                                  TimeUnit unit,
+                                  BlockingQueue<Runnable> workQueue,
+                                  ThreadFactory threadFactory,
+                                  RejectedExecutionHandler handler) {
+            // ...省略校验相关代码
+    
+            this.corePoolSize = corePoolSize;
+            this.maximumPoolSize = maximumPoolSize;
+            this.workQueue = workQueue;
+            this.keepAliveTime = unit.toNanos(keepAliveTime);
+            this.threadFactory = threadFactory;
+            this.handler = handler;
+        }
+    
+        // ...    
+    
+    }
+    ```
+  
+    
+  
+    这个构造方法中有7个参数之多，我们逐个来看每个参数所代表的含义：
+  
+    
+  
+    - corePoolSize 表示线程池的核心线程数。当有任务提交到线程池时，如果线程池中的线程数小于corePoolSize,那么则直接创建新的线程来执行任务。
+    - workQueue 任务队列，它是一个阻塞队列，用于存储来不及执行的任务的队列。当有任务提交到线程池的时候，如果线程池中的线程数大于等于corePoolSize，那么这个任务则会先被放到这个队列中，等待执行。
+    - maximumPoolSize 表示线程池支持的最大线程数量。当一个任务提交到线程池时，线程池中的线程数大于corePoolSize,并且workQueue已满，那么则会创建新的线程执行任务，但是线程数要小于等于maximumPoolSize。
+    - keepAliveTime 非核心线程空闲时保持存活的时间。非核心线程即workQueue满了之后，再提交任务时创建的线程，因为这些线程不是核心线程，所以它空闲时间超过keepAliveTime后则会被回收。
+    - unit 非核心线程空闲时保持存活的时间的单位
+    - threadFactory 创建线程的工厂，可以在这里统一处理创建线程的属性
+    - handler 拒绝策略，当线程池中的线程达到maximumPoolSize线程数后且workQueue已满的情况下，再向线程池提交任务则执行对应的拒绝策略
+  
+    
+  
+  - **线程池的拒绝策略**
+  
+    如果线程池中的线程数达到了maximumPoolSize，并且workQueue队列存储满的情况下，线程池会执行对应的拒绝策略。在JDK中提供了RejectedExecutionHandler接口来执行拒绝操作。实现RejectedExecutionHandler的类有四个，对应了四种拒绝策略。分别如下：
+  
+    
+  
+    - DiscardPolicy 当提交任务到线程池中被拒绝时，线程池会丢弃这个被拒绝的任务
+    - DiscardOldestPolicy 当提交任务到线程池中被拒绝时，线程池会丢弃等待队列中最老的任务。
+    - CallerRunsPolicy 当提交任务到线程池中被拒绝时，会在线程池当前正在运行的Thread线程中处理被拒绝额任务。即哪个线程提交的任务哪个线程去执行。
+    - AbortPolicy 当提交任务到线程池中被拒绝时，直接抛出RejectedExecutionException异常。
+  
+    
+
+* 参考资料
+  * [ThreadPoolExecutor 官方使用说明](https://blog.csdn.net/Siobhan/article/details/51282570?ops_request_misc=%7B%22request%5Fid%22%3A%22162195034216780271552440%22%2C%22scm%22%3A%2220140713.130102334.pc%5Fblog.%22%7D&request_id=162195034216780271552440&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-1-51282570.pc_v2_rank_blog_default&utm_term=线程池&spm=1018.2226.3001.4450)
+  * [彻底搞懂Java线程池的工作原理](https://mp.weixin.qq.com/s/tyh_kDZyLu7SDiDZppCx5Q)
 
 
 
 ### 参考资料
 
   * [一篇简单易懂的Java多线程基础文章](https://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&mid=2650245349&idx=1&sn=9488549af471f3f0ee8a564a3c1516d8&chksm=8863798abf14f09cc5999fd7ff9b8af31f824266513da802aa3be3d2d6c41ca9d809a8714468&xtrack=1&scene=0&subscene=131&clicktime=1553648630&ascene=7&devicetype=android-28&version=2700033b&nettype=ctnet&abtest_cookie=AwABAAoACwATAAQAI5ceAFaZHgDAmR4A3JkeAAAA&lang=zh_CN&pass_ticket=WUZw9KLx3SitUmBAZTZsUEYBCJtQDNgkE%2BNF4RSSSU4%3D&wx_header=1)
-  * [ThreadPoolExecutor 官方使用说明](https://blog.csdn.net/Siobhan/article/details/51282570?ops_request_misc=%7B%22request%5Fid%22%3A%22162195034216780271552440%22%2C%22scm%22%3A%2220140713.130102334.pc%5Fblog.%22%7D&request_id=162195034216780271552440&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-1-51282570.pc_v2_rank_blog_default&utm_term=线程池&spm=1018.2226.3001.4450)
-  * [彻底搞懂Java线程池的工作原理](https://mp.weixin.qq.com/s/tyh_kDZyLu7SDiDZppCx5Q)
-
-
 
 
 
