@@ -127,9 +127,12 @@
 14. **剑指 Offer 10- I. 斐波那契数列** [斐波那契（Fibonacci）数列]] [解决方案：动态规划] [2021/8/25] [简单]  -  https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/
 15. 剑指 Offer 06. 从尾到头打印链表 [链表] [解决方案：栈] [2021/8、25] [简单] -  https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/
 16. 剑指 Offer 12. 矩阵中的路径   [二维数组] [解决方案：回溯] [2021/8/2] [中等]   - https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/   (同：79.单词搜索   -  https://leetcode-cn.com/problems/word-search/)
-17. 剑指 Offer 32 - I. 从上到下打印二叉树 [][] [二叉树] [解决方法：BFS | 队列] [2021/7/15] [中等]   - https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/  （同：102.二叉树的层序遍历 -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))）
-18.  剑指 Offer 38. 字符串的排列 [字符串] [回溯] [2021/8/28] [中等] -  https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/  （同：46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/）
-19. 剑指 Offer 34. 二叉树中和为某一值的路径 [二叉树] [前序遍历、回溯] [2021/8/30] [中等]   - https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/
+17. 剑指 Offer 32 - I. 从上到下打印二叉树 [][] [二叉树] [解决方案：BFS | 队列] [2021/7/15] [中等]   - https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/  （同：102.二叉树的层序遍历 -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))）
+18.  剑指 Offer 38. 字符串的排列 [字符串] [解决方案：回溯] [2021/8/28] [中等] -  https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/  （同：46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/）
+19. 剑指 Offer 34. 二叉树中和为某一值的路径 [二叉树] [解决方案：前序遍历、回溯] [2021/8/30] [中等]   - https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/
+20. 剑指 Offer 26. 树的子结构 [二叉树] [解决方案：前序遍历] [2021/9/1] [中等] - https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/
+21. 剑指 Offer 03. 数组中重复的数字  [数组] [解决方案：哈希] [2021/91/] [简单]  -   https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/
+22. 剑指 Offer 56 - I. 数组中数字出现的次数 [] [] [解决方案：] [中等] -  https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/
 
  
 

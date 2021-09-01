@@ -34,6 +34,8 @@
   
   * Context的继承关系（Context -> ContextImpl ; Context -> ContextWrapper -> Application、Activity、Service）
   
+    ![context继承关系](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/12/15/1605838ab2813f10~tplv-t2oaga2asx-watermark.awebp)
+  
   * Context功能（不同的Context类型都是调用ContextImpl的方法，但是有一些细微的差别，比如启动Activity、弹窗还是需要用Activity）
   
   * Context的数量	
@@ -311,7 +313,6 @@
 
       但实际上，一个人的`hotcode`无法代表所有人的`hotcode`信息，那么需要多少个样本才能拿到一个比较稳定的`hotcode profile`呢？根据官方的数据，这个数字还挺小的。
 
-      
 * 参考资料
   * [浅谈Android打包流程](https://juejin.cn/post/6844903850453762055)
   * [浅谈Android编译打包流程](https://blog.csdn.net/li0978/article/details/115364193)
