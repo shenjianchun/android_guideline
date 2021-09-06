@@ -2725,7 +2725,10 @@
 
 ### 综合知识
 
+![android-performance.png](https://github.com/JsonChao/Awesome-Android-Performance/blob/master/screenshots/android-performance.png?raw=true)
+
 * 参考资料
+  * [Awesome-Android-Performance](https://github.com/JsonChao/Awesome-Android-Performance)
   * [分享一波 Android 性能优化的总结！](https://mp.weixin.qq.com/s/MfIT_sV0xwt1UnGQWXCJIA)
   * [性能与功耗 - Android官网](https://developer.android.com/topic/performance)
 
@@ -2921,33 +2924,10 @@
     * 方案一：Looper#loop方法中的 logging.println，需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
     * 方案二：通过Gradle Plugin+ASM，编译期在每个方法开始和结束位置分别插入一行代码，统计方法耗时。字节码插桩技术，适合线上。微信Matrix 。
 
-  * ANR的原理
-
-    * 哪些场景会造成ANR？
-
-      **Service Timeout**:比如前台服务在20s内未执行完成，后台服务是10s。
-
-      **BroadcastQueue Timeout**：比如前台广播在10s内未执行完成，后台60s。
-
-      **ContentProvider Timeout**：内容提供者,在publish过超时10s。
-
-      **InputDispatching Timeout**: 输入事件分发超时5s，包括按键和触摸事件。
-
-    * 在AMS中埋炸弹和拆炸弹（非输入事件）
-
-    * 引爆炸弹（非输入事件）
-
-      ##### **AppErrors #appNotResponding** 
-
-  * ANR分析法
-
-    * “/data/anr/tarce.txt” 文件
-    * 先查看主线程的状态，搜索“main”关键字
 * 参考资料
   
   * [卡顿、ANR、死锁，线上如何监控？](https://juejin.cn/post/6973564044351373326)
   * [《广研Android卡顿监控系统》](https://mp.weixin.qq.com/s/MthGj4AwFPL2JrZ0x1i4fw)
-  * [彻底理解安卓应用无响应机制](http://gityuan.com/2019/04/06/android-anr/)
   * [Systrace实战：彻底搞懂卡顿原理！](https://mp.weixin.qq.com/s/eij3z6wlT4k3GGQm637b-A)
 
 
@@ -3272,16 +3252,131 @@
 ### 稳定性知识与优化
 
 * 知识点
-  * 
+
+  稳定性从宏观维度来说是包含了崩溃、性能等一些维度的，但是我们这边只从微观角度来看，关于性能、功耗等会放到别的章节里面。那么微观角度会分为Crash和ANR。
+
+  * **Crash（Java和Native）**
+
+    * Java
+
+      
+
+    * Native
+
+      1. so 组成
+
+         一个完整的 so 由C代码加一些 debug 信息组成，这些debug信息会记录 so 中所有方法的对照表，就是方法名和其偏移地址的对应表，也叫做符号表，这种 so  也叫做未 strip 的，通常体积会比较大。
+
+      2. NE的捕获与解析
+
+         1） logcat捕获。获取到logcat日志之后，可以通过使用Android/SDK/NDK下面提供的一个工具ndk-stack，它可以直接将NE输出的log解析为可阅读的日志。
+
+         ​       
+
+         2）通过DropBox日志解析--适用于系统应用。 DropBox会记录JE，NE，ANR的各种日志，只需要将DropBox下面的日志传上来即可进行分析解决。借助ndk-stack工具 或 addr2line工具来解析堆栈。
+
+         
+
+         3）通过BreakPad捕获解析--适用于所有应用。
+
+         BreakPad主要提供两个个功能，NE的监听和回调，生成minidump文件，也就是dmp结尾的文件，另外提供两个工具，符号表工具和堆栈还原工具。
+
+         ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3c88fff16e1941f28fe76b0fcf87a972~tplv-k3u1fbpfcp-watermark.awebp)
+
+         - **符号表工具：**用于从so中提取出debug信息，获取到堆栈对应的符号表。
+         - **堆栈还原工具：**用于将BreakPad生成的dump文件还原成符号，也就是堆栈偏移值。
+
+         
+
+         由上述可以得知，BreakPad在应用发生NE崩溃时，可以将NE对应的minidump文件写入到本地，同时会回调给应用层，应用层可以针对本次崩溃做一些处理，达到捕获统计的作用，后续将minidump文件上传之后结合minidump_stackwalk以及addr2line工具可以还原出实际堆栈，示意图如下：
+
+         ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a7fb9897484248be8c4496306cca36ea~tplv-k3u1fbpfcp-watermark.awebp)
+
+         
+
+      
+
+  * **ANR**
+
+    * **ANR的原理**
+
+      看完这三篇文章即可：[彻底理解安卓应用无响应机制](http://gityuan.com/2019/04/06/android-anr/)、 [理解Android ANR的触发原理](http://gityuan.com/2016/07/02/android-anr/)、[Input系统—ANR原理分析](http://gityuan.com/2017/01/01/input-anr/)（同Input输入系统）
+
+      * ANR的触发机制
+
+        Service、Broadcast、Provider本质都是在AMS中通过消息机制来监测是否发生超时并触发ANR。
+
+        Input主要是由于建立连接的Window问题或者是事件队列中的事件来不及处理
+
+      * ANR的触发原理
+
+      * ANR超时阈值
+
+        不同组件的超时阈值各有不同，关于service、broadcast、contentprovider以及input的超时阈值如下表：
+
+        <img src="http://gityuan.com/images/android-anr/anr_timeout.jpg" alt="anr_timeout" style="zoom:80%;" />
+
+      * ANR上报机制（阅读 [理解Android ANR的信息收集过程](http://gityuan.com/2016/12/02/app-not-response/)）
+
+        无论哪种类型的ANR发生以后，最终都会调用 AMS.appNotResponding() 方法。
+
+        
+
+    * **ANR分析法**
+
+      除了主体逻辑，发生ANR时还会输出各种类别的日志：**event log**：通过检索”am_anr”关键字，可以找到发生ANR的应用**main log**：通过检索”ANR in “关键字，可以找到ANR的信息，日志的上下文会包含CPU的使用情况**dropbox**：通过检索”anr”类型，可以找到ANR的信息**traces**：发生ANR时，各进程的函数调用栈信息
+
+      
+
+  * **Android crash机制**
+
+    * 摘录自 [理解Android Crash处理流程](http://gityuan.com/2016/06/24/app-crash/)，本文主要以源码的视角，详细介绍了到应用crash后系统的处理流程：
+
+      1. 首先发生crash所在进程，在创建之初便准备好了defaultUncaughtHandler，用来来处理Uncaught Exception，并输出当前crash基本信息；
+      2. 调用当前进程中的AMP.handleApplicationCrash；经过binder ipc机制，传递到system_server进程；
+      3. 接下来，进入system_server进程，调用binder服务端执行AMS.handleApplicationCrash；
+      4. 从`mProcessNames`查找到目标进程的ProcessRecord对象；并将进程crash信息输出到目录`/data/system/dropbox`；
+      5. 执行makeAppCrashingLocked
+         - 创建当前用户下的crash应用的error receiver，并忽略当前应用的广播；
+         - 停止当前进程中所有activity中的WMS的冻结屏幕消息，并执行相关一些屏幕相关操作；
+      6. 再执行handleAppCrashLocked方法，
+         - 当1分钟内同一进程`连续crash两次`时，且`非persistent`进程，则直接结束该应用所有activity，并杀死该进程以及同一个进程组下的所有进程。然后再恢复栈顶第一个非finishing状态的activity;
+         - 当1分钟内同一进程`连续crash两次`时，且`persistent`进程，，则只执行恢复栈顶第一个非finishing状态的activity;
+         - 当1分钟内同一进程`未发生连续crash两次`时，则执行结束栈顶正在运行activity的流程。
+      7. 通过mUiHandler发送消息`SHOW_ERROR_MSG`，弹出crash对话框；
+      8. 到此，system_server进程执行完成。回到crash进程开始执行杀掉当前进程的操作；
+      9. 当crash进程被杀，通过binder死亡通知，告知system_server进程来执行appDiedLocked()；
+      10. 最后，执行清理应用相关的activity/service/ContentProvider/receiver组件信息。
+
+      这基本就是整个应用Crash后系统的执行过程。 最后，再说说对于同一个app连续crash的情况：
+
+      - 当60s内连续crash两次的非persistent进程时，被认定为bad进程：那么如果第3次从后台启动该进程(Intent.getFlags来判断)，则会拒绝创建进程；
+      - 当crash次数达到两次的非persistent进程时，则再次杀该进程，即便允许自启的service也会在被杀后拒绝再次启动。
+
+      
+
+      **当进程抛出未捕获异常时，则系统会处理该异常并进入crash处理流程：**
+
+      ![app_crash](http://gityuan.com/images/stability/app_crash.jpg)
+
+      **当crash进程执行kill操作后，进程被杀。此时需要掌握binder 死亡通知原理，由于Crash进程中拥有一个Binder服务端`ApplicationThread`，而应用进程在创建过程调用attachApplicationLocked()，从而attach到system_server进程，在system_server进程内有一个`ApplicationThreadProxy`，这是相对应的Binder客户端。当Binder服务端`ApplicationThread`所在进程(即Crash进程)挂掉后，则Binder客户端能收到相应的死亡通知，从而进入binderDied流程。**
+
+      ![binder_died](http://gityuan.com/images/stability/binder_died.jpg)
+
 * 参考资料
   * [深入探索Android稳定性优化](https://juejin.cn/post/6844903972587716621)
+  * [彻底理解安卓应用无响应机制](http://gityuan.com/2019/04/06/android-anr/)
   * [卡顿、ANR、死锁监控方案](https://mp.weixin.qq.com/s/EzIbxeWexQv7ENDugT-UFg)
+  * [Android NativeCrash 捕获与解析](https://juejin.cn/post/6932757164003950599#heading-0)
+  * [理解Android Crash处理流程](http://gityuan.com/2016/06/24/app-crash/)
 
 
 
 ## 10. Android安全
 
+* 知识点
 
+  
 
 * 参考资料
   * [那些值得你试试的Android竞品分析工具](http://www.jianshu.com/p/ba2d9eca47a2)
