@@ -39,8 +39,8 @@
 35. 46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/  （重点参考：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/）
 36. 62.不同路径 [数组] [解决方案：动态规划（f(i)(j) = f(i-1) (j)+ f(i)(j-1)）] [2021/7/21] [中等]  -  https://leetcode-cn.com/problems/unique-paths/
 37. 23.合并K个升序链表 [链表] [解决方案：顺序合并 | 分治合并] [2021/7/21] [困难]  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
-38. 739.每日温度 [数组] [解决方案：暴力 | 动态规划] [2021/7/21]  -   https://leetcode-cn.com/problems/daily-temperatures/
-39. 617.合并二叉树 [二叉树] [解决方案：深度优先搜索 | 广度优先搜索 ] [2021/7/22]  -  https://leetcode-cn.com/problems/merge-two-binary-trees/
+38. 739.每日温度 [数组] [解决方案：暴力 | 动态规划] [2021/7/21] [中等]  -   https://leetcode-cn.com/problems/daily-temperatures/
+39. 617.合并二叉树 [二叉树] [解决方案：深度优先搜索 | 广度优先搜索 ] [2021/7/22] [简单]  -  https://leetcode-cn.com/problems/merge-two-binary-trees/
 40. 75.颜色分类  [数组] [解决方案：双指针，类似快速排序 | API | 新建一个数组] [2021/7/22] [中等]  -  https://leetcode-cn.com/problems/sort-colors/
 41. 128.最长连续序列 [数组] [解决方案：排序后遍历 | 哈希表] [2021/7/22] -  https://leetcode-cn.com/problems/longest-consecutive-sequence/
 42. 142.环形链表 II [链表] [解决方案：哈希表 | 快慢指针，计算公式] [2021/7/22] [中等]  -  https://leetcode-cn.com/problems/linked-list-cycle-ii/
@@ -118,24 +118,25 @@
 5. 剑指 Offer 45. 把数组排成最小的数 [数组] [解决方案：字符串排序] [2021/7/28] [中等]   -  https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/
 6. 剑指 Offer 62. 圆圈中最后剩下的数字 [数组] [解决方案：约瑟夫环， 公式为当前index + m) % 上一轮剩余数字的个数] [2021/7/27] [简单]  -  https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/
 7. 剑指 Offer 07. 重建二叉树  [二叉树] [解决方案递归，利用前序查根节点，利用中序查左右子节点的坐标] [2021/7/31] [中等]   -  https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/
-9.  剑指 Offer 04. 二维数组中的查找  [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/  （同主站： 240.搜索二维矩阵 II）
-10. 剑指 Offer 64. 求1+2+…+n  [递归] [解决方案：递归] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
-10.  剑指 Offer 05. 替换空格 [] [] [] [简单]  -  https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
-11.  剑指 Offer 31. 栈的压入、弹出序列  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/
-12.  剑指 Offer 35. 复杂链表的复制 [链表] [解决方案：哈希表 | 复制出来的节点放到被复制的后面] [2021/8/16] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
+8. 剑指 Offer 04. 二维数组中的查找  [二维数组] [解决方案：线性查找] [2021/8/1] [中等]  -  https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/  （同主站： 240.搜索二维矩阵 II）
+9. 剑指 Offer 64. 求1+2+…+n  [递归] [解决方案：递归] [2021/7/31] [中等]  -  https://leetcode-cn.com/problems/qiu-12n-lcof/
+10. 剑指 Offer 05. 替换空格 [] [] [] [简单]  -  https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
+11. 剑指 Offer 31. 栈的压入、弹出序列  [] [] [] [中等]  -  https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/
+12. 剑指 Offer 35. 复杂链表的复制 [链表] [解决方案：哈希表 | 复制出来的节点放到被复制的后面] [2021/8/16] [中等]  -  https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
 13. 剑指 Offer 10- II. 青蛙跳台阶问题  [斐波那契（Fibonacci）数列] [解决方案：] [2021/8/25] [简单] - https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/
 14. **剑指 Offer 10- I. 斐波那契数列** [斐波那契（Fibonacci）数列]] [解决方案：动态规划] [2021/8/25] [简单]  -  https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/
 15. 剑指 Offer 06. 从尾到头打印链表 [链表] [解决方案：栈] [2021/8、25] [简单] -  https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/
 16. 剑指 Offer 12. 矩阵中的路径   [二维数组] [解决方案：回溯] [2021/8/2] [中等]   - https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/   (同：79.单词搜索   -  https://leetcode-cn.com/problems/word-search/)
 17. 剑指 Offer 32 - I. 从上到下打印二叉树 [][] [二叉树] [解决方案：BFS | 队列] [2021/7/15] [中等]   - https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/  （同：102.二叉树的层序遍历 -  https://leetcode-cn.com/problems/binary-tree-level-order-traversal/  (重点参考这篇讲解：[BFS 的使用场景总结：层序遍历、最短路径问题](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/solution/bfs-de-shi-yong-chang-jing-zong-jie-ceng-xu-bian-l/))）
-18.  剑指 Offer 38. 字符串的排列 [字符串] [解决方案：回溯] [2021/8/28] [中等] -  https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/  （同：46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/）
+18. 剑指 Offer 38. 字符串的排列 [字符串] [解决方案：回溯] [2021/8/28] [中等] -  https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/  （同：46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/）
 19. 剑指 Offer 34. 二叉树中和为某一值的路径 [二叉树] [解决方案：前序遍历、回溯] [2021/8/30] [中等]   - https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/
 20. 剑指 Offer 26. 树的子结构 [二叉树] [解决方案：前序遍历] [2021/9/1] [中等] - https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/
 21. 剑指 Offer 03. 数组中重复的数字  [数组] [解决方案：哈希] [2021/91/] [简单]  -   https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/
 22. 剑指 Offer 56 - I. 数组中数字出现的次数 [] [解决方案：] [] [中等] -  https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/
 23. 剑指 Offer 48. 最长不含重复字符的子字符串 [字符串] [解决方案：滑动窗口] [2021/9/2] [中等]  - https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/  （同：3.无重复字符的最长子串 -  https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/）
 24. 剑指 Offer 32 - III. 从上到下打印二叉树 III [二叉树] [解决方案：BSF + 双端队列] [2021/9/4] [中等]  -  https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/
-25. 剑指 Offer 14- I. 剪绳子  [] [解决方案：] [] [中等]  - https://leetcode-cn.com/problems/jian-sheng-zi-lcof/  （同 [343. 整数拆分](https://leetcode-cn.com/problems/integer-break/)）
+25. 剑指 Offer 47. 礼物的最大价值  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/9/6] [中等]  - https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/  (同[64. 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/))
+26. 剑指 Offer 14- I. 剪绳子  [] [解决方案：数学推导，每段长度3最大] [2021/9/6] [中等]  - https://leetcode-cn.com/problems/jian-sheng-zi-lcof/  （同 [343. 整数拆分](https://leetcode-cn.com/problems/integer-break/)）
 
  
 
