@@ -237,7 +237,7 @@
 ### 编译&打包
 
 * 知识点
-  * 构建流程总览
+  * **构建流程总览**
 
     <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/5/23/16ae50ae0b37d1d4~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:50%;" />
 
@@ -312,13 +312,29 @@
       这个方案依赖`Google Play`来完成。当一个设备为空闲状态并且连接到`WiFi`时，`Google Play Service`会将编译后的文件共享，之后如果有一样的手机从`Googole Play`中下载这个`APP`时，终端会收到其他人的`hotcode`信息，这样用户在第一次使用时就能获得良好的体验。
 
       但实际上，一个人的`hotcode`无法代表所有人的`hotcode`信息，那么需要多少个样本才能拿到一个比较稳定的`hotcode profile`呢？根据官方的数据，这个数字还挺小的。
-
+    
+      
+    
+  * [**Gradle dependencies**](https://developer.android.google.cn/studio/build/dependencies)  
+  
+    | 配置                  | 行为                                                         |
+    | :-------------------- | :----------------------------------------------------------- |
+    | `implementation`      | Gradle 会将依赖项添加到编译类路径，并将依赖项打包到构建输出。不过，当您的模块配置 `implementation` 依赖项时，会让 Gradle 了解您不希望该模块在编译时将该依赖项泄露给其他模块。也就是说，其他模块只有在运行时才能使用该依赖项。<br /><br />使用此依赖项配置代替 `api` 或 `compile`（已弃用）可以**显著缩短构建时间**，因为这样可以减少构建系统需要重新编译的模块数。例如，如果 `implementation` 依赖项更改了其 API，Gradle 只会重新编译该依赖项以及直接依赖于它的模块。大多数应用和测试模块都应使用此配置。 |
+    | `api`                 | Gradle 会将依赖项添加到编译类路径和构建输出。当一个模块包含 `api` 依赖项时，会让 Gradle 了解该模块要以传递方式将该依赖项导出到其他模块，以便这些模块在运行时和编译时都可以使用该依赖项。此配置的行为类似于 `compile`（现已弃用），但使用它时应格外小心，只能对您需要以传递方式导出到其他上游消费者的依赖项使用它。这是因为，如果 `api` 依赖项更改了其外部 API，Gradle 会在编译时重新编译所有有权访问该依赖项的模块。因此，拥有大量的 `api` 依赖项会显著增加构建时间。除非要将依赖项的 API 公开给单独的模块，否则库模块应改用 `implementation` 依赖项。 |
+    | `compileOnly`         | Gradle 只会将依赖项添加到编译类路径（也就是说，不会将其添加到构建输出）。如果您创建 Android 模块时在编译期间需要相应依赖项，但它在运行时可有可无，此配置会很有用。如果您使用此配置，那么您的库模块必须包含一个运行时条件，用于检查是否提供了相应依赖项，然后适当地改变该模块的行为，以使该模块在未提供相应依赖项的情况下仍可正常运行。这样做不会添加不重要的瞬时依赖项，因而有助于减小最终 APK 的大小。此配置的行为类似于 `provided`（现已弃用）。**注意**：您不能将 `compileOnly` 配置与 AAR 依赖项配合使用。 |
+    | `runtimeOnly`         | Gradle 只会将依赖项添加到构建输出，以便在运行时使用。也就是说，不会将其添加到编译类路径。此配置的行为类似于 `apk`（现已弃用）。 |
+    | `annotationProcessor` | 如需添加对作为注解处理器的库的依赖，您必须使用 `annotationProcessor` 配置将其添加到注解处理器的类路径。这是因为，使用此配置可以将编译类路径与注释处理器类路径分开，从而提高构建性能。如果 Gradle 在编译类路径上找到注释处理器，则会禁用[避免编译](https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_compile_avoidance)功能，这样会对构建时间产生负面影响（Gradle 5.0 及更高版本会忽略在编译类路径上找到的注释处理器）。如果 JAR 文件包含以下文件，则 Android Gradle 插件会假定依赖项是注释处理器： `META-INF/services/javax.annotation.processing.Processor`。 如果插件检测到编译类路径上包含注解处理器，则会产生构建错误。**注意**：Kotlin 项目应[使用 kapt](https://kotlinlang.org/docs/reference/kapt.html) 声明注解处理器依赖项。 |
+    | `lintChecks`          | 使用此配置可以添加您希望 Gradle 在构建项目时执行的 lint 检查。**注意**：使用 Android Gradle 插件 3.4.0 及更高版本时，此依赖项配置不再将 lint 检查打包在 Android 库项目中。如需将 lint 检查依赖项包含在 AAR 库中，请使用下面介绍的 `lintPublish` 配置。 |
+    | `lintPublish`         | 在 Android 库项目中使用此配置可以添加您希望 Gradle 编译成 `lint.jar` 文件并打包在 AAR 中的 lint 检查。这会使得使用 AAR 的项目也应用这些 lint 检查。如果您之前使用 `lintChecks` 依赖项配置将 lint 检查添加到已发布的 AAR 中，则需要迁移这些依赖项以改用 `lintPublish` 配置。<br /><br />```xmldependencies {<br/>  // Executes lint checks from the ':checks' project<br/>  // at build time.<br/>  lintChecks project(':checks')<br/>  // Compiles lint checks from the ':checks-to-publish'<br/>  // into a lint.jar file and publishes it to your<br/>  // Android library.<br/>  lintPublish project(':checks-to-publish')<br/>}``` |
+  
 * 参考资料
+  
   * [浅谈Android打包流程](https://juejin.cn/post/6844903850453762055)
   * [浅谈Android编译打包流程](https://blog.csdn.net/li0978/article/details/115364193)
   * [谈谈Android编译运行过程](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/)
   * [配置构建 - Android官网](https://developer.android.google.cn/studio/build/)
   * [Android 代码混淆，到底做了什么？](https://mp.weixin.qq.com/s/zi3K7lXfSodHj6tUTLKxgg)
+  * [添加构建依赖项](https://developer.android.google.cn/studio/build/dependencies)
 
 
 
@@ -2684,11 +2700,150 @@
 ### 组件化
 
 * 知识点
-  * 组件化方案
-  * 页面路由
+  * **模块化与组件化**
+
+    模块化以功能来区分，在AS中就是一个Module。模块之间会存在一些耦合，组件就是来解决耦合的，可以独立开发、调式、发布。
+
+  * **组件化方案**
+
+    ![图片](https://mmbiz.qpic.cn/mmbiz_png/MOu2ZNAwZwPvHTwqNWpcIToBXzvNG0cYJfet6WvMu8UicPnqBShhon1pgCiaYO7giacAoa6Eq3JiaVlmCV9eWqFvZw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+    组件独立调试可以有两种方案：
+
+    1. 单工程方案，组件以module形式存在，动态配置组件的工程类型；
+    2. 多工程方案，业务组件以library module形式存在于独立的工程，且只有这一个library module。每个项目把AAR上传到Maven仓库
+
+    
+
+  * **组件化路由（跳转、通信、解耦） - 以Arouter举例**
+
+    1. 引入依赖 
+
+       一般习惯的做法是把arouter-api的依赖放在基础服务的module里面，因为既然用到了组件化，那么肯定是所有的module都需要依赖arouter-api库的，而arouter-compiler的依赖需要放到每一个module里面。
+
+    2. Arouter初始化 
+
+       ```java
+       ARouter.init(mApplication); // 尽可能早，推荐在Application中初始化
+       ```
+
+       另外，官方实现了Gradle插件路由的自动加载功能
+
+    3. 添加注解
+
+       1）Route注解添加Activity的路由
+
+       2）Route注解添加全局序列化方式
+
+       3）Route注解定义了全局降级策略
+
+       4）Route注解实现提服务  --- 组件之间通信使用
+
+       5）@Interceptor注解  --- 跳转拦截
+
+    4. 发起路由
+
+       ```java
+       ARouter.getInstance().build("/test/1")
+                   .withLong("key1", 666L)
+                   .withString("key3", "888")
+                   .withObject("key4", new Test("Jack", "Rose"))
+                   .navigation()
+       ```
+
+    5. 混淆
+
+    6. 使用Gradle实现路由表自动加载
+
+       主要是在编译期通过gradle插装把需要依赖arouter注解的类自动扫描到arouter的map管理器里面，而传统的是通过扫描dex文件来过滤arouter注解类来添加到map中
+
+    7. 使用IDE插件通过导航的形式到目标类
+
+    
+
+  * Arouter的源码分析
+
+    1. 编译时干的事 - 生成中间代码
+
+       如下图:
+
+       ![类加载过程](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/daf5b7eac7a7429790bc7239a3bfa9ba~tplv-k3u1fbpfcp-watermark.awebp)
+
+       所以，当我们在gralde中添加了Arouter的依赖后，那么在**编译时**就会 在对应module的 **/build/generated/source/kapt/debug/** 下生成 **"com.alibaba.android.arouter.routes"** 目录，Arouter生成的代码都放在这里，比如:
+
+       ```java
+       // 这一个IRouteRoot，看名字"ARouter$$Root$$app"，其中"ARouter$$Root"是前缀，"app"是group名字，也就是path里面以"/"分隔得到的第一个字符串，然后通过"$$"连接，
+       // 那么这玩意儿的完整类名就是"com.alibaba.android.arouter.routes.ARouter$$Root$$app"
+       public class ARouter$$Root$$app implements IRouteRoot {
+       
+           // 参数是一个map，value类型是 IRouteGroup
+           @Override
+           public void loadInto(Map<String, Class<? extends IRouteGroup>> routes) {
+               // "app"就是@Route(path = "/app/activity_main") 中的"app"，在Arouter中叫做group，是以path中的"/"分隔得到的
+               // 这个的value是:ARouter$$Group$$app.class，也就是下面的类
+               routes.put("app", ARouter$$Group$$app.class);
+           }
+       }
+       
+       // 这是一个IRouteGroup，同理，前缀是"ARouter$$Group"
+       public class ARouter$$Group$$app implements IRouteGroup {
+           @Override
+           public void loadInto(Map<String, RouteMeta> atlas) {
+               // "app/activity_main"就是我们通过@Route指定的path，后面RouteMeta保存了要启动的组件类型，以及对应的.class文件
+               // 这个 RouteMeta.build()的参数很重要，后面要用到
+               atlas.put("/app/activity_main", RouteMeta.build(RouteType.ACTIVITY, MainActivity.class, "/app/activity_main", "app", null, -1, -2147483648));
+           }
+       }
+       
+       // RouteMeta.build()方法，参数后面有用
+       // type就是: RouteType.ACTIVITY，
+       // destination就是MainActivity.class，
+       // path就是"/app/activity_main",
+       // group就是"app"
+       // paramsType是null
+       // priority是-1
+       // extra是-2147483648
+       public static RouteMeta build(RouteType type, Class<?> destination, String path, String group, Map<String, Integer> paramsType, int priority, int extra) {
+           return new RouteMeta(type, null, destination, null, path, group, paramsType, priority, extra);
+       }
+       ```
+
+       我们发现生成的.java文件，都有个共同的前缀"ARouter$$"，比如"ARouter$$Root"。又因为它们是在Arouter生成的目录下面，所以它们的完整类名都有个前缀:**"com.alibaba.android.arouter.routes.ARouter$$"**。
+
+       
+
+    2. 运行时干的事 - 注入
+
+       1 在Application的onCreate()里面我们调用了Arouter.init(this)。
+
+       2 接着调用了ClassUtils.getFileNameByPackageNam()来获取所有"com.alibaba.android.arouter.routes"目录下的dex文件的路径。
+
+       3 然后遍历这些dex文件获取所有的calss文件的完整类名。
+
+       4 然后遍历所有类名，获取指定前缀的类，然后通过反射调用它们的loadInto(map)方法，这是个注入的过程，都注入到参数Warehouse的成员变量里面了。
+
+       5 其中就有Arouter在编译时生成的"com.alibaba.android.arouter.routes.ARouter$$Root.ARouter$$Root$$app"类，它对应的代码:<"app", ARouter$$Group$$app.class>就被添加到Warehouse.groupsIndex里面了。
+
+       ![image-20210125141700750](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7fcdf181df6241539deaa85c9511b404~tplv-k3u1fbpfcp-watermark.awebp)
+
+
+       
+
+    3. 调用时干的事 - 获取
+
+       调用`build`方法会创建一个`Postcard`对象，`Postcard`会根据传入的`Path`从`Warehouse`对象获取对应的对应的`RouteMeta`对象，然后找到对应的`Class`类，封装成Intent，调用系统的`startActivity()`进行跳转。
+
+       ![image-20210125141823505](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fb40a4e98e764130a6a551511f9133c8~tplv-k3u1fbpfcp-watermark.awebp)
+
+       
+
 * 参考资料
+  
   * [“终于懂了” 系列：Android组件化，全面掌握！](https://mp.weixin.qq.com/s/WSzpJXXocajJjmWgYem3fA)
   * [阿里 ARouter 全面解析，总有你没了解的](https://mp.weixin.qq.com/s/LaEbPaIKu0TNR0ygI-yOSQ)
+  * [ARouter源码分析](https://juejin.cn/post/6921580887616274439#heading-0)
+  * [Arouter从使用到原理](https://juejin.cn/post/6995136681850437662#heading-5)
+  * [探索 ARouter 原理](https://juejin.cn/post/6885932290615509000#heading-52)
 
 
 
@@ -2700,8 +2855,11 @@
     	如何hook Activity启动流程
     	双亲委派
   * 插件化原理
-  * 插件化框架学习
+  * 插件化框架
+    * VirtualAPK （滴滴）
+    * Shadow
 * 参考资料
+  * [浅谈Android插件化](https://juejin.cn/post/6973888932572315678#heading-0)
   * [Android解析ClassLoader（一）Java中的ClassLoader](https://juejin.cn/post/6844903498291625992)
   * [Android解析ClassLoader（二）Android中的ClassLoader](http://liuwangshu.cn/application/classloader/2-android-classloader.html)
 
@@ -2711,7 +2869,7 @@
 
 
 
-### ASM 技术
+### ASM 技术 & APT技术（Annotation Processing Tool）
 
 * 概念：ASM是一种通用Java字节码操作和分析框架。它可以用于修改现有的class文件或动态生成class文件。
 

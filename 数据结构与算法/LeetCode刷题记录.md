@@ -137,6 +137,7 @@
 24. 剑指 Offer 32 - III. 从上到下打印二叉树 III [二叉树] [解决方案：BSF + 双端队列] [2021/9/4] [中等]  -  https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/
 25. 剑指 Offer 47. 礼物的最大价值  [数组|矩阵] [解决方案：动态规划，3种状态转换] [2021/9/6] [中等]  - https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/  (同[64. 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/))
 26. 剑指 Offer 14- I. 剪绳子  [] [解决方案：数学推导，每段长度3最大] [2021/9/6] [中等]  - https://leetcode-cn.com/problems/jian-sheng-zi-lcof/  （同 [343. 整数拆分](https://leetcode-cn.com/problems/integer-break/)）
+27. 剑指 Offer 49. 丑数 [丑数] [解决方案：动态规划] [2021/9/8] [中等]  - https://leetcode-cn.com/problems/chou-shu-lcof/
 
  
 
