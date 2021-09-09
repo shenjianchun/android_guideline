@@ -3199,7 +3199,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 
 
 
-### [J.U.C - AQS](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#七juc---aqs)
+### [J.U.C - AQS（AbstractQueuedSynchronizer）](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#七juc---aqs)
 
 * 知识点
   - **CountDownLatch**

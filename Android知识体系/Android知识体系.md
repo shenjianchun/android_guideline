@@ -2849,13 +2849,96 @@
 
 ### 插件化
 
-* 知识点
-  * class、dex基础知识
+* 知识点 - 看此文章即可 [浅谈Android插件化](https://juejin.cn/post/6973888932572315678#heading-0)
+  * 插件的难点
+
+    * 如何加载并执行插件 `*Apk*` *中的代码（*`*ClassLoader Injection*`*）*
+    * 让系统能调用插件 `*Apk*` *中的组件（*`*Runtime Container*`*）*
+    * 正确识别插件 `*Apk*` *中的资源（*`*Resource Injection*`*）*
+
   * ClassLoader原理
-    	如何hook Activity启动流程
-    	双亲委派
-  * 插件化原理
+
+    * Java中的ClassLoader
+
+      BootstrapClassLoader 负责加载 JVM 运行时的核心类，比如 JAVA_HOME/lib/rt.jar 等等
+
+      ExtensionClassLoader 负责加载 JVM 的扩展类，比如 JAVA_HOME/lib/ext 下面的 jar 包
+
+      AppClassLoader 负责加载 classpath 里的 jar 包和目录
+
+      
+
+    * Android中的ClassLoader
+
+      PathClassLoader 用来加载系统类和应用程序类，可以加载已经安装的 apk 目录下的 dex 文件。
+
+      DexClassLoader 用来加载 dex 文件，可以从存储空间加载 dex 文件。
+
+      
+
+    * 双亲委托机制
+
+      每一个 ClassLoader 中都有一个 parent 对象，代表的是父类加载器，在加载一个类的时候，会先使用父类加载器去加载，如果在父类加载器中没有找到，自己再进行加载，如果 parent 为空，那么就用系统类加载器来加载。通过这样的机制可以保证系统类都是由系统类加载器加载的。
+
+      <img src="https://s2.ax1x.com/2019/05/29/VnM5ZT.png" alt="VnM5ZT.png" style="zoom:80%;" />
+
+      
+
+  * Runtime Container
+
+    * 运行时容器技术
+
+      预埋一些空的 `Android` 组件，使用空组件调用插件的组件。启动插件组件需要依赖容器，容器负责加载插件组件并且完成双向转发，转发来自系统的生命周期回调至插件组件，同时转发来自插件组件的系统调用至系统。
+
+      
+
+    * 字节码替换
+
+      ASM字节码插桩的方式来批量替换插件中的原生组件
+
+      
+
+  * Resource Injection
+
+    * 有两个方法可以获取到插件的Resource资源
+
+      ```java
+      PackageManager#getPackageArchiveInfo： 根据 Apk 路径解析一个未安装的 Apk 的 PackageInfo
+      PackageManager#getResourcesForApplication： 根据 ApplicationInfo 创建一个 Resources 实例
+      ```
+
+      
+
+    * 宿主资源与插件资源merge
+
+      ```java
+      public class PluginResources extends Resources {
+          private Resources hostResources;
+          private Resources injectResources;
+      
+          public PluginResources(Resources hostResources, Resources injectResources) {
+              super(injectResources.getAssets(), injectResources.getDisplayMetrics(), injectResources.getConfiguration());
+              this.hostResources = hostResources;
+              this.injectResources = injectResources;
+          }
+      
+          @Override
+          public String getString(int id, Object... formatArgs) throws NotFoundException {
+              try {
+                  return injectResources.getString(id, formatArgs);
+              } catch (NotFoundException e) {
+                  return hostResources.getString(id, formatArgs);
+              }
+          }
+      
+          // ...
+      }
+      ```
+
+      
+
   * 插件化框架
+
     * VirtualAPK （滴滴）
     * Shadow
 * 参考资料
