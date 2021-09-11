@@ -2612,6 +2612,15 @@
 
 
 
+### WebSocket
+
+* 知识点
+  * 
+* 参考资料
+  * 
+
+
+
 ### 网络框架
 
 * [Retrofit](#Retrofit)
@@ -4676,13 +4685,37 @@
 ### <span id="okhttp">okhttp</span>
 
 * 知识点
+
+  ![类图](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e7d45719cb384035a69385400f71b338~tplv-k3u1fbpfcp-watermark.awebp)
+
+  
+
+  ![img](https://upload-images.jianshu.io/upload_images/2383280-9b72edff43b2db5e.png)
+
+  
+
+  
+
   * 拦截器（责任链模式）
-  * 超时重传&重定向
+
+    ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/1/30/16146b3c0a2ee472~tplv-t2oaga2asx-watermark.awebp)
+
   * Http缓存
+
+    1. 基于HTTP的缓存机制实现
+    2. 缓存了Response
+    3. 使用DiskLruCache
+
   * Socket连接池复用
+
+    * RealConnection：真正建立连接的对象，利用Socket建立连接。
+    * ConnectionPool：连接池，用来管理和复用连接。连接池最多保 持5个地址的连接keep-alive，每个keep-alive时长为5分钟，并有异步线程清理无效的连接
+
 * 参考资料
   * [Networking with the OkHttp Library - CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Using-OkHttp)
   * [Android开源框架源码鉴赏：Okhttp](https://juejin.cn/post/6844903557632622605)
+  * [OkHttp 4源码（7）— 总结](https://www.jianshu.com/p/c988d0416020)
+  * [OkHttp源码阅读指南](https://juejin.cn/post/6951936883760988191)
 
 
 

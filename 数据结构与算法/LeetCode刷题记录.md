@@ -39,7 +39,7 @@
 35. 46.全排列 [数组] [解决方案：回溯和深度优先搜索] [2021/7/20] [中等] -  https://leetcode-cn.com/problems/permutations/  （重点参考：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/）
 36. 62.不同路径 [数组] [解决方案：动态规划（f(i)(j) = f(i-1) (j)+ f(i)(j-1)）] [2021/7/21] [中等]  -  https://leetcode-cn.com/problems/unique-paths/
 37. 23.合并K个升序链表 [链表] [解决方案：顺序合并 | 分治合并] [2021/7/21] [困难]  -  https://leetcode-cn.com/problems/merge-k-sorted-lists/
-38. 739.每日温度 [数组] [解决方案：暴力 | 动态规划] [2021/7/21] [中等]  -   https://leetcode-cn.com/problems/daily-temperatures/
+38. 739.每日温度 [数组] [解决方案：暴力 | 单调栈 | 动态规划 ] [2021/7/21] [中等]  -   https://leetcode-cn.com/problems/daily-temperatures/
 39. 617.合并二叉树 [二叉树] [解决方案：深度优先搜索 | 广度优先搜索 ] [2021/7/22] [简单]  -  https://leetcode-cn.com/problems/merge-two-binary-trees/
 40. 75.颜色分类  [数组] [解决方案：双指针，类似快速排序 | API | 新建一个数组] [2021/7/22] [中等]  -  https://leetcode-cn.com/problems/sort-colors/
 41. 128.最长连续序列 [数组] [解决方案：排序后遍历 | 哈希表] [2021/7/22] -  https://leetcode-cn.com/problems/longest-consecutive-sequence/
