@@ -983,10 +983,10 @@
   * Bitmap 与 density、dpi直接的关系
   * Bitmap内存占用
   * Bitmap加载、拉伸裁剪、保存
-  * Bitmap大图加载-BitmapRegionDecoder
+  * Bitmap大图加载 - BitmapRegionDecoder
   * ThumbnailUtils类
   * 图片加载的缓存策略：LRUCache
-  * 图片加载框架：Glide、Fresco
+  * 图片加载框架：  [Glide](#Glide)、Fresco
 * 参考资料
   * 《Android开发艺术探索》
   * [Android Bitmap 面面观](https://juejin.cn/post/6844903433313452040)
@@ -2428,10 +2428,87 @@
 * 知识点
   * 决策树
     	![此决策树可帮助您确定哪个类别最适合您的后台任务](https://developer.android.google.cn/images/guide/background/task-category-tree.png)
-  * 概括一下：**及时任务** 使用 Kotlin 协程、线程池、RxJava等，**延期任务**使用 WorkManager、JobSchedule，**精确任务** 使用 AlarmManager。
-    ![后台任务推荐方案](IMG\后台任务推荐方案.png)
+    
+    概括一下：**及时任务** 使用 Kotlin 协程、线程池、RxJava等，特殊情况使用 前台服务；**延期任务**使用 WorkManager、JobSchedule；**精确任务** 使用 AlarmManager。
+    
+    
+    
+  * WorkManager
+
+    WorkManager 是一个 API，可供您轻松调度那些即使在退出应用或重启设备后仍应运行的可靠异步任务。在后台，WorkManager 根据以下条件使用底层作业来调度服务：
+
+    <img src="https://developer.android.google.cn/images/topic/libraries/architecture/workmanager/overview-criteria.png" alt="如果设备在 API 级别 23 或更高级别上运行，系统会使用 JobScheduler。在 API 级别 14-22 上，系统会使用 GcmNetworkManager（如果可用），否则会使用自定义 AlarmManager 和 BroadcastReciever 实现作为备用。" style="zoom: 50%;" />
+
+    <img src="https://upload-images.jianshu.io/upload_images/8398510-911fe131c5a04cef?imageMogr2/auto-orient/strip|imageView2/2/w/1000/format/webp" alt="WorkManager架构图" style="zoom: 67%;" />
+
+    ① 给WorkManager发送工作请求WorkRequest，WorkRequest中包装了Worker。
+
+    ② WorkManager将该请求的相关参数放入WorkManager的数据库中。
+
+    ③ WorkManager根据设备版本、是否是前台任务等情况将请求操作传递给JobScheduler或者AlarmManager等部件。
+
+    ④ 检查Worker是否满足约束条件，当满足约束条件时调用执行Worker。
+
+    
+
+  * **JobScheduer、 JobService、JobInfo**
+
+    1. 创建Job Service
+
+    ```java
+    public class MyJobService extends JobService {
+    private static final String LOG_TAG ="ms" ;
+    @Override
+    public boolean onStartJob(JobParameters params) {
+        if (isNetWorkConnected()){
+        //在这里执行下载任务
+            new SimpleDownloadTask().execute(params);
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return false;
+    }
+    ```
+
+    
+
+    2. JobScheduler的schedule过程：
+
+    ```java
+     JobScheduler scheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);  
+     ComponentName jobService = new ComponentName(this, MyJobService.class);
+    
+     JobInfo jobInfo = new JobInfo.Builder(123, jobService) //任务Id等于123
+             .setMinimumLatency(5000)// 任务最少延迟时间 
+             .setOverrideDeadline(60000)// 任务deadline，当到期没达到指定条件也会开始执行 
+             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)// 网络条件，默认值NETWORK_TYPE_NONE
+             .setRequiresCharging(true)// 是否充电 
+             .setRequiresDeviceIdle(false)// 设备是否空闲
+             .setPersisted(true) //设备重启后是否继续执行
+             .setBackoffCriteria(3000，JobInfo.BACKOFF_POLICY_LINEAR) //设置退避/重试策略
+             .build();  
+     scheduler.schedule(jobInfo);
+    ```
+
+    3. JobScheduler的cancel过程：
+
+    ```java
+     scheduler.cancel(123); //取消jobId=123的任务
+     scheduler.cancelAll(); //取消当前uid下的所有任务
+    ```
+
+    
+
+  
+
 * 参考资料
+  
   * [官网文档 - 后台任务](https://developer.android.com/guide/background)
+  * [Android架构组件JetPack之WorkManager完全解析（五）](https://juejin.cn/post/6844904001574535176)
+  * [Android WorkManager](https://www.jianshu.com/p/444eb98724e8)
   * [Notifications (Persistent Notices on the Dashboard) -  CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Notifications)
   * [Notification 使用](http://blog.csdn.net/siobhan/article/details/50856433)
 
@@ -2836,15 +2913,16 @@
        ![image-20210125141700750](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7fcdf181df6241539deaa85c9511b404~tplv-k3u1fbpfcp-watermark.awebp)
 
 
-       
+​       
 
     3. 调用时干的事 - 获取
-
+    
        调用`build`方法会创建一个`Postcard`对象，`Postcard`会根据传入的`Path`从`Warehouse`对象获取对应的对应的`RouteMeta`对象，然后找到对应的`Class`类，封装成Intent，调用系统的`startActivity()`进行跳转。
-
+    
        ![image-20210125141823505](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fb40a4e98e764130a6a551511f9133c8~tplv-k3u1fbpfcp-watermark.awebp)
 
-       
+
+​       
 
 * 参考资料
   
@@ -4356,17 +4434,39 @@
 * 参考资料
   * [Android解析WindowManager - 刘望舒](http://liuwangshu.cn/framework/wm/3-add-window.html)
   * [Android解析WindowManagerService - 刘望舒](http://liuwangshu.cn/framework/wms/1-wms-produce.html)
-  * [Android系统_图形系统总结](https://www.jianshu.com/p/238eb0a17760)
-  * [Android图形系统篇总结](https://www.jianshu.com/p/180e1b6d0dcd)
+  
+    
 
 
 
 ### Android 显示系统
 
 * 知识点
-  * 渲染流程 vsync -> Choreographer.doFrame ->  Choreographer.doCallbacks -> ViewRootImpl.mTraversalRunnable.run -> ViewRootImpl.doTraversal() , removeSyncBarrier -> ViewRootImpl.performTraversals()
+  
+  ![img](https://upload-images.jianshu.io/upload_images/9696036-a39cc7b496fd8297.png?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
+  
+  * 绘制渲染流程 
+  
+    vsync -> DisplayEventReceiver -> Choreographer.doFrame ->  Choreographer.doCallbacks -> ViewRootImpl.mTraversalRunnable.run -> ViewRootImpl.doTraversal() , removeSyncBarrier -> ViewRootImpl.performTraversals()
+  
+  * Surafe的创建流程；Surface、Canvas、Layer的关系；
+  
+    ViewRootImpl创建Surface（空） -> setContentView  -> WMS.addWindow()  ，同时创建WindowState，与SurfaceFlinger建立关系，创建真正的Surface（SurfaceControl）返回给ViewRootImpl。
+  
+    ![img](https://img2018.cnblogs.com/blog/821933/201907/821933-20190730200725525-636751839.png)
+  
+  * Surface的绘制
+  
+    View.onDraw()  ->  surface.lockCanvas()  ->  dequeueBuffer ->  surface.unlockCanvasAndPost()   ->  queueBuffer -> SurfaceFlinger和HW合成
+  
+    ![img](https://upload-images.jianshu.io/upload_images/9696036-770103d0b6d79ada.png)
+  
 * 参考资料
+  
   * [Android UI 渲染机制的演进，你需要了解什么？](https://mp.weixin.qq.com/s/psrDADxwl782Fbs_vzxnQg)
+  * [Android系统_图形系统总结](https://www.jianshu.com/p/238eb0a17760)
+  * [Android图形系统篇总结](https://www.jianshu.com/p/180e1b6d0dcd)
+  * [Android 显示系统：SurfaceFlinger详解](https://www.cnblogs.com/blogs-of-lxl/p/11272756.html)
 
 
 
@@ -4732,13 +4832,129 @@
 ### Glide
 
 * 知识点
-  * 生命周期控制
-  * 异步加载、线程切换
-  * 缓存机制（四级缓存）
-  * 防止OOM
-  * 列表中加载图片如何设计？setTag、防止重复加载
-  * BitmapPool复用
+  * 使用
+    * 简单使用 ：Glide.with(this).load(imgUrl).into(mIv1);
+    
+    * 参数配置
+    
+      ```java
+      RequestOptions options = new RequestOptions()
+                  .placeholder(R.drawable.ic_launcher_background)
+                  .error(R.mipmap.ic_launcher)
+                  .diskCacheStrategy(DiskCacheStrategy.NONE)
+          		.override(200, 100);
+          
+      Glide.with(this)
+                  .load(imgUrl)
+                  .apply(options)
+                  .into(mIv2);
+      
+      
+      ```
+    
+      
+    
+  * **为什么使用？**
+
+    * 图片 + 媒体 缓存。  适用于更多的内容表现形式（如Gif、WebP、缩略图、Video）
+    * 生命周期集成 （根据Activity或者Fragment的生命周期管理图片加载请求）
+    * 高效处理Bitmap  （bitmap的复用和主动回收，减少系统回收压力）
+    * 高效的缓存策略，灵活（Picasso只会缓存原始尺寸的图片，Glide缓存的是多种规格），加载速度快且内存开销小，默认使用RGB565（默认Bitmap格式的不同，使得内存开销是Picasso（默认RGB888）的一半。**Glide4.0之后默认也是RGB8888了。**
+
+    
+
+  * **执行流程**
+
+    整个图片加载过程，就是with得到`RequestManager`，load得到`RequestBuilder`，然后into开启加载：
+
+    创建`Request`、开启`Engine`、运行`DecodeJob`线程、`HttpUrlFetcher`加载网络数据、回调给载体`Target`、载体为`ImageView`设置展示图片。
+
+    
+
+    ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/7/15/17351bf4013357d3~tplv-t2oaga2asx-watermark.awebp)
+
+    
+
+  * **生命周期控制**
+
+    1.调用时通过`Glide.with`传入`context`,利用`context`构建一个`Fragment`
+    2.监听`Fragment`生命周期，销毁时释放`Glide`资源
+
+    
+
+    `Glide.with(this)`绑定了`Activity`的生命周期。在`Activity`内新建了一个无`UI`的`Fragment`，这个`Fragment`持有一个`Lifecycle`，通过`Lifecycle`在`Fragment`关键生命周期通知`RequestManager进`行相关从操作。在生命周期`onStart`时继续加载，`onStop`时暂停加载，`onDestory`时停止加载任务和清除操作。
+
+    
+
+  * **Glide的内存优化策略**
+
+    1. 尺寸优化
+
+    2. 图片格式优化
+
+       在`API29`中，将`Bitmap`分为`ALPHA_8`, `RGB_565`, `ARGB_4444`, `ARGB_8888`, `RGBA_F16`, `HARDWARE`六个等级。
+
+       - `ALPHA_8`：不存储颜色信息，每个像素占1个字节；
+       - `RGB_565`：仅存储`RGB`通道，每个像素占2个字节，对`Bitmap`色彩没有高要求，可以使用该模式；
+       - `ARGB_4444`：已弃用，用`ARGB_8888`代替；
+       - `ARGB_8888`：每个像素占用4个字节，保持高质量的色彩保真度，默认使用该模式；
+       - `RGBA_F16`：每个像素占用8个字节，适合宽色域和`HDR`；
+       - `HARDWARE`：一种特殊的配置，减少了内存占用同时也加快了`Bitmap`的绘制。
+
+       每个等级每个像素所占用的字节也都不一样，所存储的色彩信息也不同。同一张100像素的图片，`ARGB_8888`就占了400字节，`RGB_565`才占200字节，RGB_565在内存上取得了优势，但是`Bitmap`的色彩值以及清晰度却不如`ARGB_8888`模式下的`Bitmap`
+
+       值得注意的是在`Glide4.0`之前,`Glide`默认使用`RGB565`格式，比较省内存
+        但是`Glide4.0`之后，默认格式已经变成了`ARGB_8888`格式了,这一优势也就不存在了。
+        这本身也就是质量与内存之间的取舍，如果应用所需图片的质量要求不高，也可以修改默认格式
+
+       
+
+    3. 内存复用优化
+
+       inBitmap 和 BitmapPool
+
+       
+
+  * **缓存机制（四级缓存）**
+
+    | 缓存类型          | 缓存代表            | 说明                                                         |
+    | ----------------- | ------------------- | ------------------------------------------------------------ |
+    | 活动缓存          | ActiveResources     | 如果当前对应的图片资源是从内存缓存中获取的，那么会将这个图片存储到活动资源中。 |
+    | 内存缓存          | LruResourceCache    | 图片解析完成并最近被加载过，则放入内存中                     |
+    | 磁盘缓存-资源类型 | DiskLruCacheWrapper | 被解码后的图片写入磁盘文件中                                 |
+    | 磁盘缓存-原始数据 | DiskLruCacheWrapper | 网络请求成功后将原始数据在磁盘中缓存                         |
+
+    在介绍具体缓存前，先来看一张加载缓存执行顺序：
+     ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/750d9bb09f2e4e8c8b0975ec43b941fa~tplv-k3u1fbpfcp-watermark.awebp)
+
+    
+
+    **内存缓存**流程（ActiveResources、LruResourceCache）：
+
+    ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec340f2b185247e9b72c582bfa252aa2~tplv-k3u1fbpfcp-watermark.awebp)
+
+    
+
+    **硬盘缓存**：主要是`DiskCacheStrategy.RESOURCE`缓存的是变换后的资源，`DiskCacheStrategy.DATA`缓存的是变换前的资源
+
+    
+
+    `DiskCacheStrategy.NONE`： 表示不缓存任何内容。
+
+    `DiskCacheStrategy.RESOURCE`： 在资源解码后将数据写入磁盘缓存，即经过缩放等转换后的图片资源。
+
+    `DiskCacheStrategy.DATA`： 在资源解码前将原始数据写入磁盘缓存。
+
+    `DiskCacheStrategy.ALL` ： 使用`DATA`和`RESOURCE`缓存远程数据，仅使用`RESOURCE`来缓存本地数据。
+
+    `DiskCacheStrategy.AUTOMATIC`：它会尝试对本地和远程图片使用最佳的策略。当你加载远程数据时，`AUTOMATIC` 策略仅会存储未被你的加载过程修改过的原始数据，因为下载远程数据相比调整磁盘上已经存在的数据要昂贵得多。对于本地数据，`AUTOMATIC` 策略则会仅存储变换过的缩略图，因为即使你需要再次生成另一个尺寸或类型的图片，取回原始数据也很容易。默认使用这种缓存策略
+
+    
+
+    
 * 参考资料
+  * [Android主流三方库源码分析（三、深入理解Glide源码）](https://jsonchao.github.io/2018/12/16/Android%E4%B8%BB%E6%B5%81%E4%B8%89%E6%96%B9%E5%BA%93%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%E3%80%81%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Glide%E6%BA%90%E7%A0%81%EF%BC%89/)
+  * [【带着问题学】Glide做了哪些优化?](https://juejin.cn/post/6970683481127043085)
   * [面试官：简历上最好不要写Glide，不是问源码那么简单](https://juejin.cn/post/6844903986412126216)
   * [Android 【手撕Glide】--Glide缓存机制](https://www.jianshu.com/p/b85f89fce019)
 
