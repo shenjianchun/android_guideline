@@ -3062,10 +3062,95 @@
 
 
 
+
+
+### 启动速度优化
+
+
+
+
+
+### UI渲染优化/绘制优化
+
+* 知识点
+
+  * Android常用的绘制优化工具一般有如下几种：
+
+    - Hierarchy View：查看Layout层次
+
+    - Android Studio自带的Profile CPU工具
+
+    - 静态代码检查工具Lint
+
+    - Profile GPU Rendering 
+
+      从Android M版本开始，GPU Profiling工具把渲染操作拆解成如下8个详细的步骤进行显示。
+
+      
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/2/16/3327d0618ded9ecf441548c12819bf7e~tplv-t2oaga2asx-watermark.awebp)渲染八步骤
+
+      
+
+      > 1. Swap Buffers：表示处理任务的时间，也可以说是CPU等待GPU完成任务的时间，线条越高，表示GPU做的事情越多；
+      > 2. Command Issue：表示执行任务的时间，这部分主要是Android进行2D渲染显示列表的时间，为了将内容绘制到屏幕上，Android需要使用Open GL ES的API接口来绘制显示列表，红色线条越高表示需要绘制的视图更多；
+      > 3. Sync & Upload：表示的是准备当前界面上有待绘制的图片所耗费的时间，为了减少该段区域的执行时间，我们可以减少屏幕上的图片数量或者是缩小图片的大小；
+      > 4. Draw：表示测量和绘制视图列表所需要的时间，蓝色线条越高表示每一帧需要更新很多视图，或者View的onDraw方法中做了耗时操作；
+      > 5. Measure/Layout：表示布局的onMeasure与onLayout所花费的时间，一旦时间过长，就需要仔细检查自己的布局是不是存在严重的性能问题；
+      > 6. Animation：表示计算执行动画所需要花费的时间，包含的动画有ObjectAnimator，ViewPropertyAnimator，Transition等等。一旦这里的执行时间过长，就需要检查是不是使用了非官方的动画工具或者是检查动画执行的过程中是不是触发了读写操作等等；
+      > 7. Input Handling：表示系统处理输入事件所耗费的时间，粗略等于对事件处理方法所执行的时间。一旦执行时间过长，意味着在处理用户的输入事件的地方执行了复杂的操作；
+      > 8. Misc Time/Vsync Delay：表示在主线程执行了太多的任务，导致UI渲染跟不上vSync的信号而出现掉帧的情况；出现该线条的时候，可以在Log中看到这样的日志：
+
+      
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/2/17/e12aea48b89572a35de339652db8b827~tplv-t2oaga2asx-watermark.awebp)
+
+
+      
+
+    - TraceView
+
+    - Systrace
+
+  * 布局优化方式
+
+    * 检查工具：Hierarchy View
+    * 减少布局嵌套
+    * 使用标签（merge、ViewStub、include）
+
+  * 避免过度绘制
+
+    * 检查工具：开发者模式 - 打开调试绘制
+    * 移除背景、自定义View优化
+
+  * 合理刷新机制
+
+    * 控制刷新频率
+    * 避免没有必要的刷新
+    * 缩小刷新区域
+
+  * 提升动画性能
+
+  * **通用套路**
+
+    1. 调试GPU过度绘制，将Overdraw降低到合理范围内；
+    2. 减少嵌套层次及控件个数，保持view的树形结构尽量扁平（使用Hierarchy Viewer可以方便的查看），同时移除所有不需要渲染的view；
+    3. 使用GPU配置渲染工具，定位出问题发生在具体哪个步骤，使用TraceView精准定位代码；
+    4. 使用标签，Merge减少嵌套层次、ViewStub延迟初始化。
+
+    
+
+* 参考资料
+
+  * [Android 性能优化（二）之布局优化面面观](https://juejin.cn/post/6844903463894122509#heading-0)
+  * [Android性能优化之绘制优化](https://juejin.cn/post/6844904080989487118#heading-0)
+
+
+
 ### 内存知识与优化
 
 * 知识点
-  * 内存优化基础
+  * **内存优化**
 
     * 为什么要做内存优化
 
@@ -3240,23 +3325,6 @@
   * [看完这篇 LeakCanary 原理分析，又可以虐面试官了！](https://mp.weixin.qq.com/s/1jFY_22hoWgCw3CDo2rpOA)
 
 
-
-### 流畅性优化|卡顿优化
-
-* 知识点
-
-  * 为什么会卡顿？
-
-  * 如何监控卡顿？
-
-    * 方案一：Looper#loop方法中的 logging.println，需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
-    * 方案二：通过Gradle Plugin+ASM，编译期在每个方法开始和结束位置分别插入一行代码，统计方法耗时。字节码插桩技术，适合线上。微信Matrix 。
-
-* 参考资料
-  
-  * [卡顿、ANR、死锁，线上如何监控？](https://juejin.cn/post/6973564044351373326)
-  * [《广研Android卡顿监控系统》](https://mp.weixin.qq.com/s/MthGj4AwFPL2JrZ0x1i4fw)
-  * [Systrace实战：彻底搞懂卡顿原理！](https://mp.weixin.qq.com/s/eij3z6wlT4k3GGQm637b-A)
 
 
 
@@ -3574,6 +3642,35 @@
   * [深入探索 Android 包体积优化（匠心制作-下）](https://juejin.cn/post/6872920643797680136#heading-41)
   * [缩减、混淆处理和优化应用](https://developer.android.com/studio/build/shrink-code)
   * [Android机型适配终极篇](https://zhuanlan.zhihu.com/p/92083368)
+
+
+
+### 功耗优化
+
+
+
+
+
+### 流畅性优化|卡顿优化
+
+* 知识点
+
+  * 为什么会卡顿？
+
+  * 如何监控卡顿？
+
+    * 方案一：Looper#loop方法中的 logging.println，需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
+    * 方案二：通过Gradle Plugin+ASM，编译期在每个方法开始和结束位置分别插入一行代码，统计方法耗时。字节码插桩技术，适合线上。微信Matrix 。
+  * Systrace
+
+* 参考资料
+
+  * [卡顿、ANR、死锁，线上如何监控？](https://juejin.cn/post/6973564044351373326)
+  * [《广研Android卡顿监控系统》](https://mp.weixin.qq.com/s/MthGj4AwFPL2JrZ0x1i4fw)
+  * [Systrace实战：彻底搞懂卡顿原理！](https://mp.weixin.qq.com/s/eij3z6wlT4k3GGQm637b-A)
+  * [Android Systrace 基础知识 -- 分析 Systrace 预备知识](https://www.androidperformance.com/2019/07/23/Android-Systrace-Pre/)
+
+
 
 
 
