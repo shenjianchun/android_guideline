@@ -3214,6 +3214,11 @@
 
 ### 启动速度优化
 
+* 参考资料
+  * [探索 Android 启动优化方法](https://juejin.cn/post/6844903919580086280)
+  * [深入探索Android启动速度优化（上）](https://juejin.cn/post/6844904093786308622)
+  * [深入探索Android启动速度优化（下）](https://juejin.cn/post/6870457006784774152)
+
 
 
 
@@ -3252,11 +3257,12 @@
       
 
       ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/2/17/e12aea48b89572a35de339652db8b827~tplv-t2oaga2asx-watermark.awebp)
-
-
-​      
-
+      
+      
+      
     - TraceView
+    
+      
     
     - Systrace
 
@@ -3809,6 +3815,11 @@
 
     * 方案一：Looper#loop方法中的 logging.println，需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
     * 方案二：通过Gradle Plugin+ASM，编译期在每个方法开始和结束位置分别插入一行代码，统计方法耗时。字节码插桩技术，适合线上。微信Matrix 。
+    
+  * TraceView
+
+    
+
   * Systrace
 
 * 参考资料
