@@ -981,11 +981,145 @@
 
 * 知识点
   * Bitmap 与 density、dpi直接的关系
+
+    <img src="https://developer.android.google.cn/images/screens_support/devices-density_2x.png?hl=zh-cn" alt="img" style="zoom:80%;" />
+
+    * 资源目录下的匹配优先级
+      * 如果在最匹配的目录没有找到对应图片，就会向更高密度的目录查找，直到没有更高密度的目录
+      * 如果一直往高密度目录均没有查找，Android就会查找drawable-nodpi目录。drawable-nodpi目录中的资源适用于所有密度的设备，不管当前屏幕的密度如何，系统都不会缩放此目录中的资源。
+      * 如果在drawable-nodpi目录也没有查找到，系统就会向比最匹配目录密度低的目录依次查找，直到没有更低密度的目录。例如，最匹配目录是xxhdpi，更高密度的目录和nodpi目录查找不到后，就会依次查找drawable-xhdp、drawable-hdpi、drawable-mdpi、drawable-ldpi。
+        
+
   * Bitmap内存占用
-  * Bitmap加载、拉伸裁剪、保存
+
+    - 内存存放位置
+
+      - 8.0之前的Bitmap像素数据基本存储在Java heap
+      - 8.0之后的 Bitmap像素数据基本存储在native heap
+
+    - 大小受影响：Bitmap的像素存储格式
+
+      | 格式      | 意义                                                         | 单个像素占用字节数 |
+      | --------- | ------------------------------------------------------------ | ------------------ |
+      | ALPHA_8   | 表示8位Alpha位图,即A=8,一个像素点占用1个字节,它没有颜色,只有透明度 | 1                  |
+      | ARGB_4444 | 表示16位ARGB位图，即A=4,R=4,G=4,B=4,一个像素点占4+4+4+4=16位 | 2                  |
+      | ARGB_8888 | 表示32位ARGB位图，即A=8,R=8,G=8,B=8,一个像素点占8+8+8+8=32位 | 4                  |
+      | RGB_565   | 表示16位RGB位图，即R=5,G=6,B=5,它没有透明度,一个像素点占5+6+5=16位 | 2                  |
+
+    
+
+  * Bitmap加载、压缩、拉伸裁剪、保存
+
+    * 加载
+
+      * decodeResource()和decodeFile()
+
+        decodeFile()用于读取SD卡上的图，得到的是图片的原始尺寸； decodeResource()用于读取Res、Raw等资源，得到的是图片的原始尺寸 * 缩放系数。
+
+    * 压缩
+
+      * 质量压缩，Bitmap.compress
+
+      * 缩略图和计算inSampleSize
+
+        需要先设置BitmapFactory.Options的inJustDecodeBounds为true，这样的Bitmap可以借助decodeFile方法把高和宽存放到Bitmap.Options中，但是内存占用为空（不会真正的加载图片）。
+
+        ```java
+         /* 获取缩略图 * 支持自动旋转 * 某些型号的手机相机图片是反的，可以根据exif信息实现自动纠正 * @return */
+        public static Bitmap $thumbnail(String path,
+                int maxWidth, int maxHeight, boolean autoRotate) {
+            int angle = 0;
+            if (autoRotate) {
+                angle = ImageLess.$exifRotateAngle(path);
+            }
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+            options.inJustDecodeBounds = false;
+            int sampleSize = $sampleSize(options, maxWidth, maxHeight);
+            options.inSampleSize = sampleSize;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            options.inPurgeable = true;
+            options.inInputShareable = true;
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+            bitmap = BitmapFactory.decodeFile(path, options);
+            if (autoRotate && angle != 0) {
+                bitmap = $rotate(bitmap, angle);
+            }
+            return bitmap;
+            }
+        
+        ```
+
+        
+
+        
+
+    * 拉伸裁剪
+
+      * Matrix、Canvas、Bitmap.createBitmap
+
+    * 保存
+
+      ```java
+      public static String $save(Bitmap bitmap,
+              Bitmap.CompressFormat format, int quality, File destFile) {
+          try {
+              FileOutputStream out = new FileOutputStream(destFile);
+              if (bitmap.compress(format, quality, out)) {
+                  out.flush();
+                  out.close();
+              }
+              if (bitmap != null && !bitmap.isRecycled()) {
+                  bitmap.recycle();
+              }
+              return destFile.getAbsolutePath();
+          } catch (FileNotFoundException e) {
+              e.printStackTrace();
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+          return null;
+          }
+      
+      ```
+
+      
+
   * Bitmap大图加载 - BitmapRegionDecoder
+
+    1. 使用
+
+       （1）创建BitmapRegionDecoder
+               使用区域解码，那么我们首先需要创建一个BitmapRegionDecoder对象。只需要调用newInstance方法，传入一个InputStream和一个boolean值。如下所示：
+
+       ```java
+       mDecoder = BitmapRegionDecoder.newInstance(is, false);
+       ```
+
+       （2）解码Bitmap
+               调用decodeRegion方法解码Bitmap，需要传入一块区域，以及参数，代码如下：
+
+       ```java 
+       Bitmap bitmap = mDecoder.decodeRegion(mRect, mDecodeOptions);
+       ```
+
+       
+
   * ThumbnailUtils类
-  * 图片加载的缓存策略：LRUCache
+
+    ThumbnailUtils是系统提供的一个专门生成缩略图的方法
+
+  * Bitmap缓存和复用：
+
+    * LRUCache、DiskLruCache
+
+    * inBitmap
+
+      Android 3.0（API 级别 11）引入了 `BitmapFactory.Options.inBitmap` 字段。如果设置了此选项，那么采用 `Options` 对象的解码方法会在加载内容时尝试重复使用现有位图。这意味着位图的内存得到了重复使用，从而提高了性能，同时移除了内存分配和取消分配。不过，`inBitmap` 的使用方式存在某些限制。特别是在 Android 4.4（API 级别 19）之前，系统仅支持大小相同的位图。
+
   * 图片加载框架：  [Glide](#Glide)、Fresco
 * 参考资料
   * 《Android开发艺术探索》
@@ -2252,7 +2386,21 @@
 ### 屏幕适配
 
 * 知识点
-  * 
+  * 将 dp 单位转换为像素单位
+  
+    `px = dp * (dpi / 160)` 
+  
+    `DisplayMetrics.density` 字段根据当前像素密度指定将 `dp` 单位转换为像素时所必须使用的缩放系数。在中密度屏幕上，`DisplayMetrics.density` 等于 1.0；在高密度屏幕上，它等于 1.5；在超高密度屏幕上，等于 2.0；在低密度屏幕上，等于 0.75。此数字是一个系数，用其乘以 `dp` 单位，即可得出当前屏幕的实际像素数。
+  
+  * 使用预缩放的配置值
+  
+    您可以使用 `ViewConfiguration` 类来获取 Android 系统常用的距离、速度和时间。例如，可通过 `getScaledTouchSlop()` 来获取框架用作滚动阈值的距离（以像素为单位）：
+  
+    ```java
+        private val GESTURE_THRESHOLD_DP = ViewConfiguration.get(myContext).scaledTouchSlop
+    ```
+  
+    `ViewConfiguration` 中以 `getScaled` 前缀开头的方法确定会返回不管当前屏幕密度为何都会正常显示的像素值。
 * 参考资料
   * [Android机型适配终极篇](https://zhuanlan.zhihu.com/p/92083368) 
   * [支持不同的像素密度 - Android官网](https://developer.android.google.cn/training/multiscreen/screendensities?hl=zh-cn)
@@ -3106,10 +3254,10 @@
       ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/2/17/e12aea48b89572a35de339652db8b827~tplv-t2oaga2asx-watermark.awebp)
 
 
-      
+​      
 
     - TraceView
-
+    
     - Systrace
 
   * 布局优化方式
@@ -5048,7 +5196,6 @@
 
     
 
-    
 * 参考资料
   * [Android主流三方库源码分析（三、深入理解Glide源码）](https://jsonchao.github.io/2018/12/16/Android%E4%B8%BB%E6%B5%81%E4%B8%89%E6%96%B9%E5%BA%93%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%E3%80%81%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Glide%E6%BA%90%E7%A0%81%EF%BC%89/)
   * [【带着问题学】Glide做了哪些优化?](https://juejin.cn/post/6970683481127043085)
