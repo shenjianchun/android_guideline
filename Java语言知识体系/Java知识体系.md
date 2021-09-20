@@ -1441,7 +1441,10 @@
 
 #### 4. Deque（双向队列，继承Queue）
 
- [Java双向队列Deque栈与队列](https://blog.csdn.net/u013967628/article/details/85210036)
+* LinkedList ， 基于链表
+* ArrayDeque ， 基于数组
+* 参考
+  *  [Java双向队列Deque栈与队列](https://blog.csdn.net/u013967628/article/details/85210036)
 
 
 
