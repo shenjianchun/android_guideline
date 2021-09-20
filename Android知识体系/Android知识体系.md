@@ -3214,7 +3214,63 @@
 
 ### 启动速度优化
 
+* 知识点
+
+  * 3种启动状态
+
+    * 热启动
+
+      `热启动是三种启动状态中是最快的一种`，因为热启动是从后台切到了前台，应用的 Activity 还驻留在内存中，应用不需要重复执行对象初始化操作，不需要再创建 Applicaiton，也不需要再进行渲染布局等操作。
+
+    * 暖启动
+
+      `暖启动只会重走 Activity 的生命周期`，启动速度介于冷启动和热启动之间，暖启动只会重走 Activity 的生命周期，不需要重新创建进程和 Application。
+
+    * 冷启动
+
+      `冷启动经历了创建进程、启动应用和绘制界面一系列流程，是耗时最多的，也是常见的启动优化的衡量标准`，一般在线上进行的启动优化都是以冷启动速度为指标的。
+
+  *  3个启动问题
+
+    * 点击图标响应慢
+    * 首页显示慢
+    * 显示后无法操作
+
+  * 2种测量方法
+
+    1. 命令测量
+
+       打开终端，输入 `adb shell am start -W packagename/首屏 Activity` 打开我们要测量的应用，打开后系统会输出应用的启动时间，`-W` 选项表示等待启动完成。
+
+    2. 埋点测量（代码打点 或 AOP）
+
+       `埋点测量可以精确控制开始和结束的位置而且可以带到线上`，使用埋点测量进行用户数据的采集，可以很方便地带到线上，把数据上报给服务器，服务器可以针对所有用户上报的启动数据，每天做一个整合，计算出一个平均值，然后对比不同版本的启动速度。
+
+  * 2种分析工具
+
+    1. TraceView
+       * 第一种：代码中添加：**Debug.startMethodTracing()、检测方法、Debug.stopMethodTracing()**。（需要**使用adb pull将生成的**.trace文件导出到电脑，然后使用Android Studio的Profiler进行加载）
+       * 第二种：打开 **Profiler  ->  CPU   ->    点击 Record   ->  点击 Stop  ->  查看Profiler下方Top Down/Bottom Up 区域**，以找出**耗时的热点方法**。
+    2. Systrace
+
+  * 4种优化方法
+
+    1. 闪屏页
+
+       使用Activity的windowBackground主题属性预先设置一个启动图片（layer-list实现），在启动后，在Activity的onCreate()方法中的super.onCreate()前再setTheme(R.style.AppTheme)。
+
+    2. 异步初始化
+
+    3. 延迟初始化
+
+    4. 改进优化方案 - 启动器
+
+       启动器的核心思想是充分利用多核 CPU ，自动梳理任务顺序。
+
+    
+
 * 参考资料
+  
   * [探索 Android 启动优化方法](https://juejin.cn/post/6844903919580086280)
   * [深入探索Android启动速度优化（上）](https://juejin.cn/post/6844904093786308622)
   * [深入探索Android启动速度优化（下）](https://juejin.cn/post/6870457006784774152)
@@ -3818,9 +3874,14 @@
     
   * TraceView
 
-    
+    两种使用方式：
+
+    * 第一种：代码中添加：**Debug.startMethodTracing()、检测方法、Debug.stopMethodTracing()**。（需要**使用adb pull将生成的**.trace文件导出到电脑，然后使用Android Studio的Profiler进行加载）
+    * 第二种：打开 **Profiler  ->  CPU   ->    点击 Record   ->  点击 Stop  ->  查看Profiler下方Top Down/Bottom Up 区域**，以找出**耗时的热点方法**。
 
   * Systrace
+
+    
 
 * 参考资料
 
