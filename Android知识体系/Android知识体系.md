@@ -79,12 +79,13 @@
 
 #### 进程相关知识
 
-* UID、UserID、AppId、Pid
+* UID、UserID、AppId、Pid、SharedUserID
 
   * android中uid用于标识一个应用程序，uid在应用安装时被分配，并且在应用存在于手机上期间，都不会改变，范围是从10000开始，到19999结束,而且，UID由用户ID(UserId)和应用ID(AppId)共同决定
   * 系统中会有多个用户 (User，即手机里的主机、访客等多用户), 每个用户也有一个唯一的 ID 值, 称为"UserId"
   * Pid就是各进程的身份标识,程序一运行系统就会自动分配给进程一个独一无二的PID
   * AppID跟app相关，包名相同的appid都一样，即使是不同用户
+  * SharedUserID：通过Shared User id,拥有同一个User id的多个APK可以配置成运行在同一个进程中.所以默认就是可以互相访问任意数据. 也可以配置成运行成不同的进程, 同时可以访问其他APK的数据目录下的数据库和文件.就像访问本程序的数据一样。**必须相同签名**
 
 * 进程的内存分配
 
@@ -92,16 +93,53 @@
 
     Android 设备包含三种不同类型的内存：RAM、zRAM 和存储器。
 
+    RAM 是最快的内存类型，但其大小通常有限。高端设备通常具有最大的 RAM 容量
+
+    zRAM 是用于交换空间的 RAM 分区。所有数据在放入 zRAM 时都会进行压缩，然后在从 zRAM 向外复制时进行解压。这部分 RAM 会随着页面进出 zRAM 而增大或缩小。设备制造商可以设置 zRAM 大小上限
+
+    存储器中包含所有持久性数据（例如文件系统等），以及为所有应用、库和平台添加的代码。存储器比另外两种内存的容量大得多。在 Android 上，存储器不像在其他 Linux 实现上那样用于交换空间，因为频繁写入会导致这种内存出现损坏，并缩短存储媒介的使用寿命
+
+    
+
+    ![内存类型 - RAM、zRAM 和存储器](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1fbd8b8c452841c08c3f61d581b890a7~tplv-k3u1fbpfcp-watermark.awebp)
+
   * 内存页
 
     Android 的物理内存被分为多个「页」（page）。通常，每个页拥有 4KB 的内存。有三种页类型：已用页、缓存页、空闲页。
+
+    不同类型的页有着各自的作用：
+
+    - 已用页（**Used Pages**）
+
+      被进程活跃使用的内存页
+
+    - 缓存页（**Cached Pages**）
+
+      进程正在使用的内存页，缓存页在存储器中有相应的备份，必要时可以回收
+
+    - 空闲页（**Free Pages**）
+
+      未使用的内存
+
+    其中 **缓存页** 又分为 私有页 和 共享页，它们各自又分 干净页 脏页：
+
+    - 私有页：由一个进程拥有且未共享
+      - 干净页：存储器中未经修改的文件备份
+      - 脏页：存储器中经过修改的文件备份
+    - 共享页：由多个进程使用
+      - 干净页：存储器中未经修改的文件备份
+      - 脏页：存储器中经过修改的文件备份
+
+    ![不同类型的页](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/753a21c3556a4d14afe26b5a2b919596~tplv-k3u1fbpfcp-watermark.awebp)
 
   * 统计内存占用
 
     * 常驻内存大小 (Resident Set Size - **RSS**) ： 应用使用的 **共享页 + 非共享页的数量**
 
-    * 按比例分摊的内存大小 (Proportional Set Size - **PSS**) ： 应用使用的 **非共享页数量 + 共享页均匀分摊数量**（例如，如果三个进程共享 3MB，则每个进程的 PSS 为 1MB）
+    * 按比例分摊的内存大小 (Proportional Set Size - **PSS**) ： 应用使用的 **非共享页数量 + 共享页均匀分摊数量**（例如，如果三个进程共享 3MB，则每个进程的 PSS 为 1MB），**最常用**。
 
+      可以使用 `adb shell dumpsys meminfo -s [process]` 来查看进程的 PSS
+    
     * 独占内存大小 (Unique Set Size - **USS**) ： 应用使用的 **非共享页数量（不包括共享页）**
 
 * 进程内存不足管理
@@ -148,9 +186,9 @@
   
   * persistent参数
   * 提高进程优先级
-  * 杀死之后再次拉起
+  * 杀死之后再次拉起（守护进程、push）
   
-  * 进程启动/APP启动
+  * 加白名单（一键加速、高耗电、低内存）
   
 * APP多进程实现
   
@@ -173,46 +211,78 @@
 
 #### IPC
 
-  * 进程间通信方式
+  * **IPC基础知识**
+    
+      * 序列化 （问题：有哪几种序列化的方式，哪种更好？） 
+        
+        | 对比         | **Serializable**                                             | **Parcelable**                                               |
+        | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+        | 所属API      | Java API                                                     | Android SDK API                                              |
+        | 特点         | 序列化和反序列化会经过大量的I/O操作，产生大量的临时变量引起GC，且反序列化时需要反射 | 基于内存拷贝实现的封装和解封(marshalled& unmarshalled)，序列化基于Native层实现，不同版本的API实现可能不同 |
+        | 开销         | 相对高                                                       | 相对低                                                       |
+        | 效率         | 相对低                                                       | 相对高                                                       |
+        | **适用场景** | **序列化到本地、网络传输**                                   | **主要内存序列化**                                           |
+        
+        
+        
+    * Binder
+    
+      1. Binder可以理解为一种虚拟的物理设备，他的设备驱动是 /dev/binder
+    
+        2. Binder调用时耗时的，客户端发起远程请求时，当前线程会被挂起直至服务器进程返回数据；服务端的Binder方法运行在Binder的线程中；因此Binder调用不能在主线程中
+    
+        3. Binder有两个重要的方法：linkToDeath 和 unLinkToDeath ，给BInder设置死亡代理。声明一个IBinder.DeathRecipient对象，再调用binder.linkToDeath(mDeathRecipient，0)。
+    
+      4. Binder连接池。设计逻辑是把所有的AIDL放在同一个Service管理。服务端提供一个queryBinder接口，这个接口能够根据业务模块的特征来返回相应的Binder对象给他们。详情可以参考《Android开发艺术探索》第2章2.5Binder连接池  章节。
+    
+         ![img](https://img.kancloud.cn/d4/e7/d4e7489a2008bd926464351c901dd451_1361x513.png)
+    
+         
+    
+  * **Android中IPC的方式**
     
     * 使用Bundle，1M大小限制
     * 使用文件共享
+    * 使用Messenger
+    * 使用ContentProvider
+    * 使用AIDL
     * 使用Socket
-    * 使用Binder（使用AIDL、使用Messenger、使用ContentProvider）
+    * 匿名共享内存
+    * 使用pipe管道
     
-  * IPC通信知识
     
-    * Binder（问题：）
-    
-    1. Binder可以理解为一种虚拟的物理设备，他的设备驱动是 /dev/binder
-      2. Binder调用时耗时的，客户端发起远程请求时，当前线程会被挂起直至服务器进程返回数据；服务端的Binder方法运行在Binder的线程中；因此Binder调用不能在主线程中
-      3. Binder有两个重要的方法：linkToDeath 和 unLinkToDeath ，给BInder设置死亡代理。声明一个IBinder.DeathRecipient对象，再调用binder.linkToDeath(mDeathRecipient，0)。
-    4. Binder连接池。设计逻辑是把所有的AIDL放在同一个Service管理。服务端提供一个queryBinder接口，这个接口能够根据业务模块的特征来返回相应的Binder对象给他们。详情可以参考《Android开发艺术探索》第2章2.5Binder连接池  章节。
     
   * AIDL（问题：如何实现、参数 in、out、inout、参数oneway）
+
+    1. 创建 .aidl 文件，一个接口IInterface ，一个抽象类 IBinder
+
+    2. 内部类Stub 和 代理类Proxy，Stub为服务端，Proxy为客户端
+
+    3. 几个重要的方法：
+
+       * DESCRIPTOR：Binder的唯一标识，一般用当前Binder的类名表示
+   * asInterface：用于将服务端的Binder对象转换成客户端所需的AIDL接口类型的对象，这种转换过程是区分进程的，如果客户端和服务端位于同一进程，那么此方法返回的就是服务端的Stub对象本身，否则返回的是系统封装后的Stub.proxy对象。
+       * asBinder：此方法用于返回当前Binder对象。
+       * transact，onTransact：读写数据。
     
-      1. 创建 .aidl 文件，一个接口IInterface ，一个抽象类 IBinder
-      2. 内部类Stub 和 代理类Proxy，Stub为服务端，Proxy为客户端
-      3. 几个重要的方法：DESCRIPTOR，asInterface，asBinder，transact，onTransact
-      4. .aidl文件中的参数in代表只能由客户端流向服务端；out 表示数据只能由服务端流向客户端；inout 则表示数据可在服务端与客户端之间双向流通；**oneway关键字用于修改远程调用的行为，**被oneway修饰了的方法不可以有返回值，也不可以有带out或inout的参数
-      
-    * 序列化 （问题：有哪几种序列化的方式，哪种更好？）
+    4. .aidl文件中的参数in代表只能由客户端流向服务端；out 表示数据只能由服务端流向客户端；inout 则表示数据可在服务端与客户端之间双向流通；**oneway关键字用于修改远程调用的行为，**被oneway修饰了的方法不可以有返回值，也不可以有带out或inout的参数
     
-      1. Serializable接口
-      2. Parcelable接口
-    
-    * 匿名共享内存
-    
-    * RemoteCallbackList
-    
-      RemoteCallbackList是系统专门提供用于删除跨进程listener的接口。使用registerListener和unregisgerListener 来注册和反注册，使用beginBroadcast和finishBroadcast配对使用来通知回调。
-    
+       
+
+* RemoteCallbackList
+
+  RemoteCallbackList是系统专门提供用于删除跨进程listener的接口。使用registerListener和unregisgerListener 来注册和反注册，使用beginBroadcast和finishBroadcast配对使用来通知回调。
+
 
 
 
 #### Binder
 
 * 原理
+* 参考资料
+  * [Binder十万个为什么](http://vanelst.site/2020/08/07/binder-question/)
+  * [彻底理解Android Binder通信架构](http://gityuan.com/2016/09/04/binder-start-service/)
+  * [Android跨进程通信：图文详解 Binder机制 原理](https://blog.csdn.net/carson_ho/article/details/73560642)
 
 
 
@@ -222,6 +292,8 @@
 * [Android官网 - 管理内存](https://developer.android.google.cn/topic/performance/memory-overview?hl=zh-cn)
 * [Android Detail：进程篇——关于进程你需要了解这些](https://xiaozhuanlan.com/topic/2036195874)    | [Android Detail：进程篇——进程内存分配与优先级](https://juejin.cn/post/6891911483379482637)
 * [Android AIDL参数中in、out、inout、oneway含义及区别](http://nicethemes.cn/news/txtlist_i6454v.html)
+* [2020年了，Android后台保活还有戏吗？看我如何优雅的实现！](http://www.52im.net/thread-2881-1-1.html)
+* [Android序列化(Serializable/Parcelable)总结](https://blog.csdn.net/u013700502/article/details/104161991)
 
 
 
@@ -5587,3 +5659,10 @@
   
   * [【带着问题学】关于LeakCanary2.0你应该知道的知识点](https://juejin.cn/post/6968084138125590541)
   * [看完这篇 LeakCanary 原理分析，又可以虐面试官了！](https://mp.weixin.qq.com/s/1jFY_22hoWgCw3CDo2rpOA)
+
+
+
+
+
+# 面经
+
