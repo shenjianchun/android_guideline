@@ -264,10 +264,11 @@
    * asInterface：用于将服务端的Binder对象转换成客户端所需的AIDL接口类型的对象，这种转换过程是区分进程的，如果客户端和服务端位于同一进程，那么此方法返回的就是服务端的Stub对象本身，否则返回的是系统封装后的Stub.proxy对象。
        * asBinder：此方法用于返回当前Binder对象。
        * transact，onTransact：读写数据。
-    
+
     4. .aidl文件中的参数in代表只能由客户端流向服务端；out 表示数据只能由服务端流向客户端；inout 则表示数据可在服务端与客户端之间双向流通；**oneway关键字用于修改远程调用的行为，**被oneway修饰了的方法不可以有返回值，也不可以有带out或inout的参数
-    
-       
+
+
+​       
 
 * RemoteCallbackList
 
@@ -5173,6 +5174,29 @@
 
 ### <span id="okhttp">okhttp</span>
 
+* 使用
+
+  ```java
+  OkHttpClient okHttpClient = new OkHttpClient.Builder()
+          .build();
+  Request request = new Request.Builder()
+          .url(url)
+          .build();
+  okHttpClient.newCall(request).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+      }
+  
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+  
+      }
+  });
+  
+  ```
+
+  
+
 * 知识点
 
   ![类图](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e7d45719cb384035a69385400f71b338~tplv-k3u1fbpfcp-watermark.awebp)
@@ -5211,7 +5235,20 @@
 ### <span id="Retrofit">Retrofit</span>
 
 * 知识点
-  * 
+
+  * 使用介绍
+
+    步骤1：添加Retrofit库的依赖
+    步骤2：创建 接收服务器返回数据 的类
+    步骤3：创建 用于描述网络请求 的接口
+    步骤4：创建 Retrofit 实例
+    步骤5：创建 网络请求接口实例 并 配置网络请求参数
+    步骤6：发送网络请求（异步 / 同步）
+
+    > 封装了 数据转换、线程切换的操作
+
+    步骤7：处理服务器返回的数据
+    
 * 参考资料
   * [深入浅出 Retrofit，这么牛逼的框架你们还不来看看？](https://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577186&idx=1&sn=1a5f6369faeb22b4b68ea39f25020d28&scene=1&srcid=06039K4A2eGkHPxLbKED09Mk)
   * [Consuming APIs with Retrofit -  CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Consuming-APIs-with-Retrofit)
