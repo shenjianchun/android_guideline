@@ -339,6 +339,8 @@
 
     
 
+    
+
   * **Android  apk 运行的过程**
 
     * Dalvik （Interpreter & JIT）
@@ -352,14 +354,14 @@
       `ART`使用`AOT（Ahead of Time）`编译器来将字节码翻译成`.oat`文件。`APP`被安装时，`ART`将`Dex`字节码预编译成`.oat`文件，每次启动`APP`时系统直接读取`.oat`文件运行即可，不再使用`JIT`以及`Interpreter`这种即时翻译的工具，大大提升了运行流畅度。
 
       这样看起来好像`AOT`好像没什么毛病，`Google`当初也觉得自己找到了终极解决方式，但实际上`AOT`还是会有一些问题：
-
+  
       - `AOT`在安装过程中进行预编译行为，这样安装和更新`APP`时间相比原来就会大大增加。另外，升级`Android`系统时，系统会把所有程序重新安装一次，想想那么多`APP`要重新安装编译成`.oat`文件，头都大了。
       - 空间大小。`AOT`将整个`.dex`文件都翻译为`.oat`文件，包括那种很少使用或者根本不会被使用到的代码（比如第一次打开`APP`的设置向导或者开屏界面）。根据`Google`相关的数据，常用的代码大概占所有代码的`15~20%`左右，这样就浪费了很大一部分空间，在一些小存储容量的低端机上这个问题尤其明显。
 
       
 
       既然这也不好，那也不好，那就集中两种方式的优点就好了。`Google`工程师想出了一个新点子：`Interpreter + JIT + AOT`混合编译，具体方案如下：
-
+  
       1. 安装的时候不进行预编译，也即不生成`.oat`文件。`app`第一次启动时，`ART`使用`Interpreter`来实时翻译`.dex`文件。
       2. 当出现`Hot Code`时，使用`JIT`进行翻译，并将翻译后的机器码存入缓存（内存）中，之后调用`Hot Code`时直接从缓存中取。
       3. 当设备空闲时，比如锁屏，`Hot Code`会被`AOT`编译器编译成`oat`文件存入本地存储空间。
@@ -368,22 +370,28 @@
       ![AOT 运行过程](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/oatRun.png)
 
       AOT 运行过程
-
+  
       国内的厂商会有“基于用户操作习惯进行学习，APP打开速度不断提高
       ”的说法，有一部分是这个混合编译方案的功劳。
 
       
 
+      dex2oat 与 dexopt
+
+    
+
+    
+
     * PGO
 
       在说`AOT`混合编译的时候系统会生成一个`profile`，这个`profile`记录了`hotcode`的信息，哪些类和哪些方法会被经常调用。而对于大多数人来说，同一个`APP`的`hotcode`区别不大，其实可以共用，因此`Google`在`2018 Google I/O`大会上提出了`Cloud Profiles`的方案。具体原理如下：
-
+  
       ![共享](https://kingsfish.github.io/2019/10/03/%E8%B0%88%E8%B0%88Android%E7%BC%96%E8%AF%91%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B/share.png)
-
+    
       
-
+    
       这个方案依赖`Google Play`来完成。当一个设备为空闲状态并且连接到`WiFi`时，`Google Play Service`会将编译后的文件共享，之后如果有一样的手机从`Googole Play`中下载这个`APP`时，终端会收到其他人的`hotcode`信息，这样用户在第一次使用时就能获得良好的体验。
-
+    
       但实际上，一个人的`hotcode`无法代表所有人的`hotcode`信息，那么需要多少个样本才能拿到一个比较稳定的`hotcode profile`呢？根据官方的数据，这个数字还挺小的。
     
       
@@ -424,6 +432,8 @@
 
       ![](https://developer.android.google.cn/guide/components/images/activity_lifecycle.png?hl=zh-cn)
 
+      
+
     * 异常情况下的生命周期
 
       异常生命周期会调用onSaveInstanceState 和 onRestoreInstanceState 函数，主要是Config发生变化、内存不足导致Activity被杀的时候会调用以上两个函数。
@@ -431,12 +441,12 @@
   * Activity的启动模式
 
     * Activity的LaunchMode
-
+  
       1. standand（标准模式）
       2. singleTop（栈顶复用模式）
       3. singleTask（栈内复用模式）
       4. singleInstance（单实例模式）
-
+  
       > TaskAffinity（相关性），默认情况下，所有的Activity所属的任务栈的名字为应用包名。也可以单独指定TaskAffinity属性，这个属性值不能和包名相同，否则相当于没指定。
       >
       > 
@@ -452,8 +462,6 @@
       3. [FLAG_ACTIVITY_CLEAR_TOP](https://developer.android.google.cn/reference/android/content/Intent?hl=zh-cn#FLAG_ACTIVITY_CLEAR_TOP) ： 如果要启动的 Activity 已经在当前任务中运行，则不会启动该 Activity 的新实例，而是会销毁位于它之上的所有其他 Activity，并通过 `onNewIntent()` 将此 intent 传送给它的已恢复实例（现在位于堆栈顶部）。（`FLAG_ACTIVITY_CLEAR_TOP` 最常与 `FLAG_ACTIVITY_NEW_TASK` 结合使用。将这两个标记结合使用，可以查找其他任务中的现有 Activity，并将其置于能够响应 intent 的位置。）
 
          > **注意**：如果指定 Activity 的启动模式为 `"standard"`，系统也会将其从堆栈中移除，并在它的位置启动一个新实例来处理传入的 intent。这是因为当启动模式为 `"standard"` 时，始终会为新 intent 创建新的实例。
-
-      4. 
 
     * Intent中addFlags的方式优先级要高于LaunchMode，两种同时存在的时候以addFlags为准。addFlags无法设置singleInstance模式，而LaunchMode无法使用FLAG_ACTIVITY_CLEAR_TOP
 
@@ -5248,7 +5256,7 @@
     > 封装了 数据转换、线程切换的操作
 
     步骤7：处理服务器返回的数据
-    
+  
 * 参考资料
   * [深入浅出 Retrofit，这么牛逼的框架你们还不来看看？](https://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653577186&idx=1&sn=1a5f6369faeb22b4b68ea39f25020d28&scene=1&srcid=06039K4A2eGkHPxLbKED09Mk)
   * [Consuming APIs with Retrofit -  CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Consuming-APIs-with-Retrofit)
