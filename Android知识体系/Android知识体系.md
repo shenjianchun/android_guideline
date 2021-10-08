@@ -635,7 +635,10 @@
 ### Fragment
 
 * 知识点
-  * 创建Fragment
+  * 创建和使用Fragment
+
+    * 在xml中使用，使用`FragmentContainerView` 来占位。
+    * 在代码中直接加载。
 
   * Fragment管理器
 
@@ -656,8 +659,8 @@
 
     3. 查找现有Fragment
 
-      *  [`findFragmentById()`](https://developer.android.com/reference/androidx/fragment/app/FragmentManager#findFragmentById(int)) 
-      *  [`findFragmentByTag()`](https://developer.android.com/reference/androidx/fragment/app/FragmentManager#findFragmentByTag(java.lang.String)) 
+       * [`findFragmentById()`](https://developer.android.com/reference/androidx/fragment/app/FragmentManager#findFragmentById(int)) 
+       * [`findFragmentByTag()`](https://developer.android.com/reference/androidx/fragment/app/FragmentManager#findFragmentByTag(java.lang.String)) 
 
   * Fragment之间添加过度动画效果
 
@@ -667,15 +670,14 @@
 
   * 生命周期
 
-    1. 使用 addToBackStack()之后的生命周期？
+    <img src="https://developer.android.google.cn/images/guide/fragments/fragment-view-lifecycle.png" style="zoom:50%;" />
 
-       <img src="https://developer.android.google.cn/images/guide/fragments/fragment-view-lifecycle.png" style="zoom:50%;" />
-
-    2. 使用ViewPager2的生命周期
+    2. *使用 addToBackStack()之后的生命周期？*
+    2. *使用ViewPager2的生命周期*
 
   * 与Fragment通信
 
-    1. `Fragment` 库提供了两个通信选项：共享的 [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) 和 Fragment Result API。建议的选项取决于用例。如需与任何自定义 API 共享持久性数据，您应使用 `ViewModel`。对于包含的数据可放置在 [`Bundle`](https://developer.android.com/reference/android/os/Bundle) 中的一次性结果，您应使用 Fragment Result API。
+    1. `Fragment` 库提供了两个通信选项：共享的 [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) 和 Fragment Result API。建议的选项取决于用例。如需与任何自定义 API 共享持久性数据，您应使用 `ViewModel`。对于包含的数据可放置在 [`Bundle`](https://developer.android.com/reference/android/os/Bundle) 中的一次性结果，您应使用 Fragment Result API（ setFragmentResultListener() +   setFragmentResult）。
 
   * ViewPager与 Fragment
 
@@ -690,26 +692,31 @@
 
     1. Viewpager2比ViewPager的优势
 
+       * 基于RecyclerView实现
        * 垂直方向支持
        * 支持RTL
        * 可以修改Fragment的集合
-       * DiffUtil （`ViewPager2` 在 [`RecyclerView`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView) 的基础上构建而成，这意味着它可以访问 [`DiffUtil`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/DiffUtil) 实用程序类。这一点带来了多项优势，但最突出的一项是，这意味着 `ViewPager2` 对象本身会利用 `RecyclerView` 类中的数据集更改动画。）
-
-    2. 如何使用ViewPager2
-
-       * 适配器类
-
-         对于要转换为 `ViewPager2` 对象的每个 `ViewPager` 对象，请更新适配器类以扩展相应的抽象类，如下所示：
-
+     * DiffUtil （`ViewPager2` 在 [`RecyclerView`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView) 的基础上构建而成，这意味着它可以访问 [`DiffUtil`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/DiffUtil) 实用程序类。这一点带来了多项优势，但最突出的一项是，这意味着 `ViewPager2` 对象本身会利用 `RecyclerView` 类中的数据集更改动画。）
+    
+  2. 如何使用ViewPager2
+    
+     * 适配器类
+      
+       对于要转换为 `ViewPager2` 对象的每个 `ViewPager` 对象，请更新适配器类以扩展相应的抽象类，如下所示：
+      
          - 当 `ViewPager` 使用 [`PagerAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager/widget/PagerAdapter) 分页浏览视图时，将 [`RecyclerView.Adapter`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.Adapter) 用于 `ViewPager2`。
          - 当 `ViewPager` 使用 [`FragmentPagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentPagerAdapter) 分页浏览固定数量的较少 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
-         - 当 `ViewPager` 使用 [`FragmentStatePagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentStatePagerAdapter) 分页浏览大量或未知数量的 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
-
-       * 自定义动画，实现 `ViewPager2.PageTransformer` 接口并将其提供给 `ViewPager2` 对象。接口只会公开一个方法 `transformPage()`，方法中有一个 `position` 参数。
-
-         > `position` 参数表示指定页面相对于屏幕中心的位置。 此参数是一个动态属性，会随着用户滚动浏览一系列页面而变化。当页面填满整个屏幕时，其位置值为 `0`。 当页面刚刚离开屏幕右侧时，其位置值为 `1`。如果用户在第一页和第二页之间滚动到一半，则第一页的位置为 -0.5，第二页的位置为 0.5。根据页面在屏幕上的位置，您可以使用 `setAlpha()`、`setTranslationX()` 或 `setScaleY()` 之类的方法设置页面属性，从而创建自定义滑动动画。
-
+       - 当 `ViewPager` 使用 [`FragmentStatePagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentStatePagerAdapter) 分页浏览大量或未知数量的 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
+      
+     * 自定义动画，实现 `ViewPager2.PageTransformer` 接口并将其提供给 `ViewPager2` 对象。接口只会公开一个方法 `transformPage()`，方法中有一个 `position` 参数。
+      
+       > `position` 参数表示指定页面相对于屏幕中心的位置。 此参数是一个动态属性，会随着用户滚动浏览一系列页面而变化。当页面填满整个屏幕时，其位置值为 `0`。 当页面刚刚离开屏幕右侧时，其位置值为 `1`。如果用户在第一页和第二页之间滚动到一半，则第一页的位置为 -0.5，第二页的位置为 0.5。根据页面在屏幕上的位置，您可以使用 `setAlpha()`、`setTranslationX()` 或 `setScaleY()` 之类的方法设置页面属性，从而创建自定义滑动动画。
+      
        * 支持嵌套的可滚动元素，必须对 `ViewPager2` 对象调用 [`requestDisallowInterceptTouchEvent()`](https://developer.android.com/reference/android/view/ViewGroup#requestDisallowInterceptTouchEvent(boolean))
+     
+    3. **缓存、懒加载、预取**
+    
+       * 
 * 参考资料
   * [官网文档](https://developer.android.google.cn/guide/fragments)
   * [深入了解ViewPager2](https://juejin.cn/post/6844904020553760782)
@@ -761,6 +768,12 @@
 * 知识点
   * RecyclerView 与ListView对比
 
+    * 布局效果，RecyclerView 的布局效果丰富， 可以在 LayoutMananger 中设置
+    * 封装了viewholder，Listview需要自己写ViewHolder缓存
+    * RecyclerView的缓存机制有了加强，ListView是2级缓存，而RecyclerView实现了4级缓存
+    * RecyclerView相对于ListView最大的加强是实现了局部刷新，这对于ListView需要刷新全部列表进步很多，特别适用于那些数据源经常发生改变的情况。
+    * 已经封装好API来实现自己的动画效果，ListView并没有
+
   * RecyclerView核心组件 
 
     | 类名                        | 作用                                                     |
@@ -797,7 +810,7 @@
          | `notifyItemRangeInserted(int positionStart, int itemCount)` | Notify any registered observers that the currently reflected `itemCount` items starting at `positionStart` have been newly inserted. |
          | `notifyItemRangeRemoved(int positionStart, int itemCount)`  | Notify any registered observers that the `itemCount` items previously located at `positionStart` have been removed from the data set. |
 
-      3. 大数据量变化 与 DiffUils
+      3. 大数据量变化 与 DiffUtil、AsyncListDiffer
 
       4. adapter订阅者模式
 
@@ -806,11 +819,16 @@
     * RecyclerView.LayoutManager
 
       1. LayoutManager的作用
+
+         LayoutManager的职责是摆放Item的位置，并且负责决定何时回收和重用Item。
+
       2. 常用的LayoutManager
          - `LinearLayoutManager` 将各个项排列在一维列表中。将 `RecyclerView` 与 `LinearLayoutManager` 搭配使用可提供类似于旧版 `ListView` 布局的功能。
          - `GridLayoutManager` 将各个项排列在二维网格中，就像棋盘上的方格一样。将 `RecyclerView` 与 `GridLayoutManager` 搭配使用可提供类似于旧版 `GridView` 布局的功能。
          - `StaggeredGridLayoutManager` 将各个项排列在二维网格中，每一列都在前一列基础上稍微偏移，就像美国国旗中的星星一样。
+
       3. 如何自定义LayoutManager
+
       4. setLayoutManager源码里做了什么？
 
       
@@ -970,6 +988,8 @@
 
       1. SnapHelper的作用
 
+         在某些场景下，卡片列表滑动浏览[有的叫轮播图]，希望当滑动停止时可以将当前卡片停留在屏幕某个位置，比如停在左边，以吸引用户的焦点。那么可以使用RecyclerView + Snaphelper来实现
+
       2. SnapHelper是怎么让RecyclerView对齐的？
 
       3. LinearSnapHelper & PagerSnapHelper
@@ -986,7 +1006,7 @@
 
     * 数据优化
 
-      1. 使用DiffUtil
+      1. 使用DiffUtil、AsyncListDiffer计算数据集的变化，实现局部更新
       2. 使用`recyclerView.setHasFixedSize(true);` ，如果items是固定且不会发生变化，为什么？
 
     * 布局优化
@@ -1016,6 +1036,10 @@
   * 在WebView中使用JavaScript，默认是关闭的；JS和Android之间相互调用，WebView使用`addJavascriptInterface()` 来给JS添加接口；但是出于安全原因，除非全部的代码都是自己所写，不然建议使用默认的浏览器。
   * 网页导航
     * 如果想要在应用中打开链接调整，则需要给WebView设置一个WebViewClient，使用WebViewClient中的` shouldOverrideUrlLoading` 可以响应网页中的超链接，可以对请求进行拦截。使用`goBack()` 和`goForward()`可以向后或向前浏览历史记录。
+  * WebViewClient 和 WebChromeClient 
+    * WebViewClient就是帮助WebView处理各种通知、请求事件的。
+    * WebChromeClient是辅助WebView处理[JavaScript](https://link.juejin.cn/?target=http%3A%2F%2Flib.csdn.net%2Fbase%2Fjavascript)的对话框，网站图标，网站title，加载进度等 。
+      方法中的代码都是由 [Android](https://link.juejin.cn/?target=http%3A%2F%2Flib.csdn.net%2Fbase%2Fandroid)端自己处理。
 * 参考资料
   * [Working with the WebView - CodePath - 使用篇](http://guides.codepath.com/android/Working-with-the-WebView) 
   * [WebView你真的熟悉吗？看了才知道](http://www.jianshu.com/p/d2f5ae6b4927)
@@ -1214,6 +1238,7 @@
 ### Drawable
 
 * 知识点
+  * BitmapDrawable（位图图形文件（`.png`、`.jpg` 或 `.gif`））
   * ShapeDrawable
   * StateListDrawable
   * LayerListDrawable
@@ -1359,14 +1384,14 @@
   * 监听浮窗界外点击事件
 
     * window添加FLAG_WATCH_OUTSIDE_TOUCH的flag，在 onTouch中监听ACTION_OUTSIDE事件。
+    
+  * 浮窗的几种实现方式
 
-* 浮窗的几种实现方式
-
-  * 应用内悬浮窗
-  * addContentView实现
-  * 应用外悬浮窗(有局限性)
-    * 需要申请权限 并且在Service中添加
-  * 无障碍悬浮窗
+    * 应用内悬浮窗
+    * addContentView实现
+    * 应用外悬浮窗(有局限性)
+      * 需要申请权限 并且在Service中添加
+    * 无障碍悬浮窗
 
 * 参考资料
   
@@ -1385,30 +1410,28 @@
 
     1. View提供的方法
 
-       * getTop：获取到的，是view自身的顶边到其父布局顶边的距离
-    * getLeft：获取到的，是view自身的左边到其父布局左边的距离
-       * getRight：获取到的，是view自身的右边到其父布局左边的距离
-       * getBottom：获取到的，是view自身的底边到其父布局顶边的距离
+       * getTop：获取到的是view自身的顶边到其父布局顶边的距离
+       * getLeft：获取到的是view自身的左边到其父布局左边的距离
+       * getRight：获取到的是view自身的右边到其父布局左边的距离
+       * getBottom：获取到的是view自身的底边到其父布局顶边的距离
        * getX()、getY()：x，y是View左上角的坐标（相对于父容器的坐标）  x = left + translationX
        * getTranslationX（）、getTranslationY（）：是View左上角相对于父容器的偏移量
        
        >  View在平移的过程中，top和left表示的是原始左上角的位置信息，其值不会发生改变，此时改变的是x、y、translationX和translationY这四个参数。
        
-       
-       
        * getLocationInWindow（）：获取控件 相对 窗口Window 的位置
        * getLocationOnScreen（）：获得 View 相对 屏幕 的绝对坐标
        * getGlobalVisibleRect（）：View可见部分 相对于 屏幕的坐标。
        * getLocalVisibleRect（）：View可见部分 相对于 自身View位置左上角的坐标。
-
+    
     
 
     2. MotionEvent中的方法
-       * getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离
+     * getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离
        * getY()：获取点击事件相对控件顶边的y轴坐标，即点击事件距离控件顶边的距离
        * getRawX()：获取点击事件相对整个屏幕左边的x轴坐标，即点击事件距离整个屏幕左边的距离
        * getRawY()：获取点击事件相对整个屏幕顶边的y轴坐标，即点击事件距离整个屏幕顶边的距离
-
+    
     <img src="https://img-blog.csdn.net/20160416152117873" style="zoom: 50%;" />
 
     3. TouchSlop
@@ -1418,20 +1441,20 @@
        获取方法：
 
        ```java
-       ViewConfiguration.get(getContext()).getScaledTouchSlop();
+     ViewConfiguration.get(getContext()).getScaledTouchSlop();
        ```
-
+    
        
 
-    4. 获取坐标的时机
+    4. 获取View宽高的时机
 
        * ViewTreeObserver  - addOnGlobalLayoutListener
-       * ViewTreeObserver  -  addOnPreDrawListener
+     * ViewTreeObserver  -  addOnPreDrawListener
        * view.post()
        * onWindowFocusChanged
-
-    
-
+       
+       > 参考：[Android--获取View的宽高的几种方法](https://blog.csdn.net/HardWorkingAnt/article/details/77278811)
+     
     5. 常用的工具类
 
        * VelocityTracker
@@ -1439,7 +1462,7 @@
          速度追踪，用于追踪手指在滑动过程中的速度，包括水平和竖直方向的速度。
 
          ```kotlin
-             private const val DEBUG_TAG = "Velocity"
+           private const val DEBUG_TAG = "Velocity"
          
              class MainActivity : Activity() {
                  private var mVelocityTracker: VelocityTracker? = null
@@ -1481,7 +1504,7 @@
              }
              
          ```
-
+    
          
 
        * GestureDetector
@@ -1489,7 +1512,7 @@
          手势检测，用于辅助检测用户的单击、滑动、长按、双击等行为。如果您只想处理几个手势，可以扩展 `GestureDetector.SimpleOnGestureListener`，而无需实现 `GestureDetector.OnGestureListener` 接口。
 
          ```kotlin
-             private const val DEBUG_TAG = "Gestures"
+           private const val DEBUG_TAG = "Gestures"
          
              class MainActivity :
                      Activity(),
@@ -1574,7 +1597,7 @@
          
              }
          ```
-
+    
          
 
        * Scroller
@@ -1583,7 +1606,7 @@
 
     
 
-  * View的滑动
+  * **View的滑动**
 
     * 使用scrollTo/scrollBy（相对滑动）
       1. View内部有两个属性mScrollX和mScrollY，scrollTo()中mScrollX的值等于view左边缘和view内容左边缘在水平方向的距离，并且当view的左边缘在view的内容左边缘右边时，mScrollX为正，反之为负；同理mScrollY等于view上边缘和view内容上边缘在竖直方向的距离，并且当view的上边缘在view的内容上边缘下边时，mScrollY为正，反之为负。当View没有使用scrollTo()和scrollBy()进行滑动的时候，mScrollX和mScrollY默认等于零，也就是view的左边缘与内容左边缘重合。
@@ -1631,16 +1654,20 @@
       * 场景2：外部滑动方向和内部滑动方向一致；
       * 场景3：上面两种情况的嵌套。
 
+    * 滑动冲突的处理规则
+
+      * 横竖方向判断的方法：1）可以依据滑动路径和水平方向所形成的夹角  2）也可以依据水平方向和竖直方向上的距离差来判断  3）某些特殊时候还可以依据水平和竖直方向的速度差来做判断
+
     * 滑动冲突的解决方式
 
       * 外部拦截法
 
         > 是指点击事件都是需要先经过父容器的拦截处理, 如果父容器需要此事件就拦截,不需要就下放. 外部拦截需要重写父容器的onInterceptTouchEvent方法
-
+    
         大概的处理流程：
 
         - `ACTION_DOWN`这个事件,父容器必须返回false, 即不拦截`ACTION_DOWN`事件, 因为一旦父容器拦截了这个事件, 那么后续的`ACTION_MOVE`,`ACTION_UP`事件都会交由父容器来处理了. 这个时候这个**事件序列**剩余部分无法传递给子元素了.
-        - `ACTION_MOVE`这个事件,就可以根据实际的需求来决定是否需要拦截. 如果需要拦截就返回true.否则false.
+      - `ACTION_MOVE`这个事件,就可以根据实际的需求来决定是否需要拦截. 如果需要拦截就返回true.否则false.
         - `ACTION_UP`这个事件必须返回false, 因为`ACTION_UP`事件本身没有太多意义.
 
       * 内部拦截法
@@ -1648,17 +1675,17 @@
         > 是指父容器不拦截任何事件, 所有的事件都需要传递给子元素, 如果子元素需要此事件就直接消费. 否则就交由父容器进行处理, 由于这种方法和Android中的事件分发机制不一致, 需要配合requestDisallowInterceptTouchEvent()方式才能正常工作. 需要重写子元素的dispatchTouchEvent
 
         这种拦截法的使用规则:
-
+    
         子View中的`dispatchTouchEvent()`进行复写.
 
         - `ACTION_DOWN`事件中: 让父容器拒绝拦截所有事件, 调用`parent.requestDisallowInterceptTouchEvent(true)`
-        - `ACTION_MOVE`事件中: 进行条件的拦截判断, 如果在某一种场景需要拦截,那么就调用方法允许父容器拦截事件.
+      - `ACTION_MOVE`事件中: 进行条件的拦截判断, 如果在某一种场景需要拦截,那么就调用方法允许父容器拦截事件.
         - `return` 时, 调用`super.dispatchTouchEvent(event)`
 
         父容器的`onInterceptTouchEvent()`进行`ACTION_DOWN`返回false, 其余都是返回true的复写.
-
+    
         说明一点, 为什么父容器不连`ACTION_DOWN`一并的用true复写. 因为`ACTION_DOWN`这个事件是不受`INTERCEPT_FLAG`这个标记影响的的, 就是不管拦截标记是否是何值, 按下事件必然会执行, 所以如果这里返回true, 那么就代表着, 这个事件序列的后续部分将由父容器进行处理, 而子容器无法收到这个事件.
-
+    
     
 
 * 参考资料
@@ -2482,6 +2509,8 @@
     ```
   
     `ViewConfiguration` 中以 `getScaled` 前缀开头的方法确定会返回不管当前屏幕密度为何都会正常显示的像素值。
+    
+  * 建议在xdhpi中作图
 * 参考资料
   * [Android机型适配终极篇](https://zhuanlan.zhihu.com/p/92083368) 
   * [支持不同的像素密度 - Android官网](https://developer.android.google.cn/training/multiscreen/screendensities?hl=zh-cn)
@@ -2524,10 +2553,47 @@
 
   * **属性动画**
 
-    * 动画监听
+    * 可以做动画的属性有
 
-      * AnimatorListenerAdapter 
-      * AnimatorUpdateListener，它会监听整个动画过程，动画是由许多帧组成的，没播放一帧，onAnimationUpdate就会被调用一次。
+      | Property                                                     | Description          |
+      | :----------------------------------------------------------- | :------------------- |
+  | `alpha`                                                      | Fade in or out       |
+      | `rotation`, `rotationX`, `rotationY`                         | Spin or flip         |
+  | `scaleX`, `scaleY`                                           | Grow or shrink       |
+      | `x`, `y`, `z`                                                | Position             |
+  | `translationX`, `translationY`, **`translationZ` (API 21+)** | Offset from Position |
+    
+* ValueAnimator 和 ObjectAnimator 
+    
+  * ValueAnimator可以通过valueAnim.addUpdateListener来自定义动画
+    
+        ```java
+        // Construct the value animator and define the range
+        ValueAnimator valueAnim = ValueAnimator.ofFloat(0, 1);
+        // Animate over the course of 700 milliseconds
+        valueAnim.setDuration(700);
+        // Choose an interpolator
+        valueAnim.setInterpolator(new DecelerateInterpolator());
+        // Define how to update the view at each "step" of the animation
+        valueAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+          @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+              float animatedValue = (float) animation.getAnimatedValue();
+              // Use the animated value to affect the view
+          }
+        });
+    // Start the animation if not already running
+        if (!valueAnim.isStarted()) {
+          valueAnim.start();
+        }
+        ```
+    
+        
+    
+    * 动画监听
+    
+      * AnimatorListenerAdapter 和 Animator.AnimatorListener
+      * AnimatorUpdateListener，它会监听整个动画过程，动画是由许多帧组成的，每播放一帧，onAnimationUpdate就会被调用一次。
 
     * 插值器与估值器		
 
@@ -2536,9 +2602,9 @@
         1. 作用：设置属性值从初始值过渡到结束值 的变化规律，如匀速、加速 & 减速等等，即确定了 动画效果变化的模式，如匀速变化、加速变化等等。
 
         2. 使用：
-
+    
            ```xml
-           <?xml version="1.0" encoding="utf-8"?>
+       <?xml version="1.0" encoding="utf-8"?>
            <!--通过资源ID设置插值器-->
            <scale xmlns:android="http://schemas.android.com/apk/res/android"
                android:interpolator="@android:anim/overshoot_interpolator"
@@ -2553,7 +2619,7 @@
                android:pivotY="50%">
            </scale>
            ```
-
+    
            ```java
            Animation scaleAnimation = new ScaleAnimation(0, 2, 0, 2, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
            scaleAnimation.setDuration(3000);
@@ -2565,29 +2631,29 @@
            //播放动画
            button.startAnimation(scaleAnimation);
            ```
-
+    
            
-
+    
         3. 自定义插值器
-
-           **根据动画的进度（0%-100%）计算出当前属性值改变的百分比**。自定义插值器需要实现 Interpolator / TimeInterpolator接口 & 复写getInterpolation()方法。
-
-           > 补间动画实现Interpolator接口；属性动画一般实现TimeInterpolator接口
+    
+       **根据动画的进度（0%-100%）计算出当前属性值改变的百分比**。自定义插值器需要实现 Interpolator / TimeInterpolator接口 & 复写getInterpolation()方法。
+    
+       > 补间动画实现Interpolator接口；属性动画一般实现TimeInterpolator接口
            >
-           > TimeInterpolator接口是属性动画中新增的，用于兼容Interpolator接口，这使得所有过去的Interpolator实现类也可以直接在属性动画使用。
-
-           ```java
+       > TimeInterpolator接口是属性动画中新增的，用于兼容Interpolator接口，这使得所有过去的Interpolator实现类也可以直接在属性动画使用。
+    
+       ```java
            // 匀速差值器：LinearInterpolator
-               @HasNativeInterpolator
+           @HasNativeInterpolator
                public class LinearInterpolator extends BaseInterpolator implements NativeInterpolatorFactory {
                    // 仅贴出关键代码
                    ...
                    public float getInterpolation(float input) {
-                       return input;
+                   return input;
                        /*没有对input值进行任何逻辑处理，直接返回
-                        即input值 = fraction值
+                    即input值 = fraction值
                         因为input值是匀速增加的，因此fraction值也是匀速增加的，
-                        所以动画的运动情况也是匀速的，所以是匀速插值器。*/
+                    所以动画的运动情况也是匀速的，所以是匀速插值器。*/
                    }
                }
            
@@ -2605,26 +2671,26 @@
                         只不过经过了余弦运算之后，最终的结果不再是匀速增加的了，而是经历了一个先加速后减速的过程
                         所以最终，fraction值 = 运算后的值 = 先加速后减速，所以该差值器是先加速再减速的。*/
                    }
-               }
+             }
            ```
-
+    
            
-
+    
       * 估值器（TypeEvaluator）
-
+    
         1. 作用：设置属性值从初始值过渡到结束值的变化具体数值。**根据当前属性改变的百分比来计算改变后的属性值。**
-
+    
         2. 使用
-
+    
            ```java
            // 在第4个参数中传入对应估值器类的对象
            ObjectAnimator anim = ObjectAnimator.ofObject(button, "height", new Evaluator()，1，3);
            ```
-
+    
            
-
+    
         3. 自定义估值器
-
+    
            ```java
            // FloatEvaluator实现了TypeEvaluator接口
            public class FloatEvaluator implements TypeEvaluator {  
@@ -2642,7 +2708,7 @@
                }  
            }
            ```
-
+  
 * 参考资料
   * [Animations -  CodePath - 使用篇](https://guides.codepath.com/android/Animations)
   * [Android动画中篇（插值器、估值器）](https://www.jianshu.com/p/676bb3b4d71d)
