@@ -701,17 +701,17 @@
   2. 如何使用ViewPager2
     
      * 适配器类
-      
+     
        对于要转换为 `ViewPager2` 对象的每个 `ViewPager` 对象，请更新适配器类以扩展相应的抽象类，如下所示：
-      
+     
          - 当 `ViewPager` 使用 [`PagerAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager/widget/PagerAdapter) 分页浏览视图时，将 [`RecyclerView.Adapter`](https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.Adapter) 用于 `ViewPager2`。
          - 当 `ViewPager` 使用 [`FragmentPagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentPagerAdapter) 分页浏览固定数量的较少 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
        - 当 `ViewPager` 使用 [`FragmentStatePagerAdapter`](https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentStatePagerAdapter) 分页浏览大量或未知数量的 Fragment 时，将 [`FragmentStateAdapter`](https://developer.android.com/reference/kotlin/androidx/viewpager2/adapter/FragmentStateAdapter) 用于 `ViewPager2`。
-      
+     
      * 自定义动画，实现 `ViewPager2.PageTransformer` 接口并将其提供给 `ViewPager2` 对象。接口只会公开一个方法 `transformPage()`，方法中有一个 `position` 参数。
-      
+     
        > `position` 参数表示指定页面相对于屏幕中心的位置。 此参数是一个动态属性，会随着用户滚动浏览一系列页面而变化。当页面填满整个屏幕时，其位置值为 `0`。 当页面刚刚离开屏幕右侧时，其位置值为 `1`。如果用户在第一页和第二页之间滚动到一半，则第一页的位置为 -0.5，第二页的位置为 0.5。根据页面在屏幕上的位置，您可以使用 `setAlpha()`、`setTranslationX()` 或 `setScaleY()` 之类的方法设置页面属性，从而创建自定义滑动动画。
-      
+     
        * 支持嵌套的可滚动元素，必须对 `ViewPager2` 对象调用 [`requestDisallowInterceptTouchEvent()`](https://developer.android.com/reference/android/view/ViewGroup#requestDisallowInterceptTouchEvent(boolean))
      
     3. **缓存、懒加载、预取**
@@ -1454,7 +1454,7 @@
        * onWindowFocusChanged
        
        > 参考：[Android--获取View的宽高的几种方法](https://blog.csdn.net/HardWorkingAnt/article/details/77278811)
-     
+    
     5. 常用的工具类
 
        * VelocityTracker
@@ -2318,7 +2318,7 @@
 
 * 知识点
 
-  自定义View 需要具备的知识：View的绘制原理、View坐标体系、Input事件传递、自定义的分类、View的构造函数、自定义属性。前面三个知识点已经总结过了。
+  自定义View 需要具备的知识：View的绘制原理、View坐标体系、Input事件传递、自定义View 的分类、View的构造函数、自定义属性。前面三个知识点已经总结过了。
 
   * **自定义View的分类**
 
@@ -2562,9 +2562,9 @@
   | `scaleX`, `scaleY`                                           | Grow or shrink       |
       | `x`, `y`, `z`                                                | Position             |
   | `translationX`, `translationY`, **`translationZ` (API 21+)** | Offset from Position |
-    
+  
 * ValueAnimator 和 ObjectAnimator 
-    
+  
   * ValueAnimator可以通过valueAnim.addUpdateListener来自定义动画
     
         ```java
@@ -2588,7 +2588,7 @@
         }
         ```
     
-        
+    ​    
     
     * 动画监听
     
@@ -2672,9 +2672,9 @@
                         所以最终，fraction值 = 运算后的值 = 先加速后减速，所以该差值器是先加速再减速的。*/
                    }
              }
-           ```
+       ```
     
-           
+      ​     
     
       * 估值器（TypeEvaluator）
     
@@ -2822,13 +2822,13 @@
     - **偏好设置**：以键值对形式存储私有原始数据。
     - **数据库**：使用 Room 持久性库将结构化数据存储在专用数据库中。
 
-    | 内容类型                                                     | 访问方法                                 | 所需权限                                                     | 其他应用是否可以访问？                                       | 卸载应用时是否移除文件？                                     |      |
-    | :----------------------------------------------------------- | :--------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | ---- |
-    | [应用专属文件](https://developer.android.google.cn/training/data-storage/app-specific) | 仅供您的应用使用的文件                   | 从内部存储空间访问，可以使用 `getFilesDir()` 或 `getCacheDir()` 方法  从外部存储空间访问，可以使用 `getExternalFilesDir()` 或 `getExternalCacheDir()` 方法 | 从内部存储空间访问不需要任何权限  如果应用在搭载 Android 4.4（API 级别 19）或更高版本的设备上运行，从外部存储空间访问不需要任何权限 | 如果文件存储在内部存储空间中的目录内，则不能访问  如果文件存储在外部存储空间中的目录内，则可以访问 | 是   |
-    | [媒体](https://developer.android.google.cn/training/data-storage/shared/media) | 可共享的媒体文件（图片、音频文件、视频） | `MediaStore` API                                             | 在 Android 10（API 级别 29）或更高版本中，访问其他应用的文件需要 `READ_EXTERNAL_STORAGE` 或 `WRITE_EXTERNAL_STORAGE` 权限  在 Android 9（API 级别 28）或更低版本中，访问**所有**文件均需要相关权限 | 是，但其他应用需要 `READ_EXTERNAL_STORAGE` 权限              | 否   |
-    | [文档和其他文件](https://developer.android.google.cn/training/data-storage/shared/documents-files) | 其他类型的可共享内容，包括已下载的文件   | 存储访问框架                                                 | 无                                                           | 是，可以通过系统文件选择器访问                               | 否   |
-    | [应用偏好设置](https://developer.android.google.cn/training/data-storage/shared-preferences) | 键值对                                   | [Jetpack Preferences](https://developer.android.google.cn/guide/topics/ui/settings/use-saved-values) 库 | 无                                                           | 否                                                           | 是   |
-    | 数据库                                                       | 结构化数据                               | [Room](https://developer.android.google.cn/training/data-storage/room) 持久性库 | 无                                                           | 否                                                           | 是   |
+    |                                                              | 内容类型                                 | 访问方法                                                     | 所需权限                                                     | 其他应用是否可以访问？                                       | 卸载应用时是否移除文件？ |
+    | :----------------------------------------------------------- | :--------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | ------------------------ |
+    | [应用专属文件](https://developer.android.google.cn/training/data-storage/app-specific) | 仅供您的应用使用的文件                   | 从内部存储空间访问，可以使用 `getFilesDir()` 或 `getCacheDir()` 方法  从外部存储空间访问，可以使用 `getExternalFilesDir()` 或 `getExternalCacheDir()` 方法 | 从内部存储空间访问不需要任何权限  如果应用在搭载 Android 4.4（API 级别 19）或更高版本的设备上运行，从外部存储空间访问不需要任何权限 | 如果文件存储在内部存储空间中的目录内，则不能访问  如果文件存储在外部存储空间中的目录内，则可以访问 | 是                       |
+    | [媒体](https://developer.android.google.cn/training/data-storage/shared/media) | 可共享的媒体文件（图片、音频文件、视频） | `MediaStore` API                                             | 在 Android 10（API 级别 29）或更高版本中，访问其他应用的文件需要 `READ_EXTERNAL_STORAGE` 或 `WRITE_EXTERNAL_STORAGE` 权限  在 Android 9（API 级别 28）或更低版本中，访问**所有**文件均需要相关权限 | 是，但其他应用需要 `READ_EXTERNAL_STORAGE` 权限              | 否                       |
+    | [文档和其他文件](https://developer.android.google.cn/training/data-storage/shared/documents-files) | 其他类型的可共享内容，包括已下载的文件   | 存储访问框架                                                 | 无                                                           | 是，可以通过系统文件选择器访问                               | 否                       |
+    | [应用偏好设置](https://developer.android.google.cn/training/data-storage/shared-preferences) | 键值对                                   | [Jetpack Preferences](https://developer.android.google.cn/guide/topics/ui/settings/use-saved-values) 库 | 无                                                           | 否                                                           | 是                       |
+    | 数据库                                                       | 结构化数据                               | [Room](https://developer.android.google.cn/training/data-storage/room) 持久性库 | 无                                                           | 否                                                           | 是                       |
 
   
 
@@ -2887,12 +2887,17 @@
 ### Provider
 
 * 知识点
-  * 权限
-  * 创建CP
+  * 设置权限
+  * 创建ContentProvider
+    * 设计数据存储
+    * 设计内容URI
+    * 实现ContentProvider类
+    * 实现内容提供程序 MIME 类型
+    * 实现内容提供程序权限
   * 读取或操作CP数据
   * 批处理
-  * bulkInsert
-    *  ContentProviderOperation 和 ContentResolver.applyBatch()
+    * bulkInsert
+    * ContentProviderOperation 和 ContentResolver.applyBatch()
   * 创建和使用FileProvider
   * 自定义文档提供程序  DocumentsProvider
   
@@ -2938,6 +2943,21 @@
 
 
 
+### DataStore
+
+Jetpack DataStore 是一种数据存储解决方案，允许您使用[协议缓冲区](https://developers.google.com/protocol-buffers)存储键值对或类型化对象。DataStore 使用 Kotlin 协程和 Flow 以异步、一致的事务方式存储数据。
+
+DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStore。
+
+- **Preferences DataStore** 使用键存储和访问数据。此实现不需要预定义的架构，也不确保类型安全。
+- **Proto DataStore** 将数据作为自定义数据类型的实例进行存储。此实现要求您使用[协议缓冲区](https://developers.google.com/protocol-buffers)来定义架构，但可以确保类型安全。
+
+
+
+### MMKV
+
+
+
 
 
 ## 7. APP 网络操作
@@ -2961,19 +2981,95 @@
   * [详解Https是如何确保安全的？](http://www.codeceo.com/article/https-make-safe.html)
   * [请简述 Http 与 Https 的区别？](https://github.com/Moosphan/Android-Daily-Interview/issues/71)
 
+
+
 ### Android原生网络API
 
 * 知识点
+
+  * URL、HttpURLConnection、getInputStream、getOutputStream
+
+  ```java
+  // 1. Declare a URL Connection
+  URL url = new URL("http://www.google.com");
+  HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+  // 2. Open InputStream to connection
+  conn.connect();
+  InputStream in = conn.getInputStream();
+  // 3. Download and decode the string response using builder
+  StringBuilder stringBuilder = new StringBuilder();
+  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+  String line;
+  while ((line = reader.readLine()) != null) {
+      stringBuilder.append(line);
+  }
+  
+  ```
+
+  
+
 * 参考资料
+  
   * [ Sending and Managing Network Requests (API Calls, Image Downloading) - CodePath - 使用篇](https://github.com/codepath/android_guides/wiki/Sending-and-Managing-Network-Requests)
 
 
 
 ### 文件下载
 
+* 知识点
+
+  * DownloadManager ，官方提供的下载工具，可以下载文件、监听进度和状态、状态栏显示等。
+
+    * [DownloadManager.Query](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fapp%2FDownloadManager.Query)     主要用于查询下载的信息
+
+    * [DownloadManager.Request](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fapp%2FDownloadManager.Request)  主要用于发起一个下载请求（其中可以添加下载的配置，例如Header等信息）
+
+      
+
+  * 多线程断点下载
+
+    * Http 怎么支持断点续传的？
+
+      主要是通过头部的两个参数：Range 和 Content Range 来实现的。客户端发请求时对应的是 Range ，服务器端响应时对应的是 Content-Range。
+
+    * 使用断点续传和不使用断点续传的响应内容区别
+
+      不使用断点续传：` HTTP/1.1 200 Ok `
+
+      使用断点续传：`HTTP/1.1 206 Partial Content`
+
+    * 检查服务器是否支持断点续传
+
+      使用 curl 进行检测，可以看出以下的几个关键信息
+
+      > HTTP/1.1 206 Partial Content
+      >
+      > Content-Range: bytes 10-222/7877
+      >
+      > Etag: "1ec5-502264e2ae4c0"
+      >
+      > Last-Modified: Wed, 03 Sep 2014 10:00:27 GMT
+
+    * 处理请求资源发生改变的问题
+
+    * 断点续传思路
+
+      1. 断点 ==> 当前线程已经下载完成的数据长度。每当线程停止时就把已下载的数据长度写入记录文件，当重新下载时，从记录文件读取已经下载了的长度。而这个长度就是所需要的断点。
+      2. 续传 ==> 向服务器请求上次线程停止位置之后的数据。可以通过设置网络请求参数，请求服务器从指定的位置开始读取数据。
+      3. 多线程断点续传便是在单线程的断点续传上延伸的，而多线程断点续传是把整个文件分割成几个部分，每个部分由一条线程执行下载，而每一条下载线程都要实现断点续传功能。
+
+      ![img](https://upload-images.jianshu.io/upload_images/1824042-843517c30becdcd6?imageMogr2/auto-orient/strip|imageView2/2/w/266/format/webp)
+
+      
+
+      
+
 * 参考资料
+  
   * [多线程断点下载](http://godcoder.me/tags/多线程下载/)
-  * [Android快速实现文件下载（只有4行代码）](http://www.jianshu.com/p/46fd1c253701)
+  * [Android Okhttp 断点续传面试解析](https://juejin.cn/post/6844903854115389447)
+  * [Android多线程断点续传下载](https://www.jianshu.com/p/2b82db0a5181)
+  * [接锅太急？DownloadManager助你一臂之力](https://juejin.cn/post/6844903768987795470)
 
 
 
@@ -2987,9 +3083,14 @@
 ### WebSocket
 
 * 知识点
-  * 
+  * WebSocket基于TCP并复用HTTP的握手通道， 是一个全双工的长连接应用层协议，可以通过它实现服务端到客户端主动的推送通信。
+  * OkHttp 中使用 WebSocket 的关键在于 newWebSocket() 方法以及 WebSocketListener 这个抽象类，最终连接建立完毕后，可以通过 WebSocket 对象向对端发送消息；
+  * WebSocket 鉴权，可以利用握手阶段的 HTTP 请求中，添加 Header 或者 URL 参数来实现；
+  * WebSocket 的保活和心跳，需要定时发送 PING 帧，发送的时间间隔，在 OkHttp 中可以通过 pingInterval() 方法设置；
+  * WebSocket可以用于实现即时通讯功能。
 * 参考资料
-  * 
+  * [聊聊OkHttp实现WebSocket细节，包括鉴权和长连接保活及其原理！](https://juejin.cn/post/6844904100224581646)
+  * [WebSocket：5分钟从入门到精通](https://juejin.cn/post/6844903544978407431#heading-0)
 
 
 
@@ -5013,7 +5114,7 @@
 
     ### ASYNC
 
-    订阅服务器将在单独的线程中调用这始终独立于发布线程和主线程。发布事件从不等待使用此模式的订阅服务器方法。如果订户方法的执行可能需要一些时间（例如，用于网络访问），则应使用此模式。避免同时触发大量长时间运行的异步订阅服务器方法来限制并发线程的数量。`EventBus`使用线程池有效地重用来自已完成的异步订阅服务器通知的线程。
+    订阅服务器将在单独的线程中调用这始终独立于发布线程和主线程。发布事件从不等待使用此模式的订阅服务器方法。如果订阅方法的执行可能需要一些时间（例如，用于网络访问），则应使用此模式。避免同时触发大量长时间运行的异步订阅服务器方法来限制并发线程的数量。`EventBus`使用线程池有效地重用来自已完成的异步订阅服务器通知的线程。
 
 
 ​    
@@ -5026,7 +5127,7 @@
 
     ### 粘性事件
 
-    粘性事件是指，不管是在事件发送之前注册的事件接收者还是在事件发送之后注册的事件接收者都能够收到事件。这里于普通事件的区别之处在于事件接收处需要定义事件接收类型，它可以通过`@Subscribe(threadMode = xxx, sticky = true)`的方式进行声明；在事件发送时需要调用`EventBus.getDefault().postSticky()`方法进行发送。事件类型默认为普通事件。
+    粘性事件是指，不管是在事件发送之前注册的事件接收者还是在事件发送之后注册的事件接收者都能够收到事件。这里与普通事件的区别之处在于事件接收处需要定义事件接收类型，它可以通过`@Subscribe(threadMode = xxx, sticky = true)`的方式进行声明；在事件发送时需要调用`EventBus.getDefault().postSticky()`方法进行发送。事件类型默认为普通事件。
 
     ### 事件优先级
 
@@ -5037,15 +5138,91 @@
   * 源码分析
 
     * EventBus.getDefault()创建EventBus对象
+
+      > 通过单例模式创建EventBus对象
+
     * EventBus.getDefault().register(Object subscriber)的过程
+
+      > 1、根据单例设计模式创建一个`EventBus`对象，同时创建一个`EventBus.Builder`对象对`EventBus`进行初始化，其中有三个比较重要的集合和一个`SubscriberMethodFinder`对象。
+      >  2、调用`register`方法,首先通过反射获取到订阅者的`Class`对象。
+      >  3、通过`SubscriberMethodFinder`对象获取订阅者中所有订阅的事件集合,它先从缓存中获取，如果缓存中有，直接返回；如果缓存中没有，通过反射的方式去遍历订阅者内部被注解的方法，将这些方法放入到集合中进行返回。
+      >  4、遍历第三步获取的集合，将订阅者和事件进行绑定。
+      >  5、在绑定之后会判断绑定的事件是否是粘性事件，如果是粘性事件，直接调用`postToSubscription`方法，将之前发送的粘性事件发送给订阅者。其实这也很好理解，在讲粘性事件时说过，如果在粘性事件发送之前注册的订阅者，当发送粘性事件时，会接收到该事件；如果是粘性事件发送之后注册的订阅者，同样也能接收到事件，原因就在这里。
+
+      ![img](https://upload-images.jianshu.io/upload_images/1485091-8bf39ad48834f39c.png?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
+
     * EventBus.getDefault().unregister(Object subscriber)的过程
+
+      > 1、获取订阅者的所有订阅方法，遍历这些方法。然后拿到每个方法对应的所有订阅者集合，将订阅者从集合中移除。
+      > 2、移除订阅者中所有的订阅方法。
+
     * EventBus.getDefault().post(Object event)的过程
+
+      > 1、获取当前线程的事件集合，将要发送的事件加入到集合中。
+      >  2、通过循环，只要事件集合中还有事件，就一直发送。
+      >  3、获取事件的`Class`对象，找到当前的`event`的所有父类和实现的接口的`class`集合。遍历这个集合，调用发送单个事件的方法进行发送。
+      >  4、根据事件获取所有订阅它的订阅者集合，遍历集合，将事件发送给订阅者。
+      >  5、发送给订阅者时，根据订阅方法的线程模式调用订阅方法，如果需要线程切换，则切换线程进行调用；否则，直接调用。
+
+      ![img](https://upload-images.jianshu.io/upload_images/1485091-b7b63f83d65903d1.png?imageMogr2/auto-orient/strip|imageView2/2/w/988/format/webp)
+
     * EventBus.getDefault().postSticky(Object event)的过程
+
+      > 1、将粘性事件加入到`EventBus`对象的粘性事件集合中，当有新的订阅者进入后，如果该订阅者订阅了该粘性事件，可以直接发送给订阅者。
+      > 2、将粘性事件发送给已有的事件订阅者。
+
     * EventBus是如何进行线程间切换的？
+
+      在`postToSubscription`时会更加ThreadMode来调用订阅者的方法，策略如上面的5种线程模型里面所写。切换到主线程会使用到mainThreadPoster，在构造函数中会初始化，其实就是一个主线程的Handler；切换到后台线程会使用到 backgroundPoster，是使用了线程池来执行。asyncPoster 和 backgroundPoster类似，也是使用了线程池来执行。
+
+      ```java
+          private void postToSubscription(Subscription subscription, Object event, boolean isMainThread) {
+              switch (subscription.subscriberMethod.threadMode) {
+                  case POSTING:
+                      invokeSubscriber(subscription, event);
+                      break;
+                  case MAIN:
+                      if (isMainThread) {
+                          invokeSubscriber(subscription, event);
+                      } else {
+                          mainThreadPoster.enqueue(subscription, event);
+                      }
+                      break;
+                  case MAIN_ORDERED:
+                      if (mainThreadPoster != null) {
+                          mainThreadPoster.enqueue(subscription, event);
+                      } else {
+                          invokeSubscriber(subscription, event);
+                      }
+                      break;
+                  case BACKGROUND:
+                      if (isMainThread) {
+                          backgroundPoster.enqueue(subscription, event);
+                      } else {
+                          invokeSubscriber(subscription, event);
+                      }
+                      break;
+                  case ASYNC:
+                      asyncPoster.enqueue(subscription, event);
+                      break;
+                  default:
+                      throw new IllegalStateException("Unknown thread mode: " + subscription.subscriberMethod.threadMode);
+              }
+          }
+      
+      ```
+
+      
+
     * EventBus 索引
+
+      EventBus3.0中增加了一个新特性：**通过在编译期创建索引（SubscriberInfoIndex）以提高程序运行性能**。在RunTime期间使用反射对程序运行的性能有较大影响
+
+      
 
 * 参考资料
   * [EventBus源码解析](https://juejin.cn/post/6844904007199113229)
+  * [EventBus 3.0 源码分析](https://www.jianshu.com/p/f057c460c77e)
   * [EventBus3.0 性能提升之添加索引](https://blog.csdn.net/kaifa1321/article/details/79761507)
 
 
