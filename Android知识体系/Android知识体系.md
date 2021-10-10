@@ -714,9 +714,18 @@
      
        * 支持嵌套的可滚动元素，必须对 `ViewPager2` 对象调用 [`requestDisallowInterceptTouchEvent()`](https://developer.android.com/reference/android/view/ViewGroup#requestDisallowInterceptTouchEvent(boolean))
      
-    3. **缓存、懒加载、预取**
+    3. **预加载、懒加载、缓存**
     
-       * 
+       * 预加载
+         由于使用的是RecyclerView，默认没有预加载，需要设置offScreenPageLimit
+       
+       * 懒加载
+         如果没有设置offScreenPageLimit，就不需要考虑，只有有预加载我们才需要考虑懒加载。在onResume中添加变量来控制加载数据，预加载的时候不会走到onResume
+       
+       * 缓存
+         需要学习RecyclerView的缓存机制
+       
+  
 * 参考资料
   * [官网文档](https://developer.android.google.cn/guide/fragments)
   * [深入了解ViewPager2](https://juejin.cn/post/6844904020553760782)
@@ -2604,7 +2613,7 @@
         2. 使用：
     
            ```xml
-       <?xml version="1.0" encoding="utf-8"?>
+         <?xml version="1.0" encoding="utf-8"?>
            <!--通过资源ID设置插值器-->
            <scale xmlns:android="http://schemas.android.com/apk/res/android"
                android:interpolator="@android:anim/overshoot_interpolator"
@@ -3968,61 +3977,63 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
          可以 **直接使用蘑菇街的 [ThinRPlugin](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fmeili%2FThinRPlugin%2Fblob%2Fmaster%2FREADME.zh-cn.md)**。它的实现原理为：**android 中的 R 文件，除了 styleable 类型外，所有字段都是 int 型变量/常量，且在运行期间都不会改变。所以可以在编译时，记录 R 中所有字段名称及对应值，然后利用 ASM 工具遍历所有 Class，将除 R$styleable.class 以外的所有 R.class 删除掉，并且在引用的地方替换成对应的常量**，从而达到缩减包大小和减少 **Dex** 个数的效果。此外，最近 **ByteX** 也增加了 [shrink_r_class](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fbytedance%2FByteX%2Fblob%2Fmaster%2Fshrink-r-plugin%2FREADME-zh.md) 的 **gradle** 插件，它不仅可以在编译阶段对 **R** 文件常量进行内联，而且还可以 **针对 App 中无用 Resource 和无用 assets 的资源进行检查**。
          
-7. 资源合并方案
-   
-   我们可以把所有的资源文件合并成一个大文件，而 **一个大资源文件就相当于换肤方案中的一套皮肤**。它的效果 **比资源混淆的效果会更好**，但是，在此之前，必须要解决 **解析资源** 与 **管理资源** 的问题。
-   
-   
-   
-8. **资源文件最少化配置**
-   
-   我们需要 **根据 App 目前所支持的语言版本去选用合适的语言资源**，例如使用了 **AppCompat**，如果不做任何配置的话，最终 **APK** 包中会包含 **AppCompat** 中所有已翻译语言字符串，无论应用的其余部分是否翻译为同一语言。对此，我们可以 **通过 resConfig 来配置使用哪些语言，从而让构建工具移除指定语言之外的所有资源**。同理，也可以**使用 resConfigs 去配置你应用需要的图片资源文件类，如 "xhdpi"、"xxhdpi" 等等**，代码如下所示：
-   
-   ```
-         android {
-             ...
-             defaultConfig {
-         	    ...
-                 resConfigs "zh", "zh-rCN"
-                 resConfigs "nodpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
-             }
-             ...
-         }    
-         复制代码
-   ```
-   
-   此外，我们还以 **利用 Density Splits 来选择应用应兼容的屏幕尺寸大小**，代码如下所示：
-   
-   ```
-         android {
-             ...
-             splits {
-                 density {
-                     enable true
-                     exclude "ldpi", "tvdpi", "xxxhdpi"
-                     compatibleScreens 'small', 'normal', 'large', 'xlarge'
-                 }
-             }
-             ...
-         }
-   ```
-   
-   
-   
-9. **尽量每张图片只保留一份**
-   
-   比如说，我们统一只把图片放到 **xhdpi** 这个目录下，那么 **在不同的分辨率下它会做自动的适配**，即 **等比例地拉伸或者是缩小**。
-   
-10. **资源在线化**
-    
-    可以 **将一些图片资源放在服务器**，然后 **结合图片预加载** 的技术手段，这些 **既可以满足产品的需要，同时可以减小包大小**。
-    
-11. 统一应用风格
-    
-    如设定统一的 **字体、尺寸、颜色和按钮按压效果、分割线 shape、selector 背景** 等等。
-    
-    
-    
+         
+         
+      7. 资源合并方案
+
+         我们可以把所有的资源文件合并成一个大文件，而 **一个大资源文件就相当于换肤方案中的一套皮肤**。它的效果 **比资源混淆的效果会更好**，但是，在此之前，必须要解决 **解析资源** 与 **管理资源** 的问题。
+
+         
+
+      8. **资源文件最少化配置**
+
+         我们需要 **根据 App 目前所支持的语言版本去选用合适的语言资源**，例如使用了 **AppCompat**，如果不做任何配置的话，最终 **APK** 包中会包含 **AppCompat** 中所有已翻译语言字符串，无论应用的其余部分是否翻译为同一语言。对此，我们可以 **通过 resConfig 来配置使用哪些语言，从而让构建工具移除指定语言之外的所有资源**。同理，也可以**使用 resConfigs 去配置你应用需要的图片资源文件类，如 "xhdpi"、"xxhdpi" 等等**，代码如下所示：
+
+         ```
+               android {
+                   ...
+                   defaultConfig {
+               	    ...
+                       resConfigs "zh", "zh-rCN"
+                       resConfigs "nodpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
+                   }
+                   ...
+               }    
+               复制代码
+         ```
+
+         此外，我们还以 **利用 Density Splits 来选择应用应兼容的屏幕尺寸大小**，代码如下所示：
+
+         ```
+               android {
+                   ...
+                   splits {
+                       density {
+                           enable true
+                           exclude "ldpi", "tvdpi", "xxxhdpi"
+                           compatibleScreens 'small', 'normal', 'large', 'xlarge'
+                       }
+                   }
+                   ...
+               }
+         ```
+
+         
+
+      9. **尽量每张图片只保留一份**
+
+         比如说，我们统一只把图片放到 **xhdpi** 这个目录下，那么 **在不同的分辨率下它会做自动的适配**，即 **等比例地拉伸或者是缩小**。
+
+      10. **资源在线化**
+
+          可以 **将一些图片资源放在服务器**，然后 **结合图片预加载** 的技术手段，这些 **既可以满足产品的需要，同时可以减小包大小**。
+
+      11. **统一应用风格**
+
+          如设定统一的 **字体、尺寸、颜色和按钮按压效果、分割线 shape、selector 背景** 等等。
+
+
+
 * So 瘦身方案探索
   
   1. So 移除方案
@@ -4085,15 +4096,37 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
      
   
 * 其它优化方案
-  
+
   1. 插件化
-      2. 业务梳理
-      3. 转变开发模式
-  
+  2. 业务梳理
+  3. 转变开发模式
+
 * 六、包体积监控
   
-* 七、瘦身优化常见问题
+  1）、**大小监控：通常是记录当前版本与上一个或几个版本直接的变化情况，如果当前版本体积增长较大，则需要分析具体原因，看是否有优化空间**。
   
+  2）、**依赖监控：包括J ar、aar 依赖**。
+  
+  3）、**规则监控：我们可以把包体积的监控抽象为无用资源、大文件、重复文件、R  文件等这些规则**。
+  
+  
+  
+* 七、瘦身优化常见问题
+
+  1. 怎么降低 Apk 包大小？
+
+     1）、**代码：Proguard、统一三方库、无用代码删除**。
+
+     2）、**资源：无用资源删除、资源混淆**。
+
+     3）、**So：只保留 Armeabi、更优方案**。
+
+  2. Apk 瘦身如何实现长效治理？
+
+     1）、**发版之前与上个版本包体积对比，超过阈值则必须优化**。
+
+     2）、**推进插件化架构改进**。
+
 * 参考资料
   
   * [深入探索 Android 包体积优化（匠心制作-上）](https://juejin.cn/post/6844904103131234311)
@@ -4115,9 +4148,13 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
   * 为什么会卡顿？
 
+    **流畅度、响应速度、稳定性**（ANR）这三类之所以用户感知都是卡顿，是因为这三类问题产生的原理是一致的，都是由于主线程的 Message 在执行任务的时候超时，根据不同的超时阈值来进行划分而已。比如在 **滑动列表的时候掉帧**、**应用启动白屏过长**、**点击电源键亮屏慢**、**界面操作没有反应然后闪退**、**点击图标没有响应**、**窗口动画不连贯、滑动不跟手、重启手机进入桌面卡顿** 等场景。
+
+    
+
   * 如何监控卡顿？
 
-    * 方案一：Looper#loop方法中的 logging.println，需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
+    * 方案一：Looper#loop方法中的 logging.println，计算出处理Message的时间。需要在后台开一个线程，定时获取主线程堆栈，**局限**： 只适合线下。
     * 方案二：通过Gradle Plugin+ASM，编译期在每个方法开始和结束位置分别插入一行代码，统计方法耗时。字节码插桩技术，适合线上。微信Matrix 。
     
   * TraceView
@@ -4286,7 +4323,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
     * **ABI是什么以及作用**
 
-      ABI是英文Application Binary Interface的缩写，及应用二进制接口。
+      ABI是英文Application Binary Interface的缩写，即应用二进制接口。
 
       不同Android设备，使用的CPU架构可能不同，因此支持不同的指令集。 CPU 与指令集的每种组合都有其自己的应用二进制界面（或 ABI）,ABI非常精确地定义了应用程序的机器代码应如何在运行时与系统交互。您必须为要与您的应用程序一起使用的每种CPU架构指定一个ABI（Application Binary Interface）。
 
@@ -4354,19 +4391,17 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
       因此，我们需要在我们的app中配置 abiFilter 配置，来避免一些未知的错误。
 
-      ```
+      ```xml
       defaultConfig {  
           ndk {  
               abiFilters "armeabi"// 指定ndk需要兼容的ABI(这样其他依赖包里x86,armeabi,arm-v8之类的so会被过滤掉) 
           }  
       }
       ```
-
-
-​      
-
+      
+      
+      
     * 项目中该如何适配
-    
       `Q1`： 只适配了`armeabi-v7a`,那如果APP装在其他架构的手机上，如`arm64-v8a`上，会蹦吗？
     
       `A:` 不会，但是反过来会。
@@ -4400,23 +4435,21 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
       - `缺点：` 只能运行在`arm64-v8`上，要放弃部分老旧设备用户
     
       这三种方案都是可以的，现在的大厂APP适配中，这三种都有，大部分是前2种方案。具体选哪一种就看自己的考量了，以性能换兼容就`arm64-v8`,以兼容换性能`armeabi`,二者稍微平衡一点的就`armeabi-v7a`。
-
-
-​      
-
+      
+      
+      
     * 性能+兼容能否兼得
-    
       为每个CPU架构单独打一个APK，该apk 中就只包含一个平台，多APK上传。
 
 
-​      
+
 
   * **so库加载和使用**
 
     Android加载so文件的方式有两种：
 
-    1. System.load。 参数必须为库文件的绝对路径。
-    2. System.loadLibrary 。 参数为库文件名，不包含库文件的扩展名，必须是在JVM属性Java.library.path所指向的路径中，路径可以通过System.getProperty(‘java.library.path’)获得。
+    1. System.load。 参数必须为库文件的绝对路径。动态加载。
+    2. System.loadLibrary 。 参数为库文件名，不包含库文件的扩展名，必须是在JVM属性Java.library.path所指向的路径中，路径可以通过System.getProperty(‘java.library.path’)获得。静态加载。
 
     
 
