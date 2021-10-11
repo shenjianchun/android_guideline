@@ -404,24 +404,26 @@
 
       1. Class 提供了4种方法获得给定类的 Field
 
-      - getDeclaredField(String name)   
+         - getDeclaredField(String name)   
 
-        获取指定的变量（只要是声明的变量都能获得，包括 private）
+           获取指定的变量（只要是声明的变量都能获得，包括 private）
 
-        - getField(String name)    
+         - getField(String name)    
 
-          获取指定的变量（只能获得 public 的）
+           获取指定的变量（只能获得 public 的）
 
-        - getDeclaredFields()        
+         - getDeclaredFields()        
 
-          获取所有声明的变量（包括 private）
+           获取所有声明的变量（包括 private）
 
-        - getFields()
+         - getFields()
 
-          获取所有的 public 变量
+           获取所有的 public 变量
+
+           
 
       2. 通过Field获取变量类型、修饰符、注解
-
+  
          ```java
          public void testField(){
                  Class c = Cat.class;
@@ -450,11 +452,11 @@
                      }
                      Log.d(TAG, builder.toString());
                  }
-             }
+           }
          ```
 
       3. 通过Field获取、设置变量值
-
+  
          ```java
          public void testField(){
                  Cat cat = new Cat("Tom", 2);
@@ -478,7 +480,7 @@
                  } catch (IllegalAccessException e) {
                      e.printStackTrace();
                  }
-             }
+           }
          ```
 
          
@@ -508,10 +510,10 @@
          > 注意：获取带参数方法时，如果参数类型错误会报 NoSuchMethodException，对于参数是泛型的情况，泛型须当成Object处理（Object.class）
 
       2. 通过Method获取方法返回类型
-
-         - getReturnType()  获取目标方法返回类型对应的 Class 对象
+  
+       - getReturnType()  获取目标方法返回类型对应的 Class 对象
          - getGenericReturnType()  获取目标方法返回类型对应的 Type 对象
-
+  
          > 这两个方法有啥区别呢？
          >
          > - getReturnType()返回类型为 Class，getGenericReturnType() 返回类型为 Type; Class 实现 Type。
@@ -533,7 +535,7 @@
          >   * getReturnType() : class java.lang.Class
          >
          >   - getGenericReturnType() : java.lang.Class<java.lang.String>
-         >
+       >
          > **其实反射中所有形如 getGenericXXX()的方法规则都与上面所述类似。**
 
          
@@ -551,8 +553,8 @@
       4. 通过Method获取方法声明抛出的异常的类型
 
          * getExceptionTypes() 获取目标方法抛出的异常类型对应的 Class 对象
-
-         * getGenericExceptionTypes()  获取目标方法抛出的异常类型对应的 Type 对象
+  
+       * getGenericExceptionTypes()  获取目标方法抛出的异常类型对应的 Type 对象
            返回值为数组，区别同上
 
            
@@ -560,7 +562,7 @@
       5. 通过Method获取方法参数名称
 
          .class 文件中默认不存储方法参数名称，如果想要获取方法参数名称，需要在编译的时候加上 -parameters 参数。(构造方法的参数获取方法同样)
-
+  
          ```java
          //这里的m可以是普通方法Method，也可以是构造方法Constructor
          //获取方法所有参数
@@ -571,15 +573,15 @@
              p.getName();  //获取参数名称，如果编译时未加上`-parameters`，返回的名称形如`argX`, X为参数在方法声明中的位置，从0开始
              p.getModifiers(); //获取参数修饰符
              p.isNamePresent();  //.class文件中是否保存参数名称, 编译时加上`-parameters`返回true,反之flase
-         }
+       }
          ```
 
          
 
       6. 通过Method获取方法修饰符
-
+  
          ```java
-         method.getModifiers();
+       method.getModifiers();
          ```
 
          
@@ -587,14 +589,14 @@
       7. 通过反射调用方法
 
          反射通过Method的invoke()方法来调用目标方法。第一个参数为需要调用的目标类对象，如果方法为static的，则该参数为null。后面的参数都为目标方法的参数值，顺序与目标方法声明中的参数顺序一致。
-
+  
          ```java
          public native Object invoke(Object obj, Object... args)
-                     throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+                   throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
          ```
 
          > 注意：如果方法是private的，可以使用 method.setAccessible(true) 方法绕过权限检查
-
+  
          ```java
          Class<?> c = Cat.class;
           try {
@@ -651,16 +653,16 @@
       2. 创建对象
 
          通过反射有两种方法可以创建对象：
-
-         - java.lang.reflect.Constructor.newInstance()
+  
+       - java.lang.reflect.Constructor.newInstance()
          - Class.newInstance()
-
+  
          > **一般来讲，我们优先使用第一种方法**；那么这两种方法有何异同呢？
          >
          > 1. Class.newInstance()仅可用来调用无参的构造方法；Constructor.newInstance()可以调用任意参数的构造方法。
-         > 2. Class.newInstance()会将构造方法中抛出的异常不作处理原样抛出; Constructor.newInstance()会将构造方法中抛出的异常都包装成 InvocationTargetException 抛出。
+       > 2. Class.newInstance()会将构造方法中抛出的异常不作处理原样抛出; Constructor.newInstance()会将构造方法中抛出的异常都包装成 InvocationTargetException 抛出。
          > 3. Class.newInstance()需要拥有构造方法的访问权限; Constructor.newInstance()可以通过 setAccessible(true) 方法绕过访问权限访问 private 构造方法。
-
+  
          ```java
          Class<?> c = Cat.class;
          try {
@@ -668,11 +670,11 @@
              Cat cat = (Cat) constructor.newInstance( "Jack", 3);
          } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
              e.printStackTrace();
-         }
+       }
          ```
 
          
-
+  
   * 副作用
     
     * 性能开销
@@ -962,14 +964,13 @@
        
            }
        }
-       复制代码
        ```
-
-       由于泛型擦除，二者本质上都是Obejct类型。方法是一样的，所以编译器会报错。
-
-       换一个方式：
-
-       ```
+       
+由于泛型擦除，二者本质上都是Obejct类型。方法是一样的，所以编译器会报错。
+       
+换一个方式：
+       
+```
        public class User<K, V> {
        
            public void show(String k) {
@@ -980,30 +981,30 @@
            }
        }
        ```
-
        
 
-     * 不能实例化类型参数
-
-       编译器也不知道该创建那种类型的对象
-
-       ```
+       
+* 不能实例化类型参数
+     
+  编译器也不知道该创建那种类型的对象
+     
+  ```
        public class User<K, V> {
        
            private K key = new K(); // 报错：Type parameter 'K' cannot be instantiated directly
        
        }
        ```
-
-       
-
-     * 对静态成员的限制
-
-       静态方法无法访问类上定义的泛型；如果静态方法操作的类型不确定，必须要将泛型定义在方法上。
-
-       **如果静态方法要使用泛型的话，必须将静态方法定义成泛型方法**。
-
-       ```
+     
+  
+     
+* 对静态成员的限制
+     
+  静态方法无法访问类上定义的泛型；如果静态方法操作的类型不确定，必须要将泛型定义在方法上。
+     
+  **如果静态方法要使用泛型的话，必须将静态方法定义成泛型方法**。
+     
+  ```
        public class User<T> {
        
            //错误
@@ -1020,14 +1021,14 @@
            }
        }
        ```
-
-       
-
-     * 对泛型数组的限制
-
-       不能实例化元素类型为类型参数的数组，但是可以将数组指向类型兼容的数组的引用
-
-       ```
+     
+  
+     
+* 对泛型数组的限制
+     
+  不能实例化元素类型为类型参数的数组，但是可以将数组指向类型兼容的数组的引用
+     
+  ```java
        public class User<T> {
        
            private T[] values;
@@ -1040,17 +1041,17 @@
            }
        }
        ```
-
-
-​       
-
+       
+       
+       
      * 对泛型异常的限制
-    
+     
        泛型类不能扩展 Throwable，意味着不能创建泛型异常类 [答案链接](https://link.juejin.cn/?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F501277%2Fwhy-doesnt-java-allow-generic-subclasses-of-throwable)
 
-* 参考资料
 
-  * [java 泛型全解 - 绝对最详细](https://juejin.cn/post/6844903925666021389)
+
+* 参考资料
+* [java 泛型全解 - 绝对最详细](https://juejin.cn/post/6844903925666021389)
   * [Java泛型详解](https://www.cnblogs.com/Blue-Keroro/p/8875898.html)
 
 
@@ -1441,6 +1442,14 @@
 
 #### 4. Deque（双向队列，继承Queue）
 
+* 说明
+
+  栈和队列只是双端队列的特殊情况，它们的方法都可以使用双端队列的方法替代，使用不同的名称和方法，概念上更为清晰。
+
+  <img src="C:\Users\11054881\AppData\Roaming\Typora\typora-user-images\image-20211011191946502.png" alt="image-20211011191946502" style="zoom: 80%;" />
+
+
+
 * LinkedList ， 基于链表
 * ArrayDeque ， 基于数组
 * 参考
@@ -1454,7 +1463,12 @@
 
 * **TreeMap**：基于红黑树实现。
 
-  
+  有以下特点：
+
+  1. 不允许出现重复的key；
+  2. 可以插入null键，null值；
+  3. 可以对元素进行排序；
+  4. 无序集合（插入和遍历顺序不一致）；
 
 * **HashMap**：基于哈希表实现。
 
@@ -2177,17 +2191,48 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
     * **异步IO模型**
 
       ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e70ade864~tplv-t2oaga2asx-watermark.awebp)
+      
+    * 五种模型对比
+
+      ![img](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/9/165bde9e87d94752~tplv-t2oaga2asx-watermark.awebp)
+
+  
+
+  
 
   * <font color=red>文件描述符</font>
 
-  * select、poll，epoll
+  * select、poll、epoll
 
-    * 
+    目前支持I/O多路复用的系统调用有 `select，pselect，poll，epoll`，I/O多路复用就是`通过一种机制，一个进程可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作`。`但select，pselect，poll，epoll本质上都是同步I/O`，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步I/O则无需自己负责进行读写，异步I/O的实现会负责把数据从内核拷贝到用户空间。
+
+    
+
+    ### select、poll、epoll的区别
+
+    1. **支持一个进程所能打开的最大连接数**
+
+    <img src="https://upload-images.jianshu.io/upload_images/2062729-a9f94d9cbaccc8e4.png?imageMogr2/auto-orient/strip|imageView2/2/w/1170/format/webp" alt="img" style="zoom: 67%;" />
+
+    
+
+    2. **FD剧增后带来的IO效率问题**
+
+    <img src="https://upload-images.jianshu.io/upload_images/2062729-34d8955371a90dad.png?imageMogr2/auto-orient/strip|imageView2/2/w/1168/format/webp" alt="img" style="zoom:67%;" />
+
+    
+
+    3. **消息传递方式**
+
+    <img src="https://upload-images.jianshu.io/upload_images/2062729-4798b7e2d5199e6a.png?imageMogr2/auto-orient/strip|imageView2/2/w/1168/format/webp" alt="img" style="zoom:67%;" />
+
+    
 
 * 参考资料
 
   * [漫话：如何给女朋友解释什么是Linux的五种IO模型？](https://juejin.cn/post/6844903687626686472)
   * [Linux IO模式及 select、poll、epoll详解](https://juejin.cn/post/6844903488170786824#heading-15)
+  * [聊聊IO多路复用之select、poll、epoll详解](https://www.jianshu.com/p/dfd940e7fca2)
 
 
 
@@ -2198,6 +2243,8 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
   * [一、概览](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#一概览)
 
     ![分类帮助记忆](https://user-gold-cdn.xitu.io/2018/5/14/1635daccc4d2bce3?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+    ![这里写图片描述](https://img-blog.csdn.net/20160504150834676)
 
   * [二、磁盘操作](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java IO.md#二磁盘操作)
 
@@ -2555,10 +2602,12 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 ### Java 文件 I/O(采用 NIO.2)
 
 * 知识点
-  * Path类 - 
-  * Files类 - 
-  * 随机访问文件 -  SeekableByteChannel 
+  * Path类 - 用于构造路径的文件名和目录列表，用于检查，定位和操作文件
+  * Files类 - 提供了一组丰富的静态方法，用于读取、写入和操作文件和目录。`Files` 方法适用于 `Path` 对象的实例。
+  *  SeekableByteChannel  - 随机访问文件
   * FileVisitor，使用Files.walkFileTree(Path, FileVisitor)遍历文件树 
+  * WatchService 	监听目录修改
+  *  PathMatcher  查找文件
 * 参考资料
   * [文件 I/O(采用 NIO.2) - Java Tutorials 中文版](https://pingfangx.github.io/java-tutorials/essential/io/fileio.html)
 
