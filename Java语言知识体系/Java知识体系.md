@@ -966,6 +966,7 @@
        }
        ```
        
+
 由于泛型擦除，二者本质上都是Obejct类型。方法是一样的，所以编译器会报错。
        
 换一个方式：
@@ -980,30 +981,30 @@
        
            }
        }
-       ```
-       
+```
 
-       
+
+​       
 * 不能实例化类型参数
-     
+  
   编译器也不知道该创建那种类型的对象
-     
+  
   ```
        public class User<K, V> {
        
            private K key = new K(); // 报错：Type parameter 'K' cannot be instantiated directly
        
        }
-       ```
-     
+  ```
   
-     
+  
+  
 * 对静态成员的限制
-     
+  
   静态方法无法访问类上定义的泛型；如果静态方法操作的类型不确定，必须要将泛型定义在方法上。
-     
+  
   **如果静态方法要使用泛型的话，必须将静态方法定义成泛型方法**。
-     
+  
   ```
        public class User<T> {
        
@@ -1020,14 +1021,14 @@
        
            }
        }
-       ```
-     
+  ```
   
-     
+  
+  
 * 对泛型数组的限制
-     
+  
   不能实例化元素类型为类型参数的数组，但是可以将数组指向类型兼容的数组的引用
-     
+  
   ```java
        public class User<T> {
        
@@ -1040,10 +1041,10 @@
                this.values = values;
            }
        }
-       ```
-       
-       
-       
+  ```
+  
+  
+  ​     
      * 对泛型异常的限制
      
        泛型类不能扩展 Throwable，意味着不能创建泛型异常类 [答案链接](https://link.juejin.cn/?target=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F501277%2Fwhy-doesnt-java-allow-generic-subclasses-of-throwable)
@@ -2957,7 +2958,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
   - ReentrantLock
   
-    ReentrantLock 是 java.util.concurrent（J.U.C）包中的锁。
+    ReentrantLock 是 java.util.concurrent（J.U.C）包中的锁。ReentrantLock重入锁，是实现Lock接口的一个类，也是在实际编程中使用频率很高的一个锁，**支持重入性，表示能够对共享资源能够重复加锁，即当前线程获取该锁再次获取不会被阻塞**。
   
     ```java
     public class LockExample {
@@ -3023,6 +3024,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 * 参考资料
 
   * [ReentrantLock 重入锁(互斥锁)](https://blog.csdn.net/lm1060891265/article/details/81747275)
+  * [彻底理解ReentrantLock](https://juejin.cn/post/6844903601542807559)
 
 
 
@@ -3092,7 +3094,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
   - **wait() notify() notifyAll()**
   
-    调用 wait() 使得线程等待某个条件满足，线程在等待时会被挂起，当其他线程的运行使得这个条件满足时，其它线程会调用 notify() 或者 notifyAll() 来唤醒挂起的线程。
+    ​	
   
     它们都属于 Object 的一部分，而不属于 Thread。
   
@@ -3254,7 +3256,30 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 ### [J.U.C - AQS（AbstractQueuedSynchronizer）](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java 并发.md#七juc---aqs)
 
 * 知识点
-  - **CountDownLatch**
+  
+  * AQS
+    
+    AQS全称`AbstractQueuedSynchronizer`，即抽象的队列同步器，是一种用来构建锁和同步器的框架。
+    
+    **基于AQS构建同步器：**
+    
+    - ReentrantLock
+    - Semaphore
+    - CountDownLatch
+    - ReentrantReadWriteLock
+    - SynchronusQueue
+    - FutureTask
+    
+    
+    
+    **优势：**
+    
+    - AQS 解决了在实现同步器时涉及的大量细节问题，例如自定义标准同步状态、FIFO 同步队列。
+    - 基于 AQS 来构建同步器可以带来很多好处。它不仅能够极大地减少实现工作，而且也不必处理在多个位置上发生的竞争问题。
+    
+    
+    
+  * **CountDownLatch**
   
     用来控制一个或者多个线程等待多个线程。
   
@@ -3288,7 +3313,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
     
   
-  - **CyclicBarrier**
+  * **CyclicBarrier**
   
     用来控制多个线程互相等待，只有当多个线程都到达时，这些线程才会继续执行。
   
@@ -3343,7 +3368,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
     
   
-  - **Semaphore**
+  * **Semaphore**
   
     Semaphore 类似于操作系统中的信号量，可以控制对互斥资源的访问线程数。
   
@@ -3557,6 +3582,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 * 参考资料
   
   * [Java Fork/Join 框架](https://www.cnblogs.com/cjsblog/p/9078341.html)
+  * [《提升能力，涨薪可待》-Java并发之AQS全面详解](https://juejin.cn/post/6844903997438951437)
 
 
 
@@ -3605,6 +3631,10 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   
     #### 1. 原子性
   
+    **即一个操作或者多个操作，要么全部执行并且执行的过程不会被任何因素打断，要么就都不执行。**
+  
+    
+  
     Java 内存模型保证了 read、load、use、assign、store、write、lock 和 unlock 操作具有原子性，例如对一个 int 类型的变量执行 assign 赋值操作，这个操作就是原子性的。但是 Java 内存模型允许虚拟机将没有被 volatile 修饰的 64 位数据（long，double）的读写操作划分为两次 32 位的操作来进行，即 load、store、read 和 write 操作可以不具备原子性。
   
     有一个错误认识就是，int 等原子性的类型在多线程环境中不会出现线程安全问题。前面的线程不安全示例代码中，cnt 属于 int 类型变量，1000 个线程对它进行自增操作之后，得到的值为 997 而不是 1000。
@@ -3620,9 +3650,9 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     ![img](https://camo.githubusercontent.com/6a12b545df7c5274334649b2a703d47c57afa4b4fd57eab2510dccaa3aeefbcc/68747470733a2f2f63732d6e6f7465732d313235363130393739362e636f732e61702d6775616e677a686f752e6d7971636c6f75642e636f6d2f64643536333033372d666361612d346264382d383362362d6233396439336131326337372e6a7067)
   
     
-  
+    
     使用 AtomicInteger 重写之前线程不安全的代码之后得到以下线程安全实现：
-  
+    
     ```java
     public class AtomicExample {
         private AtomicInteger cnt = new AtomicInteger();
@@ -3632,11 +3662,11 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
         }
     
         public int get() {
-            return cnt.get();
+          return cnt.get();
         }
     }
     ```
-  
+    
     ```java
     public static void main(String[] args) throws InterruptedException {
         final int threadSize = 1000;
@@ -3652,15 +3682,15 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
         countDownLatch.await();
         executorService.shutdown();
         System.out.println(example.get());
-    }
+  }
     
-    1000
+  1000
     ```
   
     
-  
+    
     除了使用原子类之外，也可以使用 synchronized 互斥锁来保证操作的原子性。它对应的内存间交互操作为：lock 和 unlock，在虚拟机实现上对应的字节码指令为 monitorenter 和 monitorexit。
-  
+    
     ```java
     public class AtomicSynchronizedExample {
         private int cnt = 0;
@@ -3671,13 +3701,13 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     
         public synchronized int get() {
             return cnt;
-        }
+      }
     }
-    
+  
     ```
-  
     
-  
+    
+    
     ```java
     public static void main(String[] args) throws InterruptedException {
         final int threadSize = 1000;
@@ -3693,9 +3723,9 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
         countDownLatch.await();
         executorService.shutdown();
         System.out.println(example.get());
-    }
+  }
     
-    1000
+  1000
     ```
   
     
@@ -3703,11 +3733,11 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     #### 2. 可见性
   
     可见性指当一个线程修改了共享变量的值，其它线程能够立即得知这个修改。Java 内存模型是通过在变量修改后将新值同步回主内存，在变量读取前从主内存刷新变量值来实现可见性的。
-  
+    
     主要有三种实现可见性的方式：
   
     - volatile
-    - synchronized，对一个变量执行 unlock 操作之前，必须把变量值同步回主内存。
+  - synchronized，对一个变量执行 unlock 操作之前，必须把变量值同步回主内存。
     - final，被 final 关键字修饰的字段在构造器中一旦初始化完成，并且没有发生 this 逃逸（其它线程通过 this 引用访问到初始化了一半的对象），那么其它线程就能看见 final 字段的值。
   
     对前面的线程不安全示例中的 cnt 变量使用 volatile 修饰，不能解决线程不安全问题，因为 volatile 并不能保证操作的原子性。
@@ -3715,9 +3745,9 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
     #### 3. 有序性
   
     有序性是指：在本线程内观察，所有操作都是有序的。在一个线程观察另一个线程，所有操作都是无序的，无序是因为发生了指令重排序。在 Java 内存模型中，允许编译器和处理器对指令进行重排序，重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。
-  
+    
     volatile 关键字通过添加内存屏障的方式来禁止指令重排，即重排序时不能把后面的指令放到内存屏障之前。
-  
+    
     也可以通过 synchronized 来保证有序性，它保证每个时刻只有一个线程执行同步代码，相当于是让线程顺序执行同步代码。
   
   
@@ -3805,6 +3835,7 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
   * [彻底理解volatile](https://juejin.cn/post/6844903601064640525)
   * [volatile关键字的作用、原理](https://juejin.cn/post/6844903502418804743)
   * [面试官没想到一个Volatile，我都能跟他扯半小时](https://juejin.cn/post/6844904149536997384)
+  * [Java内存模型之原子性问题](https://www.cnblogs.com/54chensongxia/p/12073428.html)
 
 
 
