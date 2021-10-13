@@ -3149,7 +3149,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
 * **LifecycleOwner、  Lifecycle、LifecycleObserver ** 
   
-  * LifecycleOwner 表示具备 Lifecycle 属性，一个借口类。如果您有一个自定义类并希望使其成为 [`LifecycleOwner`](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleOwner)，您可以使用 [LifecycleRegistry](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleRegistry) 类，但需要将事件转发到该类
+  * LifecycleOwner 表示具备 Lifecycle 属性，一个接口类。如果您有一个自定义类并希望使其成为 [`LifecycleOwner`](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleOwner)，您可以使用 [LifecycleRegistry](https://developer.android.google.cn/reference/androidx/lifecycle/LifecycleRegistry) 类，但需要将事件转发到该类
   * Lifecycle 定义一个类具有Android生命周期
   * LifecycleObserver 生命周期变化的回调接口
   
@@ -3163,7 +3163,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
 #### LiveData & ViewModel
 
-[`LiveData`](https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn) 是一种可观察的数据存储器类。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类旨在以注重生命周期的方式存储和管理界面相关的数据。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类让数据可在发生屏幕旋转等配置更改后继续留存。
+[`LiveData`](https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn) 是一种可观察的数据存储器类，具有生命周期感知能力。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类旨在以注重生命周期的方式存储和管理界面相关的数据。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类让数据可在发生屏幕旋转等配置更改后继续留存。
 
 
 
@@ -3173,6 +3173,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
 #### 参考
 
+* [LiveData 概览 - Android官网](https://developer.android.google.cn/topic/libraries/architecture/livedata#java)
 * [Android Jetpack - 刘望舒](http://liuwangshu.cn/tags/Android-Jetpack/)
 * [学习Android Jetpack? 实战和教程这里全都有！](https://juejin.cn/post/6844903889574051848)
 * [【AAC 系列二】深入理解架构组件的基石：Lifecycle](https://juejin.cn/post/6844903842589442062)
@@ -3316,18 +3317,15 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
        5 其中就有Arouter在编译时生成的"com.alibaba.android.arouter.routes.ARouter$$Root.ARouter$$Root$$app"类，它对应的代码:<"app", ARouter$$Group$$app.class>就被添加到Warehouse.groupsIndex里面了。
 
        ![image-20210125141700750](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7fcdf181df6241539deaa85c9511b404~tplv-k3u1fbpfcp-watermark.awebp)
-
-
-​       
-
+       
+       
+       
     3. 调用时干的事 - 获取
-    
        调用`build`方法会创建一个`Postcard`对象，`Postcard`会根据传入的`Path`从`Warehouse`对象获取对应的对应的`RouteMeta`对象，然后找到对应的`Class`类，封装成Intent，调用系统的`startActivity()`进行跳转。
     
        ![image-20210125141823505](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fb40a4e98e764130a6a551511f9133c8~tplv-k3u1fbpfcp-watermark.awebp)
 
 
-​       
 
 * 参考资料
   
@@ -4486,20 +4484,20 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
     * 工作原理
 
-      ThreadLocal是一个线程内部的数据存储类，通过它可以额在制定的线程中存储数据，数据存储以后，只有在制定线程中可以获取到存储的数据，对于其他线程来说则无法获取到数据。
+      ThreadLocal是一个线程内部的数据存储类，通过它可以在指定的线程中存储数据，数据存储以后，只有在指定线程中可以获取到存储的数据，对于其他线程来说则无法获取到数据。
 
     * 使用场景
 
       1. 当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候，就可以考虑采用ThreadLocal。
-      2. 另一个试用场景是复杂逻辑下的对象传递，比如监听器的传递，有些时候一个线程中的任务过于复杂，在这种情况下，我们有需要监听器能够贯穿整个线程的执行过程。此时可以采用ThreadLocal。
+      2. 另一个使用场景是复杂逻辑下的对象传递，比如监听器的传递，有些时候一个线程中的任务过于复杂，在这种情况下，我们有需要监听器能够贯穿整个线程的执行过程。此时可以采用ThreadLocal。
 
     * 内部实现
 
-      1. ThreadLocal是一个泛型，只需要弄清楚 ThreadLocal
+      1. ThreadLocal是一个泛型，只需要弄清楚 ThreadLocalMap
 
-      2. ThreadLocalMap，在Thread中y有一个threadLocals的变量来存储数据。ThreadLocalMap中通过table数组变量进行存储，而table的索引在set的时候会通过算法计算出来。
+      2. ThreadLocalMap，在Thread中有一个threadLocals的变量来存储数据。ThreadLocalMap中通过table数组变量进行存储，而table的索引在set的时候会通过算法计算出来。
 
-         * 对于某一ThreadLocal来讲，他的索引值i是确定的，在不同线程之间访问时访问的是不同的table数组的同一位置即都为table[i]，只不过这个不同线程之间的table是独立的。
+         * 对于某一ThreadLocal来讲，他的索引值是确定的，在不同线程之间访问时访问的是不同的table数组的同一位置即都为table[i]，只不过这个不同线程之间的table是独立的。
 
          * 对于同一线程的不同ThreadLocal来讲，这些ThreadLocal实例共享一个table数组，然后每个ThreadLocal实例在table中的索引i是不同的。
 
@@ -4532,7 +4530,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
     * MessageQueue 使用单链表的数据结构来维护消息列表。
 
-    * next方法是一个无限循环的方法，如果消息队列中没有消息，那么next方法会一直阻塞在这里。当有新消息到来时，next方法会返回这条消息并将其从单链表中移除。
+    * next方法是一个无限循环的方法，如果消息队列中没有消息，那么n ext方法会一直阻塞在这里。当有新消息到来时，next方法会返回这条消息并将其从单链表中移除。
 
     * nativePollOnce的底层逻辑
 
@@ -4588,9 +4586,9 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
     * quit和quitSafely 退出一个Looper。区别是：quit是直接退出Looper，而quitSafely只是设定一个退出标记，把已有消息处理完成后安全退出。只有Looper推出后线程才会停止，所以不用的Looper一定要退出。
 
-    * Looper.loop，方法是一个死循环，只有当MessageQueue的next返回了null才会跳出循环，而当调用了Looper的quit或quitSafely的时候会直接调用MessageQueue的quit，从而让next返回null。
+    * Looper.loop方法是一个死循环，只有当MessageQueue的next返回了null才会跳出循环，而当调用了Looper的quit或quitSafely的时候会直接调用MessageQueue的quit，从而让next返回null。
 
-      Looper消息处理方式：MessageQueue.next返回信息后，`msg.target.dispatchMessage(msg);` 中 msg.target就是Handler对象，发送消息最终又交给了Handler的dispathMessage。
+    * Looper消息处理方式：MessageQueue.next返回信息后，`msg.target.dispatchMessage(msg);` 中 msg.target就是Handler对象，发送消息最终又交给了Handler的dispathMessage。
 
   * Handler的工作原理
 
@@ -4599,7 +4597,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
     * Handler的dispatchMessage处理消息的流程：
 
       1. 首先，检查Message的callback是否为null，此callback时一个Runnable对象，实际上是Handler的post方法传递的Runnable参数。，
-      2. 其次，检查mCallback时候覅为null，不为null就调用mCallback的handleMessage方法来处理消息。此Callback是在创建Handler对象的时候可以作为构造函数的参数来进行赋值，作用是用来创建一个Handler的实例单并不需要派生Handler的子类。
+      2. 其次，检查mCallback时候是否为null，不为null就调用mCallback的handleMessage方法来处理消息。此Callback是在创建Handler对象的时候可以作为构造函数的参数来进行赋值，作用是用来创建一个Handler的实例单并不需要派生Handler的子类。
       3. 最后，调用handleMessage。
 
       ```java
@@ -4622,7 +4620,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
     * IdleHandler 
 
-      1. IdleHandler 说白了，就是 Handler 机制提供的一种，可以在 Looper 事件循环的过程中，当出现空闲的时候，允许我们执行任务的一种机制。
+      1. IdleHandler 说白了，就是 Handler 机制提供的一种可以在 Looper 事件循环的过程中，当出现空闲的时候，允许我们执行任务的一种机制。
       
       2. IdleHandler 被定义在 MessageQueue 中，它是一个接口。在 MessageQueue 中定义了对应的 add 和 remove 方法。add 或 remove 其实操作的都是 `mIdleHandlers`，它的类型是一个 ArrayList。
       
@@ -4767,17 +4765,25 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
       ![](https://s2.ax1x.com/2019/05/27/VZHju4.png)
   
       1. Motion事件在InputReaderThread线程中的InputReader进行加工，加工完毕后会判断是否要唤醒InputDispatcherThread，如果需要唤醒，会在InputDispatcherThread的线程循环中不断的用InputDispatcher来分发 Motion事件。
+  
       2. 将Motion事件交由InputFilter过滤，如果返回值为false，这次Motion事件就会被忽略掉。
+  
       3. InputReader对Motion事件加工后的数据结构为NotifyMotionArgs，在InputDispatcher的notifyMotion函数中，用NotifyMotionArgs中的事件参数信息构造一个MotionEntry对象。这个MotionEntry对象会被添加到InputDispatcher的mInboundQueue队列的末尾。
+  
       4. 如果mInboundQueue不为空，取出mInboundQueue队列头部的EventEntry赋值给mPendingEvent。
+  
       5. 根据mPendingEvent的值，进行事件丢弃处理。
+  
       6. 调用InputDispatcher的findTouchedWindowTargetsLocked函数，在mWindowHandles窗口列表中为Motion事件找到目标窗口，并为该窗口生成inputTarget。
+  
       7. 根据inputTarget获取一个Connection，依赖Connection将输入事件发送给目标窗口。
+  
+         
   
     * **InputChannel**
   
       InputChannel是什么时候创建的，其实应用在setView()的是会调用IWindowSession的addToDisplay()函数。
-      IWindowSession的具体实现在\services\core\java\com\android\server\wm\Session.java中。它包含了InputChannel的建立。它本身是个binder调用，服务端是WMS，最终调用的是WMS的addWindow方法。InputChannel通过InputChannel.openInputChannelPair分别窗建一对InputChannel，然后将Server端的InputChannel注册到InputDispatcher中，将Client端的InputChannel返回给客户端应用。InputChannel数组的一对InputChannel，一个注册给了InputDispatcher，另一个交给应用程序ViewRootImpl。
+      IWindowSession的具体实现在\services\core\java\com\android\server\wm\Session.java中。它包含了InputChannel的建立。它本身是个binder调用，服务端是WMS，最终调用的是WMS的addWindow方法。InputChannel通过InputChannel.openInputChannelPair分别创建一对InputChannel，然后将Server端的InputChannel注册到InputDispatcher中，将Client端的InputChannel返回给客户端应用。InputChannel数组的一对InputChannel，一个注册给了InputDispatcher，另一个交给应用程序ViewRootImpl。
   
       ![](https://upload-images.jianshu.io/upload_images/2828107-dcbf781f1b97a7a9.png?imageMogr2/auto-orient/strip|imageView2/2/w/726/format/webp)
   
