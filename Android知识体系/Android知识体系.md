@@ -1859,8 +1859,9 @@
 
        可以看出，getMinimumWidth返回的就是Drawable的原始宽度，前提是这个Drawable有原始宽度，否则就返回0。那么Drawable在什么情况下有原始宽度呢？这里先举个例子说明一下，ShapeDrawable无原始宽/高，而BitmapDrawable有原始宽/高（图片的尺寸），详细内容会在第6章进行介绍。
        **这里再总结一下getSuggestedMinimumWidth的逻辑**：如果View没有设置背景，那么返回android:minWidth这个属性所指定的值，这个值可以为0；如果View设置了背景，则返回android:minWidth和背景的最小宽度这两者中的最大值，getSuggestedMinimumWidth和getSuggestedMinimumHeight的返回值就是View在UNSPECIFIED情况下的测量宽/高。
-       从getDefaultSize方法的实现来看，View的宽/高由specSize决定，所以我们可以得出如下结论：直接继承View的自定义控件需要重写onMeasure方法并设置wrap_content时的自身大小，否则在布局中使用wrap_content就相当于使用match_parent。为什么呢？这个原因需要结合上述代码和表4-1才能更好地理解。从上述代码中我们知道，如果View在布局中使用wrap_content，那么它的specMode是AT_MOST模式，在这种模式下，它的宽/高等于specSize；查表4-1可知，这种情况下View的specSize是parentSize，而parentSize是父容器中目前可以使用的大小，也就是父容器当前剩余的空间大小。很显然，View的宽/高就等于父容器当前剩余的空间大小，这种效果和在布局中使用match_parent完全一致。如何解决这个问题呢？也很简单，代码如下所示。
-
+    
+     从getDefaultSize方法的实现来看，View的宽/高由specSize决定，所以我们可以得出如下结论：直接继承View的自定义控件需要重写onMeasure方法并设置wrap_content时的自身大小，否则在布局中使用wrap_content就相当于使用match_parent。为什么呢？这个原因需要结合上述代码和表4-1才能更好地理解。从上述代码中我们知道，如果View在布局中使用wrap_content，那么它的specMode是AT_MOST模式，在这种模式下，它的宽/高等于specSize；查表4-1可知，这种情况下View的specSize是parentSize，而parentSize是父容器中目前可以使用的大小，也就是父容器当前剩余的空间大小。很显然，View的宽/高就等于父容器当前剩余的空间大小，这种效果和在布局中使用match_parent完全一致。如何解决这个问题呢？也很简单，代码如下所示。
+    
        ```
            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -1877,16 +1878,16 @@
                    setMeasuredDimension(widthSpecSize, mHeight);
                }
            }
-       ```
-
-       在上面的代码中，我们只需要给View指定一个默认的内部宽/高（mWidth和mHeight），并在wrap_content时设置此宽/高即可。对于非wrap_content情形，我们沿用系统的测量值即可，至于这个默认的内部宽/高的大小如何指定，这个没有固定的依据，根据需要灵活指定即可。如果查看TextView、ImageView等的源码就可以知道，针对wrap_content情形，它们的onMeasure方法均做了特殊处理，读者可以自行查看它们的源码。
-
-       
-
-       **1.2 ViewGroup的measure过程**
-
-       对于ViewGroup来说，除了完成自己的measure过程以外，还会遍历去调用所有子元素的measure方法，各个子元素再递归去执行这个过程。和View不同的是，ViewGroup是一个抽象类，因此它没有重写View的onMeasure方法，但是它提供了一个叫measureChildren的方法，如下所示。
-
+     ```
+    
+     在上面的代码中，我们只需要给View指定一个默认的内部宽/高（mWidth和mHeight），并在wrap_content时设置此宽/高即可。对于非wrap_content情形，我们沿用系统的测量值即可，至于这个默认的内部宽/高的大小如何指定，这个没有固定的依据，根据需要灵活指定即可。如果查看TextView、ImageView等的源码就可以知道，针对wrap_content情形，它们的onMeasure方法均做了特殊处理，读者可以自行查看它们的源码。
+    
+     
+    
+     **1.2 ViewGroup的measure过程**
+    
+     对于ViewGroup来说，除了完成自己的measure过程以外，还会遍历去调用所有子元素的measure方法，各个子元素再递归去执行这个过程。和View不同的是，ViewGroup是一个抽象类，因此它没有重写View的onMeasure方法，但是它提供了一个叫measureChildren的方法，如下所示。
+    
        ```
            protected void measureChildren(int widthMeasureSpec, int heightMeasureSpec) {
                final int size = mChildrenCount;
@@ -1898,10 +1899,10 @@
                      }
                  }
              }
-       ```
-
-       从上述代码来看，ViewGroup在measure时，会对每一个子元素进行measure, measureChild这个方法的实现也很好理解，如下所示。
-
+     ```
+    
+     从上述代码来看，ViewGroup在measure时，会对每一个子元素进行measure, measureChild这个方法的实现也很好理解，如下所示。
+    
        ```
            protected void measureChild(View child, int parentWidthMeasureSpec,
                    int parentHeightMeasureSpec) {
@@ -1916,12 +1917,12 @@
        
                child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
            }
-       ```
-
+     ```
+    
        很显然，measureChild的思想就是取出子元素的LayoutParams，然后再通过getChildMeasureSpec来创建子元素的MeasureSpec，接着将MeasureSpec直接传递给View的measure方法来进行测量。getChildMeasureSpec的工作过程已经在上面进行了详细分析，通过表4-1可以更清楚地了解它的逻辑。
        我们知道，ViewGroup并没有定义其测量的具体过程，这是因为ViewGroup是一个抽象类，其测量过程的onMeasure方法需要各个子类去具体实现，比如LinearLayout、RelativeLayout等，为什么ViewGroup不像View一样对其onMeasure方法做统一的实现呢？那是因为不同的ViewGroup子类有不同的布局特性，这导致它们的测量细节各不相同，比如LinearLayout和RelativeLayout这两者的布局特性显然不同，因此ViewGroup无法做统一实现。下面就通过LinearLayout的onMeasure方法来分析ViewGroup的measure过程，其他Layout类型读者可以自行分析。
-       首先来看LinearLayout的onMeasure方法，如下所示。
-
+     首先来看LinearLayout的onMeasure方法，如下所示。
+    
        ```
            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                if (mOrientation == VERTICAL) {
@@ -1930,10 +1931,10 @@
                    measureHorizontal(widthMeasureSpec, heightMeasureSpec);
                }
            }
-       ```
-
-       上述代码很简单，我们选择一个来看一下，比如选择查看竖直布局的LinearLayout的测量过程，即measureVertical方法，measureVertical的源码比较长，下面只描述其大概逻辑，首先看一段代码：
-
+     ```
+    
+     上述代码很简单，我们选择一个来看一下，比如选择查看竖直布局的LinearLayout的测量过程，即measureVertical方法，measureVertical的源码比较长，下面只描述其大概逻辑，首先看一段代码：
+    
        ```
            // See how tall everyone is. Also remember max width.
            for (int i = 0; i < count; ++i) {
@@ -1956,10 +1957,10 @@
                mTotalLength=Math.max(totalLength, totalLength+childHeight+lp.topMargin +
                      lp.bottomMargin + getNextLocationOffset(child));
            }
-       ```
-
-       从上面这段代码可以看出，系统会遍历子元素并对每个子元素执行measureChild-BeforeLayout方法，这个方法内部会调用子元素的measure方法，这样各个子元素就开始依次进入measure过程，并且系统会通过mTotalLength这个变量来存储LinearLayout在竖直方向的初步高度。每测量一个子元素，mTotalLength就会增加，增加的部分主要包括了子元素的高度以及子元素在竖直方向上的margin等。当子元素测量完毕后，LinearLayout会测量自己的大小，源码如下所示。
-
+     ```
+    
+     从上面这段代码可以看出，系统会遍历子元素并对每个子元素执行measureChild-BeforeLayout方法，这个方法内部会调用子元素的measure方法，这样各个子元素就开始依次进入measure过程，并且系统会通过mTotalLength这个变量来存储LinearLayout在竖直方向的初步高度。每测量一个子元素，mTotalLength就会增加，增加的部分主要包括了子元素的高度以及子元素在竖直方向上的margin等。当子元素测量完毕后，LinearLayout会测量自己的大小，源码如下所示。
+    
        ```
                  // Add in our padding
              mTotalLength += mPaddingTop + mPaddingBottom;
@@ -1974,10 +1975,10 @@
              setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec,
              childState),
              heightSizeAndState);
-       ```
-
-       这里对上述代码进行说明，当子元素测量完毕后，LinearLayout会根据子元素的情况来测量自己的大小。针对竖直的LinearLayout而言，它在水平方向的测量过程遵循View的测量过程，在竖直方向的测量过程则和View有所不同。具体来说是指，如果它的布局中高度采用的是match_parent或者具体数值，那么它的测量过程和View一致，即高度为specSize；如果它的布局中高度采用的是wrap_content，那么它的高度是所有子元素所占用的高度总和，但是仍然不能超过它的父容器的剩余空间，当然它的最终高度还需要考虑其在竖直方向的padding，这个过程可以进一步参看如下源码：
-
+     ```
+    
+     这里对上述代码进行说明，当子元素测量完毕后，LinearLayout会根据子元素的情况来测量自己的大小。针对竖直的LinearLayout而言，它在水平方向的测量过程遵循View的测量过程，在竖直方向的测量过程则和View有所不同。具体来说是指，如果它的布局中高度采用的是match_parent或者具体数值，那么它的测量过程和View一致，即高度为specSize；如果它的布局中高度采用的是wrap_content，那么它的高度是所有子元素所占用的高度总和，但是仍然不能超过它的父容器的剩余空间，当然它的最终高度还需要考虑其在竖直方向的padding，这个过程可以进一步参看如下源码：
+    
        ```
            public static int resolveSizeAndState(int size, int measureSpec, int
            childMeasuredState) {
@@ -2001,31 +2002,35 @@
                      }
                      return result | (childMeasuredState&MEASURED_STATE_MASK);
                  }
-       ```
-
-       
-
-       View的measure过程是三大流程中最复杂的一个，measure完成以后，通过getMeasured-Width/Height方法就可以正确地获取到View的测量宽/高。需要注意的是，在某些极端情况下，系统可能需要多次measure才能确定最终的测量宽/高，在这种情形下，在onMeasure方法中拿到的测量宽/高很可能是不准确的。一个比较好的习惯是在onLayout方法中去获取View的测量宽/高或者最终宽/高。
-
-       
-
-       上面已经对View的measure过程进行了详细的分析，现在考虑一种情况，比如我们想在Activity已启动的时候就做一件任务，但是这一件任务需要获取某个View的宽/高。读者可能会说，这很简单啊，在onCreate或者onResume里面去获取这个View的宽/高不就行了？读者可以自行试一下，实际上在onCreate、onStart、onResume中均无法正确得到某个View的宽/高信息，这是因为View的measure过程和Activity的生命周期方法不是同步执行的，因此无法保证Activity执行了onCreate、onStart、onResume时某个View已经测量完毕了，如果View还没有测量完毕，那么获得的宽/高就是0。有没有什么方法能解决这个问题呢？答案是有的，这里给出四种方法来解决这个问题：
+     ```
+    
+     
+    
+     View的measure过程是三大流程中最复杂的一个，measure完成以后，通过getMeasured-Width/Height方法就可以正确地获取到View的测量宽/高。需要注意的是，在某些极端情况下，系统可能需要多次measure才能确定最终的测量宽/高，在这种情形下，在onMeasure方法中拿到的测量宽/高很可能是不准确的。一个比较好的习惯是在onLayout方法中去获取View的测量宽/高或者最终宽/高。
+    
+     
+    
+       上面已经对View的measure过程进行了详细的分析，现在考虑一种情况，比如我们想在Activity已启动的时候就做一件任务，但是这一件任务需要获取某个View的宽/高。读者可能会说，这很简单啊，在onCreate或者onResume里面去获取这个View的宽/高不就行了？读者可以自行试一下，实际上在onCreate、onStart、onResume中均无法正确得到某个View的宽/高信息，这是因为View的measure过程和Activity的生命周期方法不是同步执行的，因此无法保证Activity执行了onCreate、onStart、onResume时某个View已经测量完毕了，如果View还没有测量完毕，那么获得的宽/高就是0。
+    
+     
+    
+       有没有什么方法能解决这个问题呢？答案是有的，这里给出四种方法来解决这个问题：
        （1）Activity/View#onWindowFocusChanged。
        onWindowFocusChanged这个方法的含义是：View已经初始化完毕了，宽/高已经准备好了，这个时候去获取宽/高是没问题的。需要注意的是，onWindowFocusChanged会被调用多次，当Activity的窗口得到焦点和失去焦点时均会被调用一次。具体来说，当Activity继续执行和暂停执行时，onWindowFocusChanged均会被调用，如果频繁地进行onResume和onPause，那么onWindowFocusChanged也会被频繁地调用。典型代码如下：
-
+    
        ```
            public void onWindowFocusChanged(boolean hasFocus) {
                super.onWindowFocusChanged(hasFocus);
                if (hasFocus) {
-                   int width = view.getMeasuredWidth();
+                 int width = view.getMeasuredWidth();
                        int height = view.getMeasuredHeight();
                    }
-               }
+             }
        ```
-
+    
        （2）view.post(runnable)。
        通过post可以将一个runnable投递到消息队列的尾部，然后等待Looper调用此runnable的时候，View也已经初始化好了。典型代码如下：
-
+    
        ```
            protected void onStart() {
                super.onStart();
@@ -2034,15 +2039,15 @@
                    @Override
                    public void run() {
                        int width = view.getMeasuredWidth();
-                       int height = view.getMeasuredHeight();
+                     int height = view.getMeasuredHeight();
                    }
                });
-           }
+         }
        ```
-
+    
        （3）ViewTreeObserver。
        使用ViewTreeObserver的众多回调可以完成这个功能，比如使用OnGlobalLayoutListener这个接口，当View树的状态发生改变或者View树内部的View的可见性发现改变时，onGlobalLayout方法将被回调，因此这是获取View的宽/高一个很好的时机。需要注意的是，伴随着View树的状态改变等，onGlobalLayout会被调用多次。典型代码如下：
-
+    
        ```
            protected void onStart() {
                super.onStart();
@@ -2055,62 +2060,64 @@
                    public void onGlobalLayout() {
                              view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                              int width = view.getMeasuredWidth();
-                             int height = view.getMeasuredHeight();
+                           int height = view.getMeasuredHeight();
                          }
                      });
                  }
        ```
-
+    
        （4）view.measure(int widthMeasureSpec, int heightMeasureSpec)。
-       通过手动对View进行measure来得到View的宽/高。这种方法比较复杂，这里要分情况处理，根据View的LayoutParams来分：
+     通过手动对View进行measure来得到View的宽/高。这种方法比较复杂，这里要分情况处理，根据View的LayoutParams来分：
        **match_parent**
        直接放弃，无法measure出具体的宽/高。原因很简单，根据View的measure过程，如表4-1所示，构造此种MeasureSpec需要知道parentSize，即父容器的剩余空间，而这个时候我们无法知道parentSize的大小，所以理论上不可能测量出View的大小。
        **具体的数值（dp/px）**
        比如宽/高都是100px，如下measure：
-
+    
        ```java
            int widthMeasureSpec = MeasureSpec.makeMeasureSpec(100, MeasureSpec.
-           EXACTLY);
+         EXACTLY);
            int heightMeasureSpec = MeasureSpec.makeMeasureSpec(100, MeasureSpec.
            EXACTLY);
-               view.measure(widthMeasureSpec, heightMeasureSpec);
+             view.measure(widthMeasureSpec, heightMeasureSpec);
        ```
-
+    
        **wrap_content**
        如下measure：
-
+    
        ```java
            int widthMeasureSpec = MeasureSpec.makeMeasureSpec( (1 << 30) -1,
-           MeasureSpec.AT_MOST);
+         MeasureSpec.AT_MOST);
            int heightMeasureSpec = MeasureSpec.makeMeasureSpec( (1 << 30) -1,
            MeasureSpec.AT_MOST);
                view.measure(widthMeasureSpec, heightMeasureSpec);
-       ```
-
+     ```
+    
        注意到(1 << 30)-1，通过分析MeasureSpec的实现可以知道，View的尺寸使用30位二进制表示，也就是说最大是30个1（即2^30-1），也就是(1 << 30) -1，在最大化模式下，我们用View理论上能支持的最大值去构造MeasureSpec是合理的。
+    
        关于View的measure，网络上有两个错误的用法。为什么说是错误的，首先其违背了系统的内部实现规范（因为无法通过错误的MeasureSpec去得出合法的SpecMode，从而导致measure过程出错），其次不能保证一定能measure出正确的结果。
+    
        第一种错误用法：
-
-       ```java
+    
+     ```java
            int widthMeasureSpec = MeasureSpec.makeMeasureSpec(-1, MeasureSpec.
-           UNSPECIFIED);
+         UNSPECIFIED);
            int heightMeasureSpec = MeasureSpec.makeMeasureSpec(-1, MeasureSpec.
            UNSPECIFIED);
            view.measure(widthMeasureSpec, heightMeasureSpec);
-       ```
-
-       第二种错误用法：
-
-       ```java
+     ```
+    
+     第二种错误用法：
+    
+     ```java
            view.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-       ```
-
+     ```
+    
        
-
+    
     2. **layout过程**
-
+    
        layout方法确定View本身的位置，而onLayout方法则会确定所有子元素的位置。
-
+    
        ```java
            public void layout(int l, int t, int r, int b) {
                if ((mPrivateFlags3 & PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT) ! = 0) {
@@ -2140,32 +2147,32 @@
                              listenersCopy.get(i).onLayoutChange(this, l, t, r, b, oldL,
                              oldT, oldR, oldB);
                          }
-                     }
+                   }
                  }
-       
+     
                  mPrivateFlags &= ～PFLAG_FORCE_LAYOUT;
-                 mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;
+               mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;
              }
-       ```
-
+     ```
+    
        
-
+    
        layout方法的大致流程如下：首先会通过setFrame方法来设定View的四个顶点的位置，即初始化mLeft、mRight、mTop和mBottom这四个值，View的四个顶点一旦确定，那么View在父容器中的位置也就确定了；接着会调用onLayout方法，这个方法的用途是父容器确定子元素的位置，和onMeasure方法类似，onLayout的具体实现同样和具体的布局有关，所以View和ViewGroup均没有真正实现onLayout方法。
-
+    
        接下来，我们可以看一下LinearLayout的onLayout方法，如下所示。
-
+    
        ```
            protected void onLayout(boolean changed, int l, int t, int r, int b) {
-               if (mOrientation == VERTICAL) {
+             if (mOrientation == VERTICAL) {
                    layoutVertical(l, t, r, b);
-               } else {
+             } else {
                    layoutHorizontal(l, t, r, b);
                }
            }
        ```
-
+    
        LinearLayout中onLayout的实现逻辑和onMeasure的实现逻辑类似，这里选择layoutVertical继续讲解，为了更好地理解其逻辑，这里只给出了主要的代码：
-
+    
        ```java
            void layoutVertical(int left, int top, int right, int bottom) {
                ...
@@ -2188,79 +2195,79 @@
                        childTop += lp.topMargin;
                        setChildFrame(child, childLeft, childTop + getLocationOffset
                        (child), childWidth, childHeight);
-                       childTop += childHeight + lp.bottomMargin + getNextLocation-
+                     childTop += childHeight + lp.bottomMargin + getNextLocation-
                        Offset(child);
-                       i += getChildrenSkipCount(child, i);
+                     i += getChildrenSkipCount(child, i);
                    }
                }
            }
        ```
-
+    
        这里分析一下layoutVertical的代码逻辑，可以看到，此方法会遍历所有子元素并调用setChildFrame方法来为子元素指定对应的位置，其中childTop会逐渐增大，这就意味着后面的子元素会被放置在靠下的位置，这刚好符合竖直方向的LinearLayout的特性。至于setChildFrame，它仅仅是调用子元素的layout方法而已，这样父元素在layout方法中完成自己的定位以后，就通过onLayout方法去调用子元素的layout方法，子元素又会通过自己的layout方法来确定自己的位置，这样一层一层地传递下去就完成了整个View树的layout过程。setChildFrame方法的实现如下所示。
 
        ```java
-           private void setChildFrame(View child, int left, int top, int width, int
+         private void setChildFrame(View child, int left, int top, int width, int
            height) {
                  child.layout(left, top, left + width, top + height);
              }
        ```
-
+    
        我们注意到，setChildFrame中的width和height实际上就是子元素的测量宽/高，从下面的代码可以看出这一点：
 
        ```java
-           final int childWidth = child.getMeasuredWidth();
+         final int childWidth = child.getMeasuredWidth();
            final int childHeight = child.getMeasuredHeight();
            setChildFrame(child, childLeft, childTop + getLocationOffset(child),
            childWidth, childHeight);
        ```
-
+    
        而在layout方法中会通过setFrame去设置子元素的四个顶点的位置，在setFrame中有如下几句赋值语句，这样一来子元素的位置就确定了：
 
        ```java
-           mLeft = left;
+         mLeft = left;
            mTop = top;
-           mRight = right;
+         mRight = right;
            mBottom = bottom;
        ```
-
+    
        
-
+    
        **View的getMeasuredWidth和getWidth这两个方法有什么区别**，至于getMeasuredHeight和getHeight的区别和前两者完全一样。为了回答这个问题，首先，我们看一下getwidth和getHeight这两个方法的具体实现：
-
+    
        ```
            public final int getWidth() {
-               return mRight - mLeft;
+             return mRight - mLeft;
            }
-       
+     
            public final int getHeight() {
                return mBottom - mTop;
            }
        ```
-
-       从getWidth和getHeight的源码再结合mLeft、mRight、mTop和mBottom这四个变量的赋值过程来看，getWidth方法的返回值刚好就是View的测量宽度，而getHeight方法的返回值也刚好就是View的测量高度。经过上述分析，现在我们可以回答这个问题了：在View的默认实现中，View的测量宽/高和最终宽/高是相等的，只不过测量宽/高形成于View的measure过程，而最终宽/高形成于View的layout过程，即两者的赋值时机不同，测量宽/高的赋值时机稍微早一些。因此，在日常开发中，我们可以认为View的测量宽/高就等于最终宽/高，但是的确存在某些特殊情况会导致两者不一致，下面举例说明。
-
-       ```java
+    
+     从getWidth和getHeight的源码再结合mLeft、mRight、mTop和mBottom这四个变量的赋值过程来看，getWidth方法的返回值刚好就是View的测量宽度，而getHeight方法的返回值也刚好就是View的测量高度。经过上述分析，现在我们可以回答这个问题了：在View的默认实现中，View的测量宽/高和最终宽/高是相等的，只不过测量宽/高形成于View的measure过程，而最终宽/高形成于View的layout过程，即两者的赋值时机不同，测量宽/高的赋值时机稍微早一些。因此，在日常开发中，我们可以认为View的测量宽/高就等于最终宽/高，但是的确存在某些特殊情况会导致两者不一致，下面举例说明。
+    
+     ```java
            public void layout(int l, int t, int r, int b) {
-               super.layout(l, t, r + 100, b + 100);
+             super.layout(l, t, r + 100, b + 100);
            }
-       ```
-
-       上述代码会导致在任何情况下View的最终宽/高总是比测量宽/高大100px，虽然这样做会导致View显示不正常并且也没有实际意义，但是这证明了测量宽/高的确可以不等于最终宽/高。另外一种情况是在某些情况下，View需要多次measure才能确定自己的测量宽/高，在前几次的测量过程中，其得出的测量宽/高有可能和最终宽/高不一致，但最终来说，测量宽/高还是和最终宽/高相同。
-
-       
-
-    3. **draw过程**
-
-       Draw过程就比较简单了，它的作用是将View绘制到屏幕上面。View的绘制过程遵循如下几步：
-
-       （1）绘制背景background.draw(canvas)。
-
+     ```
+    
+     上述代码会导致在任何情况下View的最终宽/高总是比测量宽/高大100px，虽然这样做会导致View显示不正常并且也没有实际意义，但是这证明了测量宽/高的确可以不等于最终宽/高。另外一种情况是在某些情况下，View需要多次measure才能确定自己的测量宽/高，在前几次的测量过程中，其得出的测量宽/高有可能和最终宽/高不一致，但最终来说，测量宽/高还是和最终宽/高相同。
+    
+     
+    
+  3. **draw过程**
+    
+     Draw过程就比较简单了，它的作用是将View绘制到屏幕上面。View的绘制过程遵循如下几步：
+    
+     （1）绘制背景background.draw(canvas)。
+    
        （2）绘制自己（onDraw）。
-
+    
        （3）绘制children（dispatchDraw）。
-
+    
        （4）绘制装饰（onDrawScrollBars）。
-
+    
        ```java
            public void draw(Canvas canvas) {
                final int privateFlags = mPrivateFlags;
@@ -2306,14 +2313,14 @@
                  if (mOverlay ! = null && ! mOverlay.isEmpty()) {
                      mOverlay.getOverlayView().dispatchDraw(canvas);
                  }
-       
+     
                  // we're done...
                  return;
             }
             ...
          }
        ```
-
+    
        
 
 * 参考资料
@@ -4469,9 +4476,47 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 ### Android 系统启动
 
 * 知识点
-  * 
+
+  1. **BootLoader**
+
+  2. **Linux Kernel**
+
+     Linux 内核负责初始化各种软硬件环境，加载驱动程序，挂载根文件系统(/)等，最重要的是，内核启动完成后，它会在根文件系统中寻找 ”init” 文件，然后启动 init 进程。
+
+  3. **init 进程**
+
+     创建zygote进程、servicemanager、mediaservice等进程。
+
+  4. **zygote 进程**
+
+     zygote 的主要工作：
+
+     - 创建 java 虚拟机 AndroidRuntime
+
+     - 通过 AndroidRuntime 启动 ZygoteInit 进入 java 环境。
+
+       
+
+     ZygoteInit　的主要工作如下：
+
+     - 创建 socket 服务，接受 ActivityManagerService 的应用启动请求。
+     - 加载 Android framework 中的 class、res（drawable、xml信息、strings）到内存。Android 通过在 zygote 创建的时候加载资源，生成信息链接，再有应用启动，fork 子进程和父进程共享信息，不需要重新加载，同时也共享 VM。
+     - 启动 SystemServer。
+     - 监听 socket，当有启动应用请求到达，fork 生成 App 应用进程。
+
+  5. **SystemServer 进程**
+
+     SystemServer 的主要的作用是启动各种系统服务，比如 ActivityManagerService，PackageManagerService，WindowManagerService 以及硬件相关的 Service 等服务，我们平时熟知的各种系统服务其实都是在 SystemServer 进程中启动的，这些服务都运行在同一进程（即 SystemServer 进程）的不同线程中，而当我们的应用需要使用各种系统服务的时候其实也是通过与 SystemServer 进程通讯获取各种服务对象的句柄进而执行相应的操作的。在所有的服务启动完成后，会调用各服务的 service.systemReady(…) 来通知各对应的服务，系统已经就绪。
+
+  6. **Launcher 的启动**
+
+     SystemServer　进程再启动的过程中会启动PackageManagerService，PackageManagerService启动后会将系统中的应用程序安装完成。SystemServer启动完所有的服务后，会调用各服务的 service.systemReady(…)。Ｌauncher　的启动逻辑就在 ActivityManagerService.systemReady() 中。
+
+  7. **BootAnimation 退出**
+
+  ![android-boot-flow](http://qiushao.net/images/android-boot-flow.png)
 * 参考资料
-  * [详解 Android 是如何启动的](http://www.woaitqs.cc/android/2016/06/15/how-android-launch-itself.html)
+  * [Android系统开发进阶-系统启动流程概要](http://qiushao.net/2020/02/22/Android%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E8%BF%9B%E9%98%B6/Android%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/)
   * [Android系统启动源码分析](http://blog.csdn.net/ynztlxdeai/article/details/69675754)
 
 
@@ -4886,51 +4931,70 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
       * [Android深入四大组件（六）Android8.0 根Activity启动过程（前篇）](http://liuwangshu.cn/framework/component/6-activity-start-1.html)
       * [Android深入四大组件（七）Android8.0 根Activity启动过程（后篇）](http://liuwangshu.cn/framework/component/7-activity-start-2.html)
 
+    
+
   * Service的启动流程
 
     * startService的流程
-
-      
 
       ![](https://img-blog.csdnimg.cn/20200108145130415.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NoaXNoaTE5OTQzMw==,size_16,color_FFFFFF,t_70)
 
     * binderService的流程
 
-      ![](https://img-blog.csdnimg.cn/20210518110329246.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI2NDk4MzEx,size_16,color_FFFFFF,t_70)
+      ![img](http://gityuan.com/images/ams/bind_service.jpg)
 
     * 参考资料
 
       * [基于Android10的Service的启动流程](https://blog.csdn.net/chishi199433/article/details/103891219)
-      * [Service的启动流程——基于Android11](https://blog.csdn.net/qq_26498311/article/details/116980167)
-
+    * [Service的启动流程——基于Android11](https://blog.csdn.net/qq_26498311/article/details/116980167)
+  
   * Broadcast的启动流程
 
+    * 广播注册小结
+
+      1. 传递的参数为广播接收者BroadcastReceiver和Intent过滤条件IntentFilter；
+    2. 创建对象LoadedApk.ReceiverDispatcher.InnerReceiver，该对象继承于IIntentReceiver.Stub；
+      3. 通过AMS把当前进程的ApplicationThread和InnerReceiver对象的代理类，注册登记到system_server进程；
+    4. 当广播receiver没有注册过，则创建广播接收者队列ReceiverList，该对象继承于ArrayList， 并添加到AMS.mRegisteredReceivers(已注册广播队列)；
+      5. 创建BroadcastFilter，并添加到AMS.mReceiverResolver；
+    6. 将BroadcastFilter添加到该广播接收者的ReceiverList
+  
     * 发送广播过程的流程如下
 
       ![](https://skytoby.github.io/2019/BroadcastCast%E5%B9%BF%E6%92%AD%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/broadcast.jpg)
 
     * **广播机制**
-
-      1.当发送串行广播（order= true）时
-
-      - 静态注册的广播接收者（receivers），采用串行处理
+  
+    1.当发送串行广播（order= true）时
+  
+    - 静态注册的广播接收者（receivers），采用串行处理
       - 动态注册的广播接收者（registeredReceivers），采用串行处理
 
       2.当发送并行广播（order= false）时
 
       - 静态注册的广播接收者（receivers），采用串行处理
-      - 动态注册的广播接收者（registeredReceivers），采用并行处理
-
+    - 动态注册的广播接收者（registeredReceivers），采用并行处理
+  
       静态注册的receiver都是采用串行处理；动态注册的registeredReceivers处理方式无论是串行还是并行，取决于广播的发送方式（processNextBroadcast）；静态注册的广播由于其所在的进程没有创建，而进程的创建需要耗费系统的资源比较多，所以让静态注册的广播串行化，防止瞬间启动大量的进程。
-
+  
+      
+  
       广播ANR只有在串行广播时才需要考虑，因为接收者是串行处理的，前一个receiver处理慢，会影响后一个receiver；并行广播通过一个循环一次性将所有的receiver分发完，不存在彼此影响的问题，没有广播超时。
-
-      串行超时情况：某个广播处理时间>2*receiver总个数*mTimeoutPeriod，其中mTimeoutPeriod，前后队列为10s,后台队列为60s；某个receiver的执行时间超过mTimeoutPeriod。
-
-  * Provider的启动流程
-
+      
+      
+      
+      串行超时情况：1. 某个广播处理时间>2 * receiver总个数 * mTimeoutPeriod，其中mTimeoutPeriod，前台队列为10s,后台队列为60s；
+      
+      ​                           2. 某个receiver的执行时间超过mTimeoutPeriod。
+      
     * 参考资料
-      * [Android10.0 ContentProvider原理分析](https://skytoby.github.io/2019/BroadcastCast%E5%B9%BF%E6%92%AD%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/)
+  
+      * [BroadcastCast广播机制原理](https://skytoby.github.io/2019/BroadcastCast%E5%B9%BF%E6%92%AD%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/)
+  
+  * Provider的启动流程
+  
+    * 参考资料
+      * [Android10.0 ContentProvider原理分析](https://skytoby.github.io/2019/ContentProvider%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/)
 * 参考资料
   * [[译]Android Application启动流程分析](https://www.jianshu.com/p/a5532ecc8377)
   * [Android应用程序进程启动过程（前篇）](http://liuwangshu.cn/framework/applicationprocess/1.html)
@@ -4977,7 +5041,14 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
     * WMS启动
 
-      SystemServer中startOtherServices  ->  DisplayThread的getHandler来初始化WMS对象 ， 说明WMS的创建是运行在“android.display”线程中  -> 在WMS的构造函数中初始化WindowManagerPolicy（PhoneWindowManager），在android.ui线程。
+      SystemServer中startOtherServices  ->  DisplayThread的getHandler来初始化WMS对象 ， 说明WMS的创建是运行在“android.display”线程中  -> 在WMS的构造函数中初始化WindowManagerPolicy（PhoneWindowManager）。
+
+      
+
+      “system_server”线程中会调用WMS的main方法，main方法中会创建WMS，创建WMS的过程运行在”android.display”线程中，它的优先级更高一些，因此要等创建WMS完毕后才会唤醒处于等待状态的”system_server”线程。
+      WMS初始化时会执行initPolicy方法，initPolicy方法会调用PWM的init方法，这个init方法运行在”android.ui”线程，并且优先级更高，因此要先执行完PWM的init方法后，才会唤醒处于等待状态的”android.display”线程。
+      PWM的init方法执行完毕后会接着执行运行在”system_server”线程的代码，比如本文前部分提到WMS的
+      systemReady方法。
 
       ![](https://s2.ax1x.com/2019/05/28/VexoRA.png)
 
@@ -5017,27 +5088,50 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
       7. **mH：H**
       8. **mInputManager：InputManagerService**
 
+      
+
+      ![img](https://skytoby.github.io/2019/WMS%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/WMS.jpg)
+
+    
+
     * 在WMS中添加Window的过程
 
-      addWindow方法分了3个部分来进行讲解，主要就是做了下面4件事：
+       请求WMS添加Window，mWindowManager.addView(mview, wmParams)   ->  WindowManagerImpl.addView  -> WindowManagerGlobal.addView -> 创建ViewRootImpl ->  ViewRootImpl.setView ->  IWindowSession.addtoDisplay（ViewRootImpl中有一个W变量，为Window的服务端会传递到WMS的WindowState中，用于WMS来通知APP）->  WMS.addWindow (新建WindowToken、WindowState，并将两个相关联，如果是APP则是创建AppWindowToken，不同的窗口对应不同的Token类型)  ->  在WindowState对象创建后会利用 win.attach()函数为当前APP申请建立SurfaceFlinger的链接（WindowSession中一个SF的代理SurfaceSession） ->  在APP的performTraversals、relayoutWindow会时，调用mWindowSession.relayout向WMS申请或者更新Surface  ->  SurfaceComposerClient.createSurface（通过SF连创建填充Surface） -> WMS将Surface和SurfaceComposerClient封装成SurfaceControl返回给APP
 
-      1. 对所要添加的窗口进行检查，如果窗口不满足一些条件，就不会再执行下面的代码逻辑。
-      2. WindowToken相关的处理，比如有的窗口类型需要提供WindowToken，没有提供的话就不会执行下面的代码逻辑，有的窗口类型则需要由WMS隐式创建WindowToken。
-      3. WindowState的创建和相关处理，将WindowToken和WindowState相关联。
-      4. 创建和配置DisplayContent，完成窗口添加到系统前的准备工作。
+      
 
     * 删除Window的过程
 
-      简单的总结为以下4点：
+      WindowManagerGlobal.removeView  ->  WindowManagerGlobal.removeViewLocked  -> ViewRootImpl.die  ->  ViewRootImpl.doDie()  ->  ViewRootImpl.dispatchDetachedFromWindow  ->  destroySurface() ，mWindowSession.remove(mWindow)
 
+      
+      
+      简单的总结为以下4点：
+      
       1. 检查删除线程的正确性，如果不正确就抛出异常。
+      
       2. 从ViewRootImpl列表、布局参数列表和View列表中删除与V对应的元素。
+      
       3. 判断是否可以直接执行删除操作，如果不能就推迟删除操作。
+      
       4. 执行删除操作，清理和释放与V相关的一切资源。
+      
+         
+      
+    * StartingWindow分析
+
+      
 
 * 参考资料
   * [Android解析WindowManager - 刘望舒](http://liuwangshu.cn/framework/wm/3-add-window.html)
+  
   * [Android解析WindowManagerService - 刘望舒](http://liuwangshu.cn/framework/wms/1-wms-produce.html)
+  
+  * [WMS启动流程分析](https://skytoby.github.io/2019/WMS%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/)
+  
+  * [android window(三)lWindow添加流程](https://www.cnblogs.com/mingfeng002/p/10948732.html)
+  
+  * [Android应用启动界面分析（Starting Window）](https://blog.csdn.net/xueshanhaizi/article/details/51262528)
   
     
 
