@@ -1878,7 +1878,7 @@
                    setMeasuredDimension(widthSpecSize, mHeight);
                }
            }
-     ```
+       ```
     
      在上面的代码中，我们只需要给View指定一个默认的内部宽/高（mWidth和mHeight），并在wrap_content时设置此宽/高即可。对于非wrap_content情形，我们沿用系统的测量值即可，至于这个默认的内部宽/高的大小如何指定，这个没有固定的依据，根据需要灵活指定即可。如果查看TextView、ImageView等的源码就可以知道，针对wrap_content情形，它们的onMeasure方法均做了特殊处理，读者可以自行查看它们的源码。
     
@@ -1899,7 +1899,7 @@
                      }
                  }
              }
-     ```
+       ```
     
      从上述代码来看，ViewGroup在measure时，会对每一个子元素进行measure, measureChild这个方法的实现也很好理解，如下所示。
     
@@ -1917,7 +1917,7 @@
        
                child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
            }
-     ```
+       ```
     
        很显然，measureChild的思想就是取出子元素的LayoutParams，然后再通过getChildMeasureSpec来创建子元素的MeasureSpec，接着将MeasureSpec直接传递给View的measure方法来进行测量。getChildMeasureSpec的工作过程已经在上面进行了详细分析，通过表4-1可以更清楚地了解它的逻辑。
        我们知道，ViewGroup并没有定义其测量的具体过程，这是因为ViewGroup是一个抽象类，其测量过程的onMeasure方法需要各个子类去具体实现，比如LinearLayout、RelativeLayout等，为什么ViewGroup不像View一样对其onMeasure方法做统一的实现呢？那是因为不同的ViewGroup子类有不同的布局特性，这导致它们的测量细节各不相同，比如LinearLayout和RelativeLayout这两者的布局特性显然不同，因此ViewGroup无法做统一实现。下面就通过LinearLayout的onMeasure方法来分析ViewGroup的measure过程，其他Layout类型读者可以自行分析。
@@ -1931,7 +1931,7 @@
                    measureHorizontal(widthMeasureSpec, heightMeasureSpec);
                }
            }
-     ```
+       ```
     
      上述代码很简单，我们选择一个来看一下，比如选择查看竖直布局的LinearLayout的测量过程，即measureVertical方法，measureVertical的源码比较长，下面只描述其大概逻辑，首先看一段代码：
     
@@ -1957,7 +1957,7 @@
                mTotalLength=Math.max(totalLength, totalLength+childHeight+lp.topMargin +
                      lp.bottomMargin + getNextLocationOffset(child));
            }
-     ```
+       ```
     
      从上面这段代码可以看出，系统会遍历子元素并对每个子元素执行measureChild-BeforeLayout方法，这个方法内部会调用子元素的measure方法，这样各个子元素就开始依次进入measure过程，并且系统会通过mTotalLength这个变量来存储LinearLayout在竖直方向的初步高度。每测量一个子元素，mTotalLength就会增加，增加的部分主要包括了子元素的高度以及子元素在竖直方向上的margin等。当子元素测量完毕后，LinearLayout会测量自己的大小，源码如下所示。
     
@@ -1975,7 +1975,7 @@
              setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec,
              childState),
              heightSizeAndState);
-     ```
+       ```
     
      这里对上述代码进行说明，当子元素测量完毕后，LinearLayout会根据子元素的情况来测量自己的大小。针对竖直的LinearLayout而言，它在水平方向的测量过程遵循View的测量过程，在竖直方向的测量过程则和View有所不同。具体来说是指，如果它的布局中高度采用的是match_parent或者具体数值，那么它的测量过程和View一致，即高度为specSize；如果它的布局中高度采用的是wrap_content，那么它的高度是所有子元素所占用的高度总和，但是仍然不能超过它的父容器的剩余空间，当然它的最终高度还需要考虑其在竖直方向的padding，这个过程可以进一步参看如下源码：
     
@@ -2002,7 +2002,7 @@
                      }
                      return result | (childMeasuredState&MEASURED_STATE_MASK);
                  }
-     ```
+       ```
     
      
     
@@ -2090,7 +2090,7 @@
            int heightMeasureSpec = MeasureSpec.makeMeasureSpec( (1 << 30) -1,
            MeasureSpec.AT_MOST);
                view.measure(widthMeasureSpec, heightMeasureSpec);
-     ```
+       ```
     
        注意到(1 << 30)-1，通过分析MeasureSpec的实现可以知道，View的尺寸使用30位二进制表示，也就是说最大是30个1（即2^30-1），也就是(1 << 30) -1，在最大化模式下，我们用View理论上能支持的最大值去构造MeasureSpec是合理的。
     
@@ -2153,6 +2153,7 @@
                  mPrivateFlags &= ～PFLAG_FORCE_LAYOUT;
                mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;
              }
+       ```
      ```
     
        
@@ -2161,7 +2162,7 @@
     
        接下来，我们可以看一下LinearLayout的onLayout方法，如下所示。
     
-       ```
+     ```
            protected void onLayout(boolean changed, int l, int t, int r, int b) {
              if (mOrientation == VERTICAL) {
                    layoutVertical(l, t, r, b);
@@ -2203,8 +2204,8 @@
            }
        ```
     
-       这里分析一下layoutVertical的代码逻辑，可以看到，此方法会遍历所有子元素并调用setChildFrame方法来为子元素指定对应的位置，其中childTop会逐渐增大，这就意味着后面的子元素会被放置在靠下的位置，这刚好符合竖直方向的LinearLayout的特性。至于setChildFrame，它仅仅是调用子元素的layout方法而已，这样父元素在layout方法中完成自己的定位以后，就通过onLayout方法去调用子元素的layout方法，子元素又会通过自己的layout方法来确定自己的位置，这样一层一层地传递下去就完成了整个View树的layout过程。setChildFrame方法的实现如下所示。
-
+     这里分析一下layoutVertical的代码逻辑，可以看到，此方法会遍历所有子元素并调用setChildFrame方法来为子元素指定对应的位置，其中childTop会逐渐增大，这就意味着后面的子元素会被放置在靠下的位置，这刚好符合竖直方向的LinearLayout的特性。至于setChildFrame，它仅仅是调用子元素的layout方法而已，这样父元素在layout方法中完成自己的定位以后，就通过onLayout方法去调用子元素的layout方法，子元素又会通过自己的layout方法来确定自己的位置，这样一层一层地传递下去就完成了整个View树的layout过程。setChildFrame方法的实现如下所示。
+    
        ```java
          private void setChildFrame(View child, int left, int top, int width, int
            height) {
@@ -2212,8 +2213,8 @@
              }
        ```
     
-       我们注意到，setChildFrame中的width和height实际上就是子元素的测量宽/高，从下面的代码可以看出这一点：
-
+     我们注意到，setChildFrame中的width和height实际上就是子元素的测量宽/高，从下面的代码可以看出这一点：
+    
        ```java
          final int childWidth = child.getMeasuredWidth();
            final int childHeight = child.getMeasuredHeight();
@@ -2221,8 +2222,8 @@
            childWidth, childHeight);
        ```
     
-       而在layout方法中会通过setFrame去设置子元素的四个顶点的位置，在setFrame中有如下几句赋值语句，这样一来子元素的位置就确定了：
-
+     而在layout方法中会通过setFrame去设置子元素的四个顶点的位置，在setFrame中有如下几句赋值语句，这样一来子元素的位置就确定了：
+    
        ```java
          mLeft = left;
            mTop = top;
@@ -5165,6 +5166,14 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
   * [Android系统_图形系统总结](https://www.jianshu.com/p/238eb0a17760)
   * [Android图形系统篇总结](https://www.jianshu.com/p/180e1b6d0dcd)
   * [Android 显示系统：SurfaceFlinger详解](https://www.cnblogs.com/blogs-of-lxl/p/11272756.html)
+
+
+
+### PackageManagerService源码分析
+
+
+
+
 
 
 
