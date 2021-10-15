@@ -1009,7 +1009,7 @@
 
   * 缓存（四级缓存）
 
-    
+    ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62aee1745ef7435bb93293bc49aafbcf~tplv-k3u1fbpfcp-watermark.awebp)
 
   * RecyclerView性能优化
 
@@ -1017,11 +1017,18 @@
 
       1. 使用DiffUtil、AsyncListDiffer计算数据集的变化，实现局部更新
       2. 使用`recyclerView.setHasFixedSize(true);` ，如果items是固定且不会发生变化，为什么？
+* 布局优化
+    
 
-    * 布局优化
-
-      
-
+    
+* 源码分析
+  
+    * 知识点
+      * 
+    * 参考资料
+      * [RecyclerView 源码分析(一) - RecyclerView的三大流程](https://www.jianshu.com/p/61fe3f3bb7ec)
+      * [04.RecyclerView用法和源码深度解析.md](https://github.com/yangchong211/YCBlogs/blob/master/android/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/04.RecyclerView%E7%94%A8%E6%B3%95%E5%92%8C%E6%BA%90%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90.md)
+  
 * 参考资料
   * [RecyclerView - Android官网文档](https://developer.android.google.cn/guide/topics/ui/layout/recyclerview?hl=zh_cn)
   * [[CodePath](Using the RecyclerView (Android 5.0))](http://guides.codepath.com/android/Using-the-RecyclerView)
@@ -1859,11 +1866,13 @@
 
        可以看出，getMinimumWidth返回的就是Drawable的原始宽度，前提是这个Drawable有原始宽度，否则就返回0。那么Drawable在什么情况下有原始宽度呢？这里先举个例子说明一下，ShapeDrawable无原始宽/高，而BitmapDrawable有原始宽/高（图片的尺寸），详细内容会在第6章进行介绍。
        **这里再总结一下getSuggestedMinimumWidth的逻辑**：如果View没有设置背景，那么返回android:minWidth这个属性所指定的值，这个值可以为0；如果View设置了背景，则返回android:minWidth和背景的最小宽度这两者中的最大值，getSuggestedMinimumWidth和getSuggestedMinimumHeight的返回值就是View在UNSPECIFIED情况下的测量宽/高。
-    
-     从getDefaultSize方法的实现来看，View的宽/高由specSize决定，所以我们可以得出如下结论：直接继承View的自定义控件需要重写onMeasure方法并设置wrap_content时的自身大小，否则在布局中使用wrap_content就相当于使用match_parent。为什么呢？这个原因需要结合上述代码和表4-1才能更好地理解。从上述代码中我们知道，如果View在布局中使用wrap_content，那么它的specMode是AT_MOST模式，在这种模式下，它的宽/高等于specSize；查表4-1可知，这种情况下View的specSize是parentSize，而parentSize是父容器中目前可以使用的大小，也就是父容器当前剩余的空间大小。很显然，View的宽/高就等于父容器当前剩余的空间大小，这种效果和在布局中使用match_parent完全一致。如何解决这个问题呢？也很简单，代码如下所示。
+       
+       
+       
+       从getDefaultSize方法的实现来看，View的宽/高由specSize决定，所以我们可以得出如下结论：直接继承View的自定义控件需要重写onMeasure方法并设置wrap_content时的自身大小，否则在布局中使用wrap_content就相当于使用match_parent。为什么呢？这个原因需要结合上述代码和表4-1才能更好地理解。从上述代码中我们知道，如果View在布局中使用wrap_content，那么它的specMode是AT_MOST模式，在这种模式下，它的宽/高等于specSize；查表4-1可知，这种情况下View的specSize是parentSize，而parentSize是父容器中目前可以使用的大小，也就是父容器当前剩余的空间大小。很显然，View的宽/高就等于父容器当前剩余的空间大小，这种效果和在布局中使用match_parent完全一致。如何解决这个问题呢？也很简单，代码如下所示。
     
        ```
-           protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+          protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
                int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -2154,7 +2163,6 @@
                mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;
              }
        ```
-     ```
     
        
     
@@ -2162,7 +2170,8 @@
     
        接下来，我们可以看一下LinearLayout的onLayout方法，如下所示。
     
-     ```
+    
+    
            protected void onLayout(boolean changed, int l, int t, int r, int b) {
              if (mOrientation == VERTICAL) {
                    layoutVertical(l, t, r, b);
@@ -2324,10 +2333,16 @@
     
        
 
+  * **requestLayout和invalidate区别**
+
+    
+
 * 参考资料
   
   * [Android自定义View教程目录](http://www.gcssloop.com/category/customview.html)
   * [《Android开发艺术探索》](http://static.kancloud.cn/alex_wsc/android_art/1828407)
+  * [比较一下requestLayout和invalidate方法](https://juejin.cn/post/6904518722564653070#heading-0)
+  * [invalidate、postInvalidate与requestLayout浅析](https://juejin.cn/post/6844903913196519431)
 
 
 
@@ -5374,7 +5389,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 * 知识点
   * 简介
 
-    * Observable/Observer
+    * Observable/Observer/Disposable
 
       ![img](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/afb793854f364a34a5321de53daa1361~tplv-k3u1fbpfcp-watermark.awebp)
 
@@ -5458,8 +5473,6 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
         
 
-    * 常用
-
   * 线程调度
 
     * subscribeOn / observeOn
@@ -5471,13 +5484,13 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
     * 线程类型
 
       | 类型                           | 含义                  | 应用场景                         |
-      | ------------------------------ | --------------------- | -------------------------------- |
+    | ------------------------------ | --------------------- | -------------------------------- |
       | Schedulers.immediate()         | 当前线程 = 不指定线程 | 默认                             |
       | AndroidSchedulers.mainThread() | Android主线程         | 操作UI                           |
       | Schedulers.newThread()         | 常规新线程            | 耗时等操作                       |
       | Schedulers.io()                | io操作线程            | 网络请求、读写文件等io密集型操作 |
       | Schedulers.computation()       | CPU计算操作线程       | 大量计算操作                     |
-
+  
       
 
   * 异常处理
@@ -5521,8 +5534,8 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
     * 处理方式：将缓存区大小设置成无限大
 
       > 即 被观察者可无限发送事件 观察者，但实际上是存放在缓存区
-      > 但要注意内存情况，防止出现OOM
-
+    > 但要注意内存情况，防止出现OOM
+  
     
 
     **模式4： BackpressureStrategy.DROP**
@@ -5552,9 +5565,9 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
   * 源码分析 - 查看次文章 [详解 RxJava 的消息订阅和线程切换原理](https://juejin.cn/post/6844903619947397134#heading-0)
 
     * 消息订阅
-    * 切断消息
+  * 切断消息
     * 线程切换
-
+  
 * 参考资料
   * [使用 - RxJava2 只看这一篇文章就够了](https://juejin.cn/post/6844903617124630535#heading-0)
   * [使用 - 给初学者的RxJava2.0教程](https://www.jianshu.com/c/299d0a51fdd4)
@@ -5846,38 +5859,37 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
      ```
 
      当我们启动`App`时，一般启动顺序为：`Application`->`attachBaseContext` =====>`ContentProvider`->`onCreate` =====>`Application`->`onCreate`
-      `ContentProvider`会在`Application.onCreate`前初始化，这样就调用到了`LeakCanary`的初始化方法
-      实现了免手动初始化
-
+      `ContentProvider`会在`Application.onCreate`前初始化，这样就调用到了`LeakCanary`的初始化方法实现了免手动初始化。
      
 
-     * 跨进程初始化
-
-       注意,`AppWatcherInstaller`有两个子类,`MainProcess`与`LeakCanaryProcess`
+     
+* 跨进程初始化
+     
+  注意,`AppWatcherInstaller`有两个子类,`MainProcess`与`LeakCanaryProcess`
         其中默认使用`MainProcess`,会在`App`进程初始化
         有时我们考虑到`LeakCanary`比较耗内存，需要在独立进程初始化
         使用`leakcanary-android-process`模块的时候，会在一个新的进程中去开启`LeakCanary`
-
-     * LeakCanary2.0手动初始化的方法
-
-       `LeakCanary`在检测内存泄漏时比较耗时，同时会打断`App`操作，在不需要检测时的体验并不太好
+     
+* LeakCanary2.0手动初始化的方法
+     
+  `LeakCanary`在检测内存泄漏时比较耗时，同时会打断`App`操作，在不需要检测时的体验并不太好
         所以虽然`LeakCanary`可以自动初始化，但我们有时其实还是需要手动初始化
-
-       `LeakCanary`的自动初始化可以手动关闭
-
-       ```xml
+     
+  `LeakCanary`的自动初始化可以手动关闭
+     
+  ```xml
         <?xml version="1.0" encoding="utf-8"?>
         <resources>
              <bool name="leak_canary_watcher_auto_install">false</bool>
         </resources>
        ```
-
-       1.然后在需要初始化的时候，调用`AppWatcher.manualInstall`即可
+     
+  1.然后在需要初始化的时候，调用`AppWatcher.manualInstall`即可
         2.是否开始`dump`与分析开头：`LeakCanary.config = LeakCanary.config.copy(dumpHeap = false)`
         3.桌面图标开头：重写`R.bool.leak_canary_add_launcher_icon`或者调用`LeakCanary.showLeakDisplayActivityLauncherIcon(false)`
-
      
 
+     
   3. LeakCanary如何检测内存泄漏?
 
      * 3.1 初始化的时候做了什么？（AppWatcher.manualInstall）
@@ -6051,18 +6063,17 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
             )
         }
        }
-       复制代码
        ```
-
-       1.如果`retainedObjectCount`数量大于0，则进行一次`GC`,避免额外的`Dump`
+       
+     1.如果`retainedObjectCount`数量大于0，则进行一次`GC`,避免额外的`Dump`
         2.默认情况下，如果`retainedReferenceCount<5`，不会进行`Dump`，节省资源
         3.如果两次`Dump`之间时间少于60s，也会直接返回，避免频繁`Dump`
         4.调用`heapDumper.dumpHeap()`进行真正的`Dump`操作
         5.`Dump`之后，要删除已经处理过了的引用
         6.调用`HeapAnalyzerService.runAnalysis`对结果进行分析
-
        
 
+       
      * 3.5 LeakCanary如何分析hprof文件
 
        分析`hprof`文件的工作主要是在`HeapAnalyzerService`类中完成的.
@@ -6075,6 +6086,15 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
         3.构建内存索引
         4.使用`hprof`对象和索引构建`Graph`对象
         5.查找可能泄漏的对象与`GCRoot`间的引用链来判断是否存在泄漏(使用广度优先算法在`Graph`中查找)
+       
+       
+       
+     * 3.6 泄漏结果存储与通知
+
+       结果的存储与通知主要在DefaultOnHeapAnalyzedListener中完成，主要做了两件事：
+
+       1.存储泄漏分析结果到数据库中
+       2.展示通知，提醒用户去查看内存泄漏情况
 
      
 
