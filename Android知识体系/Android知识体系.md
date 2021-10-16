@@ -1018,9 +1018,9 @@
       1. 使用DiffUtil、AsyncListDiffer计算数据集的变化，实现局部更新
       2. 使用`recyclerView.setHasFixedSize(true);` ，如果items是固定且不会发生变化，为什么？
 * 布局优化
-    
-
-    
+  
+  
+  
 * 源码分析
   
     * 知识点
@@ -2158,7 +2158,7 @@
                          }
                    }
                  }
-     
+        
                  mPrivateFlags &= ～PFLAG_FORCE_LAYOUT;
                mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;
              }
@@ -4159,7 +4159,108 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
 ### 功耗优化
 
+* **知识点**
 
+  * 电量检测的工具
+
+    1. Battery Historian
+
+    2. dumpsys batterystats
+
+       
+
+  * 如何进行电量优化
+
+    * 监控电池电量和充电电量
+
+      根据具体的业务，考虑将一些不需要及时地和用户交互的操作放到充电 的时候去做。
+
+      
+
+      `BatteryManager` 会在一个包含充电状态的粘性 `Intent` 中广播所有电池和充电详情。由于它是一个粘性 Intent，通过简单地调用 `registerReceiver` 传入 `null` 作为接收器来注册 `BroadcastReceiver`，便可返回当前电池状态 Intent。
+
+      ```java
+          IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+          Intent batteryStatus = context.registerReceiver(null, ifilter);
+      ```
+
+      可以提取当前充电状态，并且如果设备正在充电，则还可以提取设备是通过 USB 还是交流充电器进行充电。
+
+      ```java
+          // Are we charging / charged?
+          int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+          boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                               status == BatteryManager.BATTERY_STATUS_FULL;
+      
+          // How are we charging?
+          int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+          boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+          boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
+          
+      ```
+
+      监听电池变化，在清单中注册一个 `BroadcastReceiver`，通过在一个 Intent 过滤器内定义 `ACTION_POWER_CONNECTED` 和 `ACTION_POWER_DISCONNECTED` 来同时监听这两种事件。
+
+      ```java
+      <receiver android:name=".PowerConnectionReceiver">
+            <intent-filter>
+              <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+              <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+            </intent-filter>
+          </receiver>
+      ```
+
+      
+
+    * JobSchedule
+
+      JobScheduler 可以允许开发者在符合某些条件下创造执行在后台的任务，我们可以设置执行一些耗电操作的场景，比如说 处于 WIFI 状态下同时连接电源 的情况下。同时，要注意用户在离开界面后，要避免耗电的操作，比如说停止播放动画。通过这些操作，我们的 App 就不会比之前耗电了。
+
+      
+
+    * WakeLock
+
+      我们在实际项目中使用 WakeLock 有几个注意事项：
+
+      第一，acquire、release 要成对地释放，
+
+      第二，尽量使用 acquire 的超时方法来设置超时时间，避免因为异常情况从而导致 WakeLock 而无法释放的情况，
+
+      第三，关于 WakeLock 的释放一定要写在 try-catch-finally 的 finally 当中，保证 WakeLock 在异常情况下的释放。
+
+      
+
+    * 屏幕唤醒
+
+      根据自己的 APP 实际情况，根据业务来控制好是否保持屏幕常量
+
+      
+
+    * 灭屏时或不在前台时停止动画和刷新
+
+      
+
+    * GPS
+
+      根据场景谨慎选择定位模式：对定位准确度没那么高的场景可以选择低精度模式。
+
+      可以考虑网络定位代替 GPS。
+
+      及时注销定位监听。
+
+      
+
+    * 传感器
+
+      使用传感器，选择合适的采样率，越高的采样率类型则越费电。
+
+      
+
+* **参考资料**
+
+  * [监控电池电量和充电状态](https://developer.android.google.cn/training/monitoring-device-state/battery-monitoring#java)
+  * [深入探索 Android 电量优化](https://juejin.cn/post/6844904195523346439#heading-0)
+  * [Android电量优化全解析](https://juejin.cn/post/6844903779268034574#heading-0)
 
 
 
@@ -5484,7 +5585,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
     * 线程类型
 
       | 类型                           | 含义                  | 应用场景                         |
-    | ------------------------------ | --------------------- | -------------------------------- |
+      | ------------------------------ | --------------------- | -------------------------------- |
       | Schedulers.immediate()         | 当前线程 = 不指定线程 | 默认                             |
       | AndroidSchedulers.mainThread() | Android主线程         | 操作UI                           |
       | Schedulers.newThread()         | 常规新线程            | 耗时等操作                       |
@@ -5861,35 +5962,35 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
      当我们启动`App`时，一般启动顺序为：`Application`->`attachBaseContext` =====>`ContentProvider`->`onCreate` =====>`Application`->`onCreate`
       `ContentProvider`会在`Application.onCreate`前初始化，这样就调用到了`LeakCanary`的初始化方法实现了免手动初始化。
      
-
+     
      
 * 跨进程初始化
-     
+  
   注意,`AppWatcherInstaller`有两个子类,`MainProcess`与`LeakCanaryProcess`
         其中默认使用`MainProcess`,会在`App`进程初始化
         有时我们考虑到`LeakCanary`比较耗内存，需要在独立进程初始化
         使用`leakcanary-android-process`模块的时候，会在一个新的进程中去开启`LeakCanary`
-     
+  
 * LeakCanary2.0手动初始化的方法
-     
+  
   `LeakCanary`在检测内存泄漏时比较耗时，同时会打断`App`操作，在不需要检测时的体验并不太好
         所以虽然`LeakCanary`可以自动初始化，但我们有时其实还是需要手动初始化
-     
+  
   `LeakCanary`的自动初始化可以手动关闭
-     
+  
   ```xml
         <?xml version="1.0" encoding="utf-8"?>
         <resources>
              <bool name="leak_canary_watcher_auto_install">false</bool>
         </resources>
-       ```
-     
+  ```
+  
   1.然后在需要初始化的时候，调用`AppWatcher.manualInstall`即可
         2.是否开始`dump`与分析开头：`LeakCanary.config = LeakCanary.config.copy(dumpHeap = false)`
         3.桌面图标开头：重写`R.bool.leak_canary_add_launcher_icon`或者调用`LeakCanary.showLeakDisplayActivityLauncherIcon(false)`
-     
-
-     
+  
+  
+  
   3. LeakCanary如何检测内存泄漏?
 
      * 3.1 初始化的时候做了什么？（AppWatcher.manualInstall）
@@ -6065,19 +6166,20 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
        }
        ```
        
+  
      1.如果`retainedObjectCount`数量大于0，则进行一次`GC`,避免额外的`Dump`
         2.默认情况下，如果`retainedReferenceCount<5`，不会进行`Dump`，节省资源
         3.如果两次`Dump`之间时间少于60s，也会直接返回，避免频繁`Dump`
         4.调用`heapDumper.dumpHeap()`进行真正的`Dump`操作
         5.`Dump`之后，要删除已经处理过了的引用
         6.调用`HeapAnalyzerService.runAnalysis`对结果进行分析
-       
 
-       
+     
+  
      * 3.5 LeakCanary如何分析hprof文件
-
+  
        分析`hprof`文件的工作主要是在`HeapAnalyzerService`类中完成的.
-
+  
        解析流程如下所示:
         ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a9c48844833244c4957fe5a6eb04508c~tplv-k3u1fbpfcp-watermark.awebp)
         简要说下流程：
@@ -6090,21 +6192,21 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
        
        
      * 3.6 泄漏结果存储与通知
-
+  
        结果的存储与通知主要在DefaultOnHeapAnalyzedListener中完成，主要做了两件事：
-
+  
        1.存储泄漏分析结果到数据库中
        2.展示通知，提醒用户去查看内存泄漏情况
-
+  
      
-
+  
   4. 为什么LeakCanary不能用于线上?
-
+  
      * 每次内存泄漏以后，都会生成一个`.hprof`文件，然后解析，并将结果写入`.hprof.result`。增加手机负担，引起手机卡顿等问题。
      * 多次调用`GC`，可能会对线上性能产生影响
      * 同样的泄漏问题，会重复生成 `.hprof` 文件，重复分析并写入磁盘。
      * `.hprof`文件较大，信息回捞成问题。
-
+  
 * 参考资料
   
   * [【带着问题学】关于LeakCanary2.0你应该知道的知识点](https://juejin.cn/post/6968084138125590541)
