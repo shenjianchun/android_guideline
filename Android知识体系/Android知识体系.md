@@ -5490,7 +5490,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 * 知识点
   * 简介
 
-    * Observable/Observer/Disposable
+    * Observable/Observer/ObserableEmitter
 
       ![img](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/afb793854f364a34a5321de53daa1361~tplv-k3u1fbpfcp-watermark.awebp)
 
@@ -5586,12 +5586,12 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
       | 类型                           | 含义                  | 应用场景                         |
       | ------------------------------ | --------------------- | -------------------------------- |
-      | Schedulers.immediate()         | 当前线程 = 不指定线程 | 默认                             |
+      | Schedulers.trampoline()        | 当前线程 = 不指定线程 | 默认                             |
       | AndroidSchedulers.mainThread() | Android主线程         | 操作UI                           |
       | Schedulers.newThread()         | 常规新线程            | 耗时等操作                       |
       | Schedulers.io()                | io操作线程            | 网络请求、读写文件等io密集型操作 |
       | Schedulers.computation()       | CPU计算操作线程       | 大量计算操作                     |
-  
+
       
 
   * 异常处理
@@ -5636,7 +5636,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
       > 即 被观察者可无限发送事件 观察者，但实际上是存放在缓存区
     > 但要注意内存情况，防止出现OOM
-  
+
     
 
     **模式4： BackpressureStrategy.DROP**
@@ -5666,9 +5666,63 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
   * 源码分析 - 查看次文章 [详解 RxJava 的消息订阅和线程切换原理](https://juejin.cn/post/6844903619947397134#heading-0)
 
     * 消息订阅
-  * 切断消息
+
+      1. 总结一下流程：
+
+         1）Obserable 调用create方法，ObservableOnSubscribe作为上游参数，会创建出一个ObservableCreate类。而此处需要注意 Observable是一个抽象类，RxJava中的操作符都会对应一个`Observable`的子类，例如`ObservableCreate`、`ObservableFromCallable`等。
+
+         2）创建出对应的Obserable 后（此处为`ObservableCreate`），调用子类的subscribe()方法，会新创建出一个CreateEmitter发射器，此发射器实现了`Disposable`接口，所以也是一个`Disposable`对象，此发射器会同时传递给上游和下游，所以发射器其实是一个连接器。通过observer.onSubscribe(parent)把Emitter给Observer，添加监听者；通过source.subscribe(parent) 把将Emitter与ObservableOnSubscribe添加订阅。
+
+         3）在上游的subscribe的方法中通过调用emmiter的onNext或onComplete方法，然后emmiter会在内部传递给下游Observer来执行对应的方法。
+
+      ![Observable.create()时序图.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/12/163f3fc55ef0d5ef~tplv-t2oaga2asx-watermark.awebp)
+
+      ![订阅过程时序图.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/12/163f3fc55f4f9e71~tplv-t2oaga2asx-watermark.awebp)
+
+      
+
+    * 切断消息
+
+      1）Disposable是一个接口，可以理解Disposable为一个连接器，调用dispose()后，这个连接器将会中断。其具体实现在`CreateEmitter`类，所以看` CreateEmitter.dispose()` 即可。
+
+      2）在` CreateEmitter.dispose()` 只是调用了`DisposableHelper.dispose(this)` , DisposableHelper中有一个标识位来标识是否中断，通过isDisposed()来判断。
+
+      3）`CreateEmitter`类中的方法会通过isDisposed来进行判断是否发送，如果中断了就不会发送。所以onError 和 onComplete 是互斥的，因为他们发送之后会进行中断。
+
+      
+
     * 线程切换
-  
+
+      > `Observer`（观察者）的`onSubscribe()`方法运行在当前线程中。
+      >
+      > `Observable`（被观察者）中的`subscribe()`运行在`subscribeOn()`指定的线程中。
+      >
+      > `Observer`（观察者）的`onNext()`和`onComplete()`等方法运行在`observeOn()`指定的线程中。
+      >
+      > 
+      >
+      > 多次调用`subscribeOn()`，不断的进行封装，会从外向内不断调用，最终使用了第一次设置的线程。多次调用`observeOn` 则就以最后一次的为准。
+
+      1） subscribeOn()
+
+      ​      subscribeOn实际是创建了ObservableSubscribeOn的Observable，它的订阅方法里面创建了`SubscribeOnObserver`，通过线程池执行Runnable来达到上游Observable的订阅在子线程中执行
+
+      ​	![subscribeOn()切换线程时序图.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/12/163f3fc597417a8c~tplv-t2oaga2asx-watermark.awebp)
+
+      
+
+      2）observeOn()
+
+      ​     observeOn实际是创建了ObservableObserveOn的Observable，它的订阅方法里面创建了`ObserveOnObserver`，而`ObserveOnObserver`是实现了Runnable接口，把它包装成message给主线程的Handler发送一条消息，而`ObserveOnObserver`的run方法中会给下游的Observer发送数据。
+
+      
+
+      ![ObservableObserveOn.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/12/163f3fc59a40251e~tplv-t2oaga2asx-watermark.awebp)
+
+      
+
+      ![observeOn()时序图.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/12/163f3fc5bcad8321~tplv-t2oaga2asx-watermark.awebp)
+
 * 参考资料
   * [使用 - RxJava2 只看这一篇文章就够了](https://juejin.cn/post/6844903617124630535#heading-0)
   * [使用 - 给初学者的RxJava2.0教程](https://www.jianshu.com/c/299d0a51fdd4)
