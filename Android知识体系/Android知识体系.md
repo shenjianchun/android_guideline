@@ -977,7 +977,9 @@
 
   * Header & Footer
 
-    * 
+    * RecyclerView实现添加HeaderView和FooterView的核心就是在Adapter里面的onCreateViewHolder根据viewType来判断是列表项还是HeaderView、FooterView来分别加载不同的布局文件
+
+      
 
   * RecyelerView滑动
 
@@ -1014,7 +1016,7 @@
   * RecyclerView性能优化
 
     * 数据优化
-
+  
       1. 使用DiffUtil、AsyncListDiffer计算数据集的变化，实现局部更新
       2. 使用`recyclerView.setHasFixedSize(true);` ，如果items是固定且不会发生变化，为什么？
 * 布局优化
@@ -1036,7 +1038,6 @@
   * [Android 优雅的为RecyclerView添加HeaderView和FooterView](http://blog.csdn.net/lmj623565791/article/details/51854533)
   * [[CodePath\] Implementing Pull to Refresh Guide](http://guides.codepath.com/android/Implementing-Pull-to-Refresh-Guide)
   * [[CodePath\]Endless Scrolling with AdapterViews and RecyclerView (Infinite pagination)](http://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews-and-RecyclerView)
-  * [RecyclerView 实现下拉刷新和自动加载](http://www.jianshu.com/p/4feb0c16d1b5)
   * [你必须了解的RecyclerView的五大开源项目-解决上拉加载、下拉刷新和添加Header、Footer等问题](http://blog.csdn.net/mynameishuangshuai/article/details/51153978)
   * [深入理解 RecyclerView 的缓存机制](https://juejin.cn/post/6844904146684870669)
   * [RecyclerView问题汇总](https://juejin.cn/post/6844903837724213256)
