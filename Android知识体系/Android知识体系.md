@@ -276,6 +276,14 @@
 
 
 
+* Binder 和 Intent传递的数据大小
+
+  Binder 事务缓冲区的大小固定有限，目前为 1MB，由进程中正在处理的所有事务共享。由于此限制是进程级别而不是 Activity 级别的限制，因此这些事务包括应用中的所有 binder 事务，例如 onSaveInstanceState，startActivity 以及与系统的任何互动。超过大小限制时，将引发TransactionTooLargeException。
+
+  参考：[intent传递数据大小限制](https://www.jianshu.com/p/2182ae72e56b) 、[Parcelable 和 Bundle - 官网](https://developer.android.google.cn/guide/components/activities/parcelables-and-bundles?hl=zh-cn)
+
+
+
 
 #### Binder
 
@@ -838,6 +846,16 @@
 
       3. 如何自定义LayoutManager
 
+         1）重写generateDefaultLayoutParams()
+
+         2）重写 onLayoutChildren()
+
+         3）重写 canScrollVertically() 或者 canScrollHorizontally()
+
+         4）重写 scrollHorizontallyBy() 或者 scrollVerticallyBy()
+
+         
+
       4. setLayoutManager源码里做了什么？
 
       
@@ -847,9 +865,9 @@
       1. ViewHolder的作用
 
       2. ViewHolder如何复用
-
+  
          
-
+  
     * RecyclerView.ItemDecoration
 
       1. ItemDecoration的作用，本质是一个Drawable
@@ -857,61 +875,63 @@
       2. 如何使用ItemDecoration
 
          ```java
-         mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+       mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                       mLayoutManager.getOrientation());
-         recyclerView.addItemDecoration(mDividerItemDecoration);
+       recyclerView.addItemDecoration(mDividerItemDecoration);
          ```
 
          
-
+  
       3. 自定义ItemDecoration有哪些重写方法？
-
-         
-
-    * RecyclerView.ItemAnimator  动效
-
-      1. 如何使用ItemAnimator  
-
-         ```java
+  
+       
+  
+  * RecyclerView.ItemAnimator  动效
+  
+    1. 如何使用ItemAnimator  
+  
+       ```java
          //设置默认的动画模式
-         recyclerView.setItemAnimator(new DefaultItemAnimator());
-         ```
+       recyclerView.setItemAnimator(new DefaultItemAnimator());
+       ```
 
       2. ItemAnimator  中的几个重要方法
-
+  
          
-
+  
   * 点击&长按&选择|多选
-
+  
     * Item的Touch事件
-
+  
       1. `RecyclerView.OnItemTouchListener`
-
+  
       ```
       recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
       
           @Override
           public void onTouchEvent(RecyclerView recycler, MotionEvent event) {
-              // Handle on touch events here
+            // Handle on touch events here
           }
-      
+  
           @Override
-          public boolean onInterceptTouchEvent(RecyclerView recycler, MotionEvent event) {
+        public boolean onInterceptTouchEvent(RecyclerView recycler, MotionEvent event) {
               return false;
-          }
+        }
       
-      });
       ```
-
+  
+    });
+      ```
+    
       
-
+    
     * Item的click事件 和 longClick事件
-
+    
       1. Attaching Click Listeners with Decorators
-
+    
          RecyclerView is to add a decorator class such as [this clever `ItemClickSupport` decorator](https://gist.github.com/nesquena/231e356f372f214c4fe6) and then implement the following code in your Activity or Fragment code:
-
-         ```
+    
+      ```
          public class PostsFragment extends Fragment {
              // ...
          
@@ -924,21 +944,22 @@
                          new ItemClickSupport.OnItemClickListener() {
                              @Override
                              public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                                 // do stuff
+                               // do stuff
                              }
-                         }
+                       }
                  );
-         
+           
              }
          
              // ...
          }
          ```
-
-         
-
+  
+  
+    ​     
+  
       2. Simple Click Handler within ViewHolder
-
+  
          ```
              // Used to cache the views within the item layout for fast access
              public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -958,68 +979,75 @@
          
                  // Handles the row being being clicked
                  @Override
-                 public void onClick(View view) {
+               public void onClick(View view) {
                      int position = getAdapterPosition(); // gets item position
-                     if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+                   if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
                          User user = users.get(position);
-                         // We can access the data within the views
+                       // We can access the data within the views
                          Toast.makeText(context, tvName.getText(), Toast.LENGTH_SHORT).show();
-                     }
-                 }
-             }
-         ```
-
-         
-
-    * Item的选择和多选
-
-      
-
-  * Header & Footer
-
-    * RecyclerView实现添加HeaderView和FooterView的核心就是在Adapter里面的onCreateViewHolder根据viewType来判断是列表项还是HeaderView、FooterView来分别加载不同的布局文件
-
-      
-
-  * RecyelerView滑动
-
-    * 下拉刷新 & 加载更多
-
-      1. 下拉刷新如何实现？
-
-         
-
-      2. 上拉加载更多如何实现？
-
-         1） 使用  [EndlessRecyclerViewScrollListener.java](https://gist.github.com/nesquena/d09dc68ff07e845cc622) 
-
-         
-
-    * SnapHelper
-
-      1. SnapHelper的作用
-
-         在某些场景下，卡片列表滑动浏览[有的叫轮播图]，希望当滑动停止时可以将当前卡片停留在屏幕某个位置，比如停在左边，以吸引用户的焦点。那么可以使用RecyclerView + Snaphelper来实现
-
-      2. SnapHelper是怎么让RecyclerView对齐的？
-
+                   }
+               }
+           }
+       ```
+  
+       
+  
+  * Item的选择和多选
+  
+    
+  
+* Header & Footer
+  
+  * RecyclerView实现添加HeaderView和FooterView的核心就是在Adapter里面的onCreateViewHolder根据viewType来判断是列表项还是HeaderView、FooterView来分别加载不同的布局文件
+  
+    
+  
+* RecyelerView滑动
+  
+  * 下拉刷新 & 加载更多
+  
+    1. 下拉刷新如何实现？
+  
+       
+  
+    2. 上拉加载更多如何实现？
+  
+       1） 使用  [EndlessRecyclerViewScrollListener.java](https://gist.github.com/nesquena/d09dc68ff07e845cc622) 
+  
+       
+  
+  * SnapHelper
+  
+    1. SnapHelper的作用
+  
+       在某些场景下，卡片列表滑动浏览[有的叫轮播图]，希望当滑动停止时可以将当前卡片停留在屏幕某个位置，比如停在左边，以吸引用户的焦点。那么可以使用RecyclerView + Snaphelper来实现
+  
+    2. SnapHelper是怎么让RecyclerView对齐的？
+  
       3. LinearSnapHelper & PagerSnapHelper
-
+  
     * 滑动冲突
-
+  
       
-
+  
   * 缓存（四级缓存）
-
-    ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62aee1745ef7435bb93293bc49aafbcf~tplv-k3u1fbpfcp-watermark.awebp)
-
+  
+    <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62aee1745ef7435bb93293bc49aafbcf~tplv-k3u1fbpfcp-watermark.awebp" alt="img" style="zoom:80%;" />
+  
+    ![缓存获取流程](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/5/3/171d878fdd157587~tplv-t2oaga2asx-watermark.awebp)
+  
+    
+  
   * RecyclerView性能优化
-
+  
     * 数据优化
   
       1. 使用DiffUtil、AsyncListDiffer计算数据集的变化，实现局部更新
       2. 使用`recyclerView.setHasFixedSize(true);` ，如果items是固定且不会发生变化，为什么？
-* 布局优化
+      
+    * 布局优化
+    
+      性能优化的本质就是要减少这两个函数（onCreateViewHolder，onBindViewHolder）的调用时间和调用的次数。
   
   
   
@@ -2989,7 +3017,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
 ### MMKV
 
-
+MMKV——基于 mmap 的高性能通用 key-value 组件。
 
 
 
@@ -3755,10 +3783,10 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
     * Memory profile ([使用内存性能分析器查看应用的内存使用情况](https://developer.android.google.cn/studio/profile/memory-profiler?hl=zh-cn))
 
       > 内存计数中的类别如下：
-    >
+      >
       > - **Java**：从 Java 或 Kotlin 代码分配的对象的内存。
       >
-    > - **Native**：从 C 或 C++ 代码分配的对象的内存。
+      > - **Native**：从 C 或 C++ 代码分配的对象的内存。
       >
       >   即使您的应用中不使用 C++，您也可能会看到此处使用了一些原生内存，因为即使您编写的代码采用 Java 或 Kotlin 语言，Android 框架仍使用原生内存代表您处理各种任务，如处理图像资源和其他图形。
       >
@@ -3766,13 +3794,13 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
       >
       > - **Stack**：您的应用中的原生堆栈和 Java 堆栈使用的内存。这通常与您的应用运行多少线程有关。
       >
-    > - **Code**：您的应用用于处理代码和资源（如 dex 字节码、经过优化或编译的 dex 代码、.so 库和字体）的内存。
+      > - **Code**：您的应用用于处理代码和资源（如 dex 字节码、经过优化或编译的 dex 代码、.so 库和字体）的内存。
       >
-    > - **Others**：您的应用使用的系统不确定如何分类的内存。
+      > - **Others**：您的应用使用的系统不确定如何分类的内存。
       >
-    > - **Allocated**：您的应用分配的 Java/Kotlin 对象数。此数字没有计入 C 或 C++ 中分配的对象。
+      > - **Allocated**：您的应用分配的 Java/Kotlin 对象数。此数字没有计入 C 或 C++ 中分配的对象。
       >
-    >   如果连接到搭载 Android 7.1 及更低版本的设备，只有在内存性能分析器连接到您运行的应用时，才开始此分配计数。因此，您开始分析之前分配的任何对象都不会被计入。但是，Android 8.0 及更高版本附带一个设备内置性能剖析工具，该工具可跟踪所有分配，因此，在 Android 8.0 及更高版本上，此数字始终表示您的应用中待处理的 Java 对象总数。
+      >   如果连接到搭载 Android 7.1 及更低版本的设备，只有在内存性能分析器连接到您运行的应用时，才开始此分配计数。因此，您开始分析之前分配的任何对象都不会被计入。但是，Android 8.0 及更高版本附带一个设备内置性能剖析工具，该工具可跟踪所有分配，因此，在 Android 8.0 及更高版本上，此数字始终表示您的应用中待处理的 Java 对象总数。
 
     * MAT
 
@@ -4287,9 +4315,43 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
     * 第一种：代码中添加：**Debug.startMethodTracing()、检测方法、Debug.stopMethodTracing()**。（需要**使用adb pull将生成的**.trace文件导出到电脑，然后使用Android Studio的Profiler进行加载）
     * 第二种：打开 **Profiler  ->  CPU   ->    点击 Record   ->  点击 Stop  ->  查看Profiler下方Top Down/Bottom Up 区域**，以找出**耗时的热点方法**。
 
+    
+
   * Systrace
 
+    * 如何捕捉系统跟踪记录
     
+      1. 通过python命令systrace
+    
+      2. 使用Android Device Monitor
+    
+      3. System Tracing 的系统级应用，要求 Android 9（API 级别 28）或更高版本的设备，在**开发者选项** -> 调试 中
+    
+         
+    
+    * 系统跟踪分析工具
+    
+      1. Systrace 是平台提供的旧版命令行工具，可记录短时间内的设备活动，并保存在压缩的文本文件中。该工具会生成一份报告，其中汇总了 Android 内核中的数据，例如 CPU 调度程序、磁盘活动和应用线程。
+    
+      2. Perfetto 是 Android 10 中引入的全新平台级跟踪工具。这是适用于 Android、Linux 和 Chrome 的更加通用和复杂的开源跟踪项目。与 Systrace 不同，它提供数据源超集，可让您以 protobuf 编码的二进制流形式记录任意长度的跟踪记录。
+    
+      
+    
+    * 浏览Systrace报告
+    
+      1. 用户互动
+    
+      2. CPU活动
+    
+      3. 系统事件 （SurfaceFlinger、Input事件）
+    
+      4. 显示帧 （显示线程状态）
+    
+      5. 检查界面帧和提醒
+    
+         
+    
+    * 举例？
 
 * 参考资料
 
@@ -4448,7 +4510,7 @@ DataStore 提供两种不同的实现：Preferences DataStore 和 Proto DataStor
 
       ABI是英文Application Binary Interface的缩写，即应用二进制接口。
 
-      不同Android设备，使用的CPU架构可能不同，因此支持不同的指令集。 CPU 与指令集的每种组合都有其自己的应用二进制界面（或 ABI）,ABI非常精确地定义了应用程序的机器代码应如何在运行时与系统交互。您必须为要与您的应用程序一起使用的每种CPU架构指定一个ABI（Application Binary Interface）。
+      不同Android设备，使用的CPU架构可能不同，因此支持不同的指令集。 CPU 与指令集的每种组合都有其自己的应用二进制接口（或 ABI）,ABI非常精确地定义了应用程序的机器代码应如何在运行时与系统交互。您必须为要与您的应用程序一起使用的每种CPU架构指定一个ABI（Application Binary Interface）。
 
       ABI 包含以下信息：
 
