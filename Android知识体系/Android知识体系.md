@@ -4730,8 +4730,8 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
              /* ThreadLocal values pertaining to this thread. This map is maintained
               * by the ThreadLocal class. */
              ThreadLocal.ThreadLocalMap threadLocals = null;
-         ```
-         
+  ```
+  
   ```
          
          //ThreadLocalMap构造方法
@@ -4745,8 +4745,8 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
                  size = 1;
                  setThreshold(INITIAL_CAPACITY);
          }
-         ```
-         
+  ```
+  
 
   * 消息队列MessageQueue的工作原理
 
@@ -5279,7 +5279,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
     * 在WMS中添加Window的过程
 
-       请求WMS添加Window，mWindowManager.addView(mview, wmParams)   ->  WindowManagerImpl.addView  -> WindowManagerGlobal.addView -> 创建ViewRootImpl ->  ViewRootImpl.setView ->  IWindowSession.addtoDisplay（ViewRootImpl中有一个W变量，为Window的服务端会传递到WMS的WindowState中，用于WMS来通知APP）->  WMS.addWindow (新建WindowToken、WindowState，并将两个相关联，如果是APP则是创建AppWindowToken，不同的窗口对应不同的Token类型)  ->  在WindowState对象创建后会利用 win.attach()函数为当前APP申请建立SurfaceFlinger的链接（WindowSession中一个SF的代理SurfaceSession） ->  在APP的performTraversals、relayoutWindow会时，调用mWindowSession.relayout向WMS申请或者更新Surface  ->  SurfaceComposerClient.createSurface（通过SF连创建填充Surface） -> WMS将Surface和SurfaceComposerClient封装成SurfaceControl返回给APP
+       请求WMS添加Window，mWindowManager.addView(mview, wmParams)   ->  WindowManagerImpl.addView  -> WindowManagerGlobal.addView -> 创建ViewRootImpl ->  ViewRootImpl.setView ->  IWindowSession.addtoDisplay（ViewRootImpl中有一个W变量，为Window的服务端会传递到WMS的WindowState中，用于WMS来通知APP）->  WMS.addWindow (新建WindowToken、WindowState，并将两个相关联，如果是APP则是创建AppWindowToken，不同的窗口对应不同的Token类型)  ->  在WindowState对象创建后会利用 win.attach()函数为当前APP申请建立SurfaceFlinger的链接（IWindowSession中一个SF的代理SurfaceSession） ->  在APP的performTraversals、relayoutWindow会时，调用mWindowSession.relayout向WMS申请或者更新Surface  ->  SurfaceComposerClient.createSurface（通过SF连创建填充Surface） -> WMS将Surface和SurfaceComposerClient封装成SurfaceControl返回给APP
 
       
 
@@ -5346,7 +5346,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
   
   * Surafe的创建流程；Surface、Canvas、Layer的关系；
   
-    ViewRootImpl创建Surface（空） -> setContentView  -> WMS.addWindow()  ，同时创建WindowState，与SurfaceFlinger建立关系，创建真正的Surface（SurfaceControl）返回给ViewRootImpl。
+    ViewRootImpl创建SurfaceControl（空） -> setContentView  -> WMS.addWindow()  ，同时创建WindowState与WindowStateAnimator，与SurfaceFlinger建立关系，创建真正的Surface（SurfaceControl）返回给ViewRootImpl。
   
     ![img](https://img2018.cnblogs.com/blog/821933/201907/821933-20190730200725525-636751839.png)
   
