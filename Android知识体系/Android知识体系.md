@@ -959,7 +959,7 @@
     ​     
   
       2. Simple Click Handler within ViewHolder
-  
+      
          ```
              // Used to cache the views within the item layout for fast access
              public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -990,7 +990,8 @@
            }
        ```
   
-       
+  
+  ​     
   
   * Item的选择和多选
   
@@ -4720,19 +4721,18 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
       1. ThreadLocal是一个泛型，只需要弄清楚 ThreadLocalMap
 
-      2. ThreadLocalMap，在Thread中有一个threadLocals的变量来存储数据。ThreadLocalMap中通过table数组变量进行存储，而table的索引在set的时候会通过算法计算出来。
+      2. ThreadLocalMap，在Thread中有一个threadLocals的变量来存储数据。ThreadLocalMap中通过table数组变量进行存储，而table的索引在set的时候会通过算法计算出来。（table默认大小为16）
 
          * 对于某一ThreadLocal来讲，他的索引值是确定的，在不同线程之间访问时访问的是不同的table数组的同一位置即都为table[i]，只不过这个不同线程之间的table是独立的。
-
-         * 对于同一线程的不同ThreadLocal来讲，这些ThreadLocal实例共享一个table数组，然后每个ThreadLocal实例在table中的索引i是不同的。
-
-         ```
+  * 对于同一线程的不同ThreadLocal来讲，这些ThreadLocal实例共享一个table数组，然后每个ThreadLocal实例在table中的索引i是不同的。
+         
+  ```
              /* ThreadLocal values pertaining to this thread. This map is maintained
               * by the ThreadLocal class. */
              ThreadLocal.ThreadLocalMap threadLocals = null;
          ```
-
-         ```
+         
+  ```
          
          //ThreadLocalMap构造方法
          ThreadLocalMap(ThreadLocal<?> firstKey, Object firstValue) {
@@ -4746,7 +4746,6 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
                  setThreshold(INITIAL_CAPACITY);
          }
          ```
-
          
 
   * 消息队列MessageQueue的工作原理
@@ -4917,6 +4916,10 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
   * 在子线程中更新UI
 
+    1. Handler 和 Message
+    2. runOnUIThread
+    3. View.post()
+
 * 参考资料
 
   * 《Android开发艺术探索》
@@ -4981,7 +4984,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
   
       3. InputReader通过EventHub的getEvents函数获取事件信息，如果是原始输入事件，就将这些原始输入事件交由不同的InputMapper来处理，最终交由InputDispatcher来进行分发。
   
-      4. InputDispatcher的notifyKey函数中会根据按键数据来判断InputDispatcher是否要被唤醒，InputDispatcher被唤醒后，会重新调用dispatchOnceInnerLocked函数将输入事件分发给合适的Window。
+      4. InputReader的notifyKey函数中会根据按键数据来判断InputDispatcher是否要被唤醒，InputDispatcher被唤醒后，会重新调用dispatchOnceInnerLocked函数将输入事件分发给合适的Window。
   
          ![](https://s2.ax1x.com/2019/05/27/VZ4ac9.png)
   
@@ -5126,7 +5129,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
     * 参考资料
 
       * [基于Android10的Service的启动流程](https://blog.csdn.net/chishi199433/article/details/103891219)
-    * [Service的启动流程——基于Android11](https://blog.csdn.net/qq_26498311/article/details/116980167)
+      * [Service的启动流程——基于Android11](https://blog.csdn.net/qq_26498311/article/details/116980167)
   
   * Broadcast的启动流程
 
@@ -5300,6 +5303,18 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
       
     * StartingWindow分析
 
+      **启动流程**
+      
+      ![img](https://upload-images.jianshu.io/upload_images/2828107-49dd85bab26d5042.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+      
+      ![img](https://upload-images.jianshu.io/upload_images/2828107-026caae8f143fb4d.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+      
+      
+      
+      **移除流程**
+      
+      ![img](https://upload-images.jianshu.io/upload_images/2828107-9fc26e42f1ea27eb.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+      
       
 
 * 参考资料
@@ -5312,6 +5327,8 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
   * [android window(三)lWindow添加流程](https://www.cnblogs.com/mingfeng002/p/10948732.html)
   
   * [Android应用启动界面分析（Starting Window）](https://blog.csdn.net/xueshanhaizi/article/details/51262528)
+  
+  * [四大组件之Activity（二）-StartingWindow流程分析](https://www.jianshu.com/p/9740ab570df7)
   
     
 
