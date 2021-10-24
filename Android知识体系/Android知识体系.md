@@ -912,7 +912,7 @@
           public void onTouchEvent(RecyclerView recycler, MotionEvent event) {
             // Handle on touch events here
           }
-  
+      
           @Override
         public boolean onInterceptTouchEvent(RecyclerView recycler, MotionEvent event) {
               return false;
@@ -3231,14 +3231,20 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 * [学习Android Jetpack? 实战和教程这里全都有！](https://juejin.cn/post/6844903889574051848)
 * [【AAC 系列二】深入理解架构组件的基石：Lifecycle](https://juejin.cn/post/6844903842589442062)
 * [“终于懂了“系列：Jetpack AAC完整解析（一）Lifecycle 完全掌握！](https://juejin.cn/post/6893870636733890574)
+* [ViewModel原理分析](https://www.jianshu.com/p/e5c363255617)
 
 
 
 ### MVVM
 
 * 知识点
+
+  **View: **对应于Activity和XML，负责View的绘制以及与用户交互。 **Model: **实体模型。 **ViewModel: **负责完成View与Model间的交互，负责业务逻辑。
+
+  
+
 * 参考资料
-  *  [如何构建Android MVVM 应用框架](https://tech.meituan.com/2016/11/11/android-mvvm.html)
+  *  [如何构建Android MVVM 应用框架](https://zhuanlan.zhihu.com/p/23772285)
 
 
 
