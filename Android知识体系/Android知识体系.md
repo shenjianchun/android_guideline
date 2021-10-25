@@ -1436,7 +1436,7 @@
     * 应用内悬浮窗
     * addContentView实现
     * 应用外悬浮窗(有局限性)
-      * 需要申请权限 并且在Service中添加
+    * 需要申请权限 并且在Service中添加
     * 无障碍悬浮窗
 
 * 参考资料
@@ -1473,7 +1473,7 @@
     
 
     2. MotionEvent中的方法
-     * getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离
+       * getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离
        * getY()：获取点击事件相对控件顶边的y轴坐标，即点击事件距离控件顶边的距离
        * getRawX()：获取点击事件相对整个屏幕左边的x轴坐标，即点击事件距离整个屏幕左边的距离
        * getRawY()：获取点击事件相对整个屏幕顶边的y轴坐标，即点击事件距离整个屏幕顶边的距离
@@ -1713,7 +1713,7 @@
         大概的处理流程：
 
         - `ACTION_DOWN`这个事件,父容器必须返回false, 即不拦截`ACTION_DOWN`事件, 因为一旦父容器拦截了这个事件, 那么后续的`ACTION_MOVE`,`ACTION_UP`事件都会交由父容器来处理了. 这个时候这个**事件序列**剩余部分无法传递给子元素了.
-      - `ACTION_MOVE`这个事件,就可以根据实际的需求来决定是否需要拦截. 如果需要拦截就返回true.否则false.
+        - `ACTION_MOVE`这个事件,就可以根据实际的需求来决定是否需要拦截. 如果需要拦截就返回true.否则false.
         - `ACTION_UP`这个事件必须返回false, 因为`ACTION_UP`事件本身没有太多意义.
 
       * 内部拦截法
@@ -1725,7 +1725,7 @@
         子View中的`dispatchTouchEvent()`进行复写.
 
         - `ACTION_DOWN`事件中: 让父容器拒绝拦截所有事件, 调用`parent.requestDisallowInterceptTouchEvent(true)`
-      - `ACTION_MOVE`事件中: 进行条件的拦截判断, 如果在某一种场景需要拦截,那么就调用方法允许父容器拦截事件.
+        - `ACTION_MOVE`事件中: 进行条件的拦截判断, 如果在某一种场景需要拦截,那么就调用方法允许父容器拦截事件.
         - `return` 时, 调用`super.dispatchTouchEvent(event)`
 
         父容器的`onInterceptTouchEvent()`进行`ACTION_DOWN`返回false, 其余都是返回true的复写.
@@ -3244,6 +3244,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
   
 
 * 参考资料
+  
   *  [如何构建Android MVVM 应用框架](https://zhuanlan.zhihu.com/p/23772285)
 
 
@@ -5446,7 +5447,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
     ### MAIN
 
-    在`Android`上，用户将在`Android`的主线程（`UI`线程）中被调用。如果发布线程是主线程，则将直接调用订阅方方法，从而阻塞发布线程。否则，事件将排队等待传递（非阻塞）。使用此模式的订阅服务器必须快速返回，以避免阻塞主线程。如果不在`Android`上，则行为与`POSTING`相同。
+    在主线程中执行响应方法。如果发布线程就是主线程，则直接调用订阅者的事件响应方法，否则通过主线程的 Handler 发送消息在主线程中处理——调用订阅者的事件响应函数。显然，`MainThread`类的方法也不能有耗时操作，以避免卡主线程。适用场景：**必须在主线程执行的操作**；
 
     ### MAIN_ORDERED
 
@@ -5454,11 +5455,13 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
     ### BACKGROUND
 
-    在`Android`上，用户将在后台线程中被调用。如果发布线程不是主线程，则将在发布线程中直接调用订阅方方法。如果发布线程是主线程，则`EventBus`使用单个后台线程，该线程将按顺序传递其所有事件。使用此模式的订阅服务器应尝试快速返回，以避免阻塞后台线程。如果不在`Android`上，则始终使用后台线程。
+    在后台线程中执行响应方法。如果发布线程**不是**主线程，则直接调用订阅者的事件响应函数，否则启动**唯一的**后台线程去处理。由于后台线程是唯一的，当事件超过一个的时候，它们会被放在队列中依次执行，因此该类响应方法虽然没有`PostThread`类和`MainThread`类方法对性能敏感，但最好不要有重度耗时的操作或太频繁的轻度耗时操作，以造成其他操作等待。适用场景：*操作轻微耗时且不会过于频繁*，即一般的耗时操作都可以放在这里；
+
+    
 
     ### ASYNC
-
-    订阅服务器将在单独的线程中调用这始终独立于发布线程和主线程。发布事件从不等待使用此模式的订阅服务器方法。如果订阅方法的执行可能需要一些时间（例如，用于网络访问），则应使用此模式。避免同时触发大量长时间运行的异步订阅服务器方法来限制并发线程的数量。`EventBus`使用线程池有效地重用来自已完成的异步订阅服务器通知的线程。
+    
+    不论发布线程是否为主线程，都使用一个空闲线程来处理。和`BackgroundThread`不同的是，`Async`类的所有线程是相互独立的，因此不会出现卡线程的问题。适用场景：*长耗时操作，例如网络访问*。
 
 
 ​    
@@ -5517,7 +5520,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
     * EventBus是如何进行线程间切换的？
 
-      在`postToSubscription`时会更加ThreadMode来调用订阅者的方法，策略如上面的5种线程模型里面所写。切换到主线程会使用到mainThreadPoster，在构造函数中会初始化，其实就是一个主线程的Handler；切换到后台线程会使用到 backgroundPoster，是使用了线程池来执行。asyncPoster 和 backgroundPoster类似，也是使用了线程池来执行。
+      在`postToSubscription`时会根据ThreadMode来调用订阅者的方法，策略如上面的5种线程模型里面所写。切换到主线程会使用到mainThreadPoster，在构造函数中会初始化，其实就是一个主线程的Handler；切换到后台线程会使用到 backgroundPoster，是使用了线程池来执行。asyncPoster 和 backgroundPoster类似，也是使用了线程池来执行。
 
       ```java
           private void postToSubscription(Subscription subscription, Object event, boolean isMainThread) {
@@ -6112,241 +6115,240 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
         使用`leakcanary-android-process`模块的时候，会在一个新的进程中去开启`LeakCanary`
   
 * LeakCanary2.0手动初始化的方法
-  
-  `LeakCanary`在检测内存泄漏时比较耗时，同时会打断`App`操作，在不需要检测时的体验并不太好
-        所以虽然`LeakCanary`可以自动初始化，但我们有时其实还是需要手动初始化
-  
+
+  `LeakCanary`在检测内存泄漏时比较耗时，同时会打断`App`操作，在不需要检测时的体验并不太好，所以虽然`LeakCanary`可以自动初始化，但我们有时其实还是需要手动初始化
+
   `LeakCanary`的自动初始化可以手动关闭
-  
+
   ```xml
         <?xml version="1.0" encoding="utf-8"?>
         <resources>
              <bool name="leak_canary_watcher_auto_install">false</bool>
         </resources>
   ```
+
+  1. 然后在需要初始化的时候，调用`AppWatcher.manualInstall`即可
+  2. 是否开始`dump`与分析开头：`LeakCanary.config = LeakCanary.config.copy(dumpHeap = false)`
+  3. 桌面图标开头：重写`R.bool.leak_canary_add_launcher_icon`或者调用`LeakCanary.showLeakDisplayActivityLauncherIcon(false)`
+
   
-  1.然后在需要初始化的时候，调用`AppWatcher.manualInstall`即可
-        2.是否开始`dump`与分析开头：`LeakCanary.config = LeakCanary.config.copy(dumpHeap = false)`
-        3.桌面图标开头：重写`R.bool.leak_canary_add_launcher_icon`或者调用`LeakCanary.showLeakDisplayActivityLauncherIcon(false)`
-  
-  
-  
-  3. LeakCanary如何检测内存泄漏?
 
-     * 3.1 初始化的时候做了什么？（AppWatcher.manualInstall）
+* LeakCanary如何检测内存泄漏?
 
-       ```kotlin
-         @JvmOverloads
-         fun manualInstall(
-           application: Application,
-           retainedDelayMillis: Long = TimeUnit.SECONDS.toMillis(5),
-           watchersToInstall: List<InstallableWatcher> = appDefaultWatchers(application)
-         ) {
-           ....
-           watchersToInstall.forEach {
-             it.install()
-           }
-         }
-       
-         fun appDefaultWatchers(
-           application: Application,
-           reachabilityWatcher: ReachabilityWatcher = objectWatcher
-         ): List<InstallableWatcher> {
-           return listOf(
-             ActivityWatcher(application, reachabilityWatcher),
-             FragmentAndViewModelWatcher(application, reachabilityWatcher),
-             RootViewWatcher(reachabilityWatcher),
-             ServiceWatcher(reachabilityWatcher)
-           )
-         }
-       
-       ```
+  * 3.1 初始化的时候做了什么？（AppWatcher.manualInstall）
 
-       可以看出，初始化时即安装了一些`Watcher`，即在默认情况下，我们只会观察`Activity`,`Fragment`,`RootView`,`Service`这些对象是否泄漏
-       如果需要观察其他对象，需要手动添加并处理
-
-     * 3.2 LeakCanary如何触发检测?
-
-       如上文所述，在初始化时会安装一些`Watcher`，我们以`ActivityWatcher`为例
-
-       ```kotlin
-       class ActivityWatcher(
-         private val application: Application,
-         private val reachabilityWatcher: ReachabilityWatcher
-       ) : InstallableWatcher {
-       
-         private val lifecycleCallbacks =
-           object : Application.ActivityLifecycleCallbacks by noOpDelegate() {
-             override fun onActivityDestroyed(activity: Activity) {
-               reachabilityWatcher.expectWeaklyReachable(
-                 activity, "${activity::class.java.name} received Activity#onDestroy() callback"
-               )
-             }
-           }
-       
-         override fun install() {
-           application.registerActivityLifecycleCallbacks(lifecycleCallbacks)
-         }
-       
-         override fun uninstall() {
-           application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks)
-         }
-       }
-       ```
-
-       可以看到在`Activity.onDestory`时，就会触发检测内存泄漏
-
-       
-
-     * 3.3 LeakCanary如何检测可能泄漏的对象?
-
-       从上面可以看出，`Activity`关闭后会调用到`ObjectWatcher.expectWeaklyReachable`
-
-       ```kotlin
-       @Synchronized override fun expectWeaklyReachable(
-           watchedObject: Any,
-           description: String
-         ) {
-           if (!isEnabled()) {
-             return
-           }
-           removeWeaklyReachableObjects()
-           val key = UUID.randomUUID()
-             .toString()
-           val watchUptimeMillis = clock.uptimeMillis()
-           val reference =
-             KeyedWeakReference(watchedObject, key, description, watchUptimeMillis, queue)
-           SharkLog.d {
-             "Watching " +
-               (if (watchedObject is Class<*>) watchedObject.toString() else "instance of ${watchedObject.javaClass.name}") +
-               (if (description.isNotEmpty()) " ($description)" else "") +
-               " with key $key"
-           }
-       
-           watchedObjects[key] = reference
-           checkRetainedExecutor.execute {
-             moveToRetained(key)
-           }
-         }
-       
-       private fun removeWeaklyReachableObjects() {
-           // WeakReferences are enqueued as soon as the object to which they point to becomes weakly
-           // reachable. This is before finalization or garbage collection has actually happened.
-           var ref: KeyedWeakReference?
-           do {
-             ref = queue.poll() as KeyedWeakReference?
-             if (ref != null) {
-               watchedObjects.remove(ref.key)
-             }
-           } while (ref != null)
-         }  
-       ```
-
-       可以看出
-
-       1. 传入的观察对象都会被存储在`watchedObjects`中
-       2. 会为每个`watchedObject`生成一个`KeyedWeakReference`弱引用对象并与一个`queue`关联，当对象被回收时，该弱引用对象将进入`queue`当中
-       3. 在检测过程中，我们会调用多次`removeWeaklyReachableObjects`,将已回收对象从`watchedObjects`中移除
-       4. 如果`watchedObjects`中没有移除对象，证明它没有被回收，那么就会调用`moveToRetained`。
-
-       
-
-     * 3.4 LeakCanary触发堆快照，生成hprof文件
-
-       `moveToRetained`之后会调用到`HeapDumpTrigger.checkRetainedInstances`方法
-        `checkRetainedInstances()` 方法是确定泄露的最后一个方法了。
-        这里会确认引用是否真的泄露，如果真的泄露，则发起 `heap dump`，分析 `dump` 文件，找到引用链
-
-       ```kotlin
-       private fun checkRetainedObjects() {
-           var retainedReferenceCount = objectWatcher.retainedObjectCount
-       
-           if (retainedReferenceCount > 0) {
-             gcTrigger.runGc()
-             retainedReferenceCount = objectWatcher.retainedObjectCount
-           }
-       
-           if (checkRetainedCount(retainedReferenceCount, config.retainedVisibleThreshold)) return
-       
-           val now = SystemClock.uptimeMillis()
-           val elapsedSinceLastDumpMillis = now - lastHeapDumpUptimeMillis
-           if (elapsedSinceLastDumpMillis < WAIT_BETWEEN_HEAP_DUMPS_MILLIS) {
-             onRetainInstanceListener.onEvent(DumpHappenedRecently)
-             ....
-             return
-           }
-       
-           dismissRetainedCountNotification()
-           val visibility = if (applicationVisible) "visible" else "not visible"
-           dumpHeap(
-             retainedReferenceCount = retainedReferenceCount,
-             retry = true,
-             reason = "$retainedReferenceCount retained objects, app is $visibility"
-           ) 
-       }
-       
-         private fun dumpHeap(
-           retainedReferenceCount: Int,
-           retry: Boolean,
-           reason: String
-         ) {
-            ....
-         	 heapDumper.dumpHeap()
-         	 ....
-            lastDisplayedRetainedObjectCount = 0
-            lastHeapDumpUptimeMillis = SystemClock.uptimeMillis()
-            objectWatcher.clearObjectsWatchedBefore(heapDumpUptimeMillis)
-            HeapAnalyzerService.runAnalysis(
-              context = application,
-              heapDumpFile = heapDumpResult.file,
-              heapDumpDurationMillis = heapDumpResult.durationMillis,
-              heapDumpReason = reason
-            )
+    ```kotlin
+      @JvmOverloads
+      fun manualInstall(
+        application: Application,
+        retainedDelayMillis: Long = TimeUnit.SECONDS.toMillis(5),
+        watchersToInstall: List<InstallableWatcher> = appDefaultWatchers(application)
+      ) {
+        ....
+        watchersToInstall.forEach {
+          it.install()
         }
-       }
-       ```
-       
-  
-     1.如果`retainedObjectCount`数量大于0，则进行一次`GC`,避免额外的`Dump`
-        2.默认情况下，如果`retainedReferenceCount<5`，不会进行`Dump`，节省资源
-        3.如果两次`Dump`之间时间少于60s，也会直接返回，避免频繁`Dump`
-        4.调用`heapDumper.dumpHeap()`进行真正的`Dump`操作
-        5.`Dump`之后，要删除已经处理过了的引用
-        6.调用`HeapAnalyzerService.runAnalysis`对结果进行分析
+      }
+    
+      fun appDefaultWatchers(
+        application: Application,
+        reachabilityWatcher: ReachabilityWatcher = objectWatcher
+      ): List<InstallableWatcher> {
+        return listOf(
+          ActivityWatcher(application, reachabilityWatcher),
+          FragmentAndViewModelWatcher(application, reachabilityWatcher),
+          RootViewWatcher(reachabilityWatcher),
+          ServiceWatcher(reachabilityWatcher)
+        )
+      }
+    
+    ```
 
-     
+    可以看出，初始化时即安装了一些`Watcher`，即在默认情况下，我们只会观察`Activity`,`Fragment`,`RootView`,`Service`这些对象是否泄漏
+    如果需要观察其他对象，需要手动添加并处理
+
+  * 3.2 LeakCanary如何触发检测?
+
+    如上文所述，在初始化时会安装一些`Watcher`，我们以`ActivityWatcher`为例
+
+    ```kotlin
+    class ActivityWatcher(
+      private val application: Application,
+      private val reachabilityWatcher: ReachabilityWatcher
+    ) : InstallableWatcher {
+    
+      private val lifecycleCallbacks =
+        object : Application.ActivityLifecycleCallbacks by noOpDelegate() {
+          override fun onActivityDestroyed(activity: Activity) {
+            reachabilityWatcher.expectWeaklyReachable(
+              activity, "${activity::class.java.name} received Activity#onDestroy() callback"
+            )
+          }
+        }
+    
+      override fun install() {
+        application.registerActivityLifecycleCallbacks(lifecycleCallbacks)
+      }
+    
+      override fun uninstall() {
+        application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks)
+      }
+    }
+    ```
+
+    可以看到在`Activity.onDestory`时，就会触发检测内存泄漏
+
+    
+
+  * 3.3 LeakCanary如何检测可能泄漏的对象?
+
+    从上面可以看出，`Activity`关闭后会调用到`ObjectWatcher.expectWeaklyReachable`
+
+    ```kotlin
+    @Synchronized override fun expectWeaklyReachable(
+        watchedObject: Any,
+        description: String
+      ) {
+        if (!isEnabled()) {
+          return
+        }
+        removeWeaklyReachableObjects()
+        val key = UUID.randomUUID()
+          .toString()
+        val watchUptimeMillis = clock.uptimeMillis()
+        val reference =
+          KeyedWeakReference(watchedObject, key, description, watchUptimeMillis, queue)
+        SharkLog.d {
+          "Watching " +
+            (if (watchedObject is Class<*>) watchedObject.toString() else "instance of ${watchedObject.javaClass.name}") +
+            (if (description.isNotEmpty()) " ($description)" else "") +
+            " with key $key"
+        }
+    
+        watchedObjects[key] = reference
+        checkRetainedExecutor.execute {
+          moveToRetained(key)
+        }
+      }
+    
+    private fun removeWeaklyReachableObjects() {
+        // WeakReferences are enqueued as soon as the object to which they point to becomes weakly
+        // reachable. This is before finalization or garbage collection has actually happened.
+        var ref: KeyedWeakReference?
+        do {
+          ref = queue.poll() as KeyedWeakReference?
+          if (ref != null) {
+            watchedObjects.remove(ref.key)
+          }
+        } while (ref != null)
+      }  
+    ```
+
+    可以看出
+
+    1. 传入的观察对象都会被存储在`watchedObjects`中
+    2. 会为每个`watchedObject`生成一个`KeyedWeakReference`弱引用对象并与一个`queue`关联，当对象被回收时，该弱引用对象将进入`queue`当中
+    3. 在检测过程中，我们会调用多次`removeWeaklyReachableObjects`,将已回收对象从`watchedObjects`中移除
+    4. 如果`watchedObjects`中没有移除对象，证明它没有被回收，那么就会调用`moveToRetained`。
+
+    
+
+  * 3.4 LeakCanary触发堆快照，生成hprof文件
+
+    `moveToRetained`之后会调用到`HeapDumpTrigger.checkRetainedInstances`方法
+     `checkRetainedInstances()` 方法是确定泄露的最后一个方法了。
+     这里会确认引用是否真的泄露，如果真的泄露，则发起 `heap dump`，分析 `dump` 文件，找到引用链
+
+    ```kotlin
+    private fun checkRetainedObjects() {
+        var retainedReferenceCount = objectWatcher.retainedObjectCount
+    
+        if (retainedReferenceCount > 0) {
+          gcTrigger.runGc()
+          retainedReferenceCount = objectWatcher.retainedObjectCount
+        }
+    
+        if (checkRetainedCount(retainedReferenceCount, config.retainedVisibleThreshold)) return
+    
+        val now = SystemClock.uptimeMillis()
+        val elapsedSinceLastDumpMillis = now - lastHeapDumpUptimeMillis
+        if (elapsedSinceLastDumpMillis < WAIT_BETWEEN_HEAP_DUMPS_MILLIS) {
+          onRetainInstanceListener.onEvent(DumpHappenedRecently)
+          ....
+          return
+        }
+    
+        dismissRetainedCountNotification()
+        val visibility = if (applicationVisible) "visible" else "not visible"
+        dumpHeap(
+          retainedReferenceCount = retainedReferenceCount,
+          retry = true,
+          reason = "$retainedReferenceCount retained objects, app is $visibility"
+        ) 
+    }
+    
+      private fun dumpHeap(
+        retainedReferenceCount: Int,
+        retry: Boolean,
+        reason: String
+      ) {
+         ....
+      	 heapDumper.dumpHeap()
+      	 ....
+         lastDisplayedRetainedObjectCount = 0
+         lastHeapDumpUptimeMillis = SystemClock.uptimeMillis()
+         objectWatcher.clearObjectsWatchedBefore(heapDumpUptimeMillis)
+         HeapAnalyzerService.runAnalysis(
+           context = application,
+           heapDumpFile = heapDumpResult.file,
+           heapDumpDurationMillis = heapDumpResult.durationMillis,
+           heapDumpReason = reason
+         )
+     }
+    }
+    ```
+    
+
+  1.如果`retainedObjectCount`数量大于0，则进行一次`GC`,避免额外的`Dump`
+     2.默认情况下，如果`retainedReferenceCount<5`，不会进行`Dump`，节省资源
+     3.如果两次`Dump`之间时间少于60s，也会直接返回，避免频繁`Dump`
+     4.调用`heapDumper.dumpHeap()`进行真正的`Dump`操作
+     5.`Dump`之后，要删除已经处理过了的引用
+     6.调用`HeapAnalyzerService.runAnalysis`对结果进行分析
+
   
-     * 3.5 LeakCanary如何分析hprof文件
+
+  * 3.5 LeakCanary如何分析hprof文件
+
+    分析`hprof`文件的工作主要是在`HeapAnalyzerService`类中完成的.
+
+    解析流程如下所示:
+     ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a9c48844833244c4957fe5a6eb04508c~tplv-k3u1fbpfcp-watermark.awebp)
+     简要说下流程：
+     1.解析文件头信息，得到解析开始位置
+     2.根据头信息创建`Hprof`文件对象
+     3.构建内存索引
+     4.使用`hprof`对象和索引构建`Graph`对象
+     5.查找可能泄漏的对象与`GCRoot`间的引用链来判断是否存在泄漏(使用广度优先算法在`Graph`中查找)
+    
+    
+    
+  * 3.6 泄漏结果存储与通知
+
+    结果的存储与通知主要在DefaultOnHeapAnalyzedListener中完成，主要做了两件事：
+
+    1.存储泄漏分析结果到数据库中
+    2.展示通知，提醒用户去查看内存泄漏情况
+
   
-       分析`hprof`文件的工作主要是在`HeapAnalyzerService`类中完成的.
-  
-       解析流程如下所示:
-        ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a9c48844833244c4957fe5a6eb04508c~tplv-k3u1fbpfcp-watermark.awebp)
-        简要说下流程：
-        1.解析文件头信息，得到解析开始位置
-        2.根据头信息创建`Hprof`文件对象
-        3.构建内存索引
-        4.使用`hprof`对象和索引构建`Graph`对象
-        5.查找可能泄漏的对象与`GCRoot`间的引用链来判断是否存在泄漏(使用广度优先算法在`Graph`中查找)
-       
-       
-       
-     * 3.6 泄漏结果存储与通知
-  
-       结果的存储与通知主要在DefaultOnHeapAnalyzedListener中完成，主要做了两件事：
-  
-       1.存储泄漏分析结果到数据库中
-       2.展示通知，提醒用户去查看内存泄漏情况
-  
-     
-  
+
   4. 为什么LeakCanary不能用于线上?
-  
+
      * 每次内存泄漏以后，都会生成一个`.hprof`文件，然后解析，并将结果写入`.hprof.result`。增加手机负担，引起手机卡顿等问题。
      * 多次调用`GC`，可能会对线上性能产生影响
      * 同样的泄漏问题，会重复生成 `.hprof` 文件，重复分析并写入磁盘。
      * `.hprof`文件较大，信息回捞成问题。
-  
+
 * 参考资料
   
   * [【带着问题学】关于LeakCanary2.0你应该知道的知识点](https://juejin.cn/post/6968084138125590541)
