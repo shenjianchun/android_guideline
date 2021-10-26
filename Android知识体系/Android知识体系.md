@@ -3218,6 +3218,16 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
 [`LiveData`](https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn) 是一种可观察的数据存储器类，具有生命周期感知能力。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类旨在以注重生命周期的方式存储和管理界面相关的数据。[`ViewModel`](https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn) 类让数据可在发生屏幕旋转等配置更改后继续留存。
 
+**ViewModel的实现原理**
+
+1. 当Activity由于配置信息发生改变而重建的时候，会保存一个`Activity.NonConfigurationInstances`对象。
+
+2. AppCompatActivity的间接父类ComponentActivity在此过程中保存了一个`ComponentActivity.NonConfigurationInstances`到`Activity.NonConfigurationInstances`中。`ComponentActivity.NonConfigurationInstances`中保存了AppCompatActivity当前的`ViewModelStore`对象。ViewModelStore对象中存储着当前AppCompatActivity的所有ViewModel对象。
+
+3. 在新创建的AppCompatActivity的attach方法中恢复了`ViewModelStore`对象。该方法在onCreate方法之前被调用。
+
+4. 在新创建的AppCompatActivity的onCreate方法中可以获取到恢复了的`ViewModelStore`对象。从而可以获取对应的ViewModel对象。
+
 
 
 #### Room
