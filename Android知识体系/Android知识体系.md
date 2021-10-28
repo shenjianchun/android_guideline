@@ -3242,6 +3242,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 * [【AAC 系列二】深入理解架构组件的基石：Lifecycle](https://juejin.cn/post/6844903842589442062)
 * [“终于懂了“系列：Jetpack AAC完整解析（一）Lifecycle 完全掌握！](https://juejin.cn/post/6893870636733890574)
 * [ViewModel原理分析](https://www.jianshu.com/p/e5c363255617)
+* [ViewModel 这些知识点你都知道吗？](https://juejin.cn/post/6844904079265644551)
 
 
 
@@ -3881,15 +3882,19 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
     我们都知道，**Android** 项目最终会编译成一个 **.apk** 后缀的文件，实际上它就是一个 **压缩包**。因此，它内部还有很多不同类型的文件，这些文件，按照大小，共分为如下四类：
 
-    - 1）、**代码相关**：**classes.dex**，我们在项目中所编写的 **java** 文件，经过编译之后会生成一个 **.class** 文件，而这些所有的 **.class** 文件呢，它最终会经过 **dx** 工具编译生成一个 **classes.dex**。
-    - 2）、**资源相关**：**res**、**assets**、编译后的二进制资源文件 **resources.arsc** 和 清单文件 等等。**res** 和 **assets** 的不同在于 **res** 目录下的文件会在 **.R** 文件中生成对应的资源 **ID**，而 **assets** 不会自动生成对应的 **ID**，而是通过 **AssetManager** 类的接口来获取。此外，每当在 **res** 文件夹下放一个文件时，**aapt** 就会自动生成对应的 **id** 并保存在 **.R** 文件中，**但 .R 文件仅仅只是保证编译程序不会报错，实际上在应用运行时，系统会根据 ID 寻找对应的资源路径，而 resources.arsc 文件就是用来记录这些 ID 和 资源文件位置对应关系 的文件**。
-    - 3）、**So 相关**：**lib** 目录下的文件，这块文件的优化空间其实非常大。
+    - 1）**代码相关**：**classes.dex**，我们在项目中所编写的 **java** 文件，经过编译之后会生成一个 **.class** 文件，而这些所有的 **.class** 文件呢，它最终会经过 **dx** 工具编译生成一个 **classes.dex**。
+
+    - 2）**资源相关**：**res**、**assets**、编译后的二进制资源文件 **resources.arsc** 和 清单文件 等等。**res** 和 **assets** 的不同在于 **res** 目录下的文件会在 **.R** 文件中生成对应的资源 **ID**，而 **assets** 不会自动生成对应的 **ID**，而是通过 **AssetManager** 类的接口来获取。此外，每当在 **res** 文件夹下放一个文件时，**aapt** 就会自动生成对应的 **id** 并保存在 **.R** 文件中，**但 .R 文件仅仅只是保证编译程序不会报错，实际上在应用运行时，系统会根据 ID 寻找对应的资源路径，而 resources.arsc 文件就是用来记录这些 ID 和 资源文件位置对应关系 的文件**。
+
+    - 3）**So 相关**：**lib** 目录下的文件，这块文件的优化空间其实非常大。
+
+      
 
     此外，还有 **META-INF**，它存放了应用的 **签名信息**，其中主要有 **3个文件**，如下所示：
 
-    - 1）、**MANIFEST.MF**：其中每一个资源文件都有一个对应的 **SHA-256-Digest（SHA1)** 签名，**MANIFEST.MF** 文件的 **SHA256（SHA1）** 经过 **base64** 编码的结果即为 **CERT.SF** 中的 **SHA256（SHA1）-Digest-Manifest** 值。
-    - 2）、**CERT.SF**：除了开头处定义的 **SHA256（SHA1）-Digest-Manifest** 值，后面几项的值是对 **MANIFEST.MF** 文件中的每项再次 **SHA256（SHA1）** 经过 **base64** 编码后的值。
-    - 3）、**CERT.RSA：其中包含了公钥、加密算法等信息。首先，对前一步生成的 CERT.SF 使用了 SHA256（SHA1）生成了数字摘要并使用了 RSA 加密，接着，利用了开发者私钥进行签名。然后，在安装时使用公钥解密。最后，将其与未加密的摘要信息（MANIFEST.MF文件）进行对比，如果相符，则表明内容没有被修改。**
+    - 1）**MANIFEST.MF**：其中每一个资源文件都有一个对应的 **SHA-256-Digest（SHA1)** 签名，**MANIFEST.MF** 文件的 **SHA256（SHA1）** 经过 **base64** 编码的结果即为 **CERT.SF** 中的 **SHA256（SHA1）-Digest-Manifest** 值。
+    - 2）**CERT.SF**：除了开头处定义的 **SHA256（SHA1）-Digest-Manifest** 值，后面几项的值是对 **MANIFEST.MF** 文件中的每项再次 **SHA256（SHA1）** 经过 **base64** 编码后的值。
+    - 3）**CERT.RSA：其中包含了公钥、加密算法等信息。首先，对前一步生成的 CERT.SF 使用了 SHA256（SHA1）生成了数字摘要并使用了 RSA 加密，接着，利用了开发者私钥进行签名。然后，在安装时使用公钥解密。最后，将其与未加密的摘要信息（MANIFEST.MF文件）进行对比，如果相符，则表明内容没有被修改。**
 
     
 
@@ -4507,11 +4512,27 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
 ## 10. Android安全
 
-* 知识点
+* **知识点**
 
+  * APK的组成（参考 [体积优化](#体积优化)）
+
+  * 反编译
+
+    1. 反编译的方法
+       * 使用AS，直接拖入apk，可以查看apk的组成，并且可以对比不同版本的apk体积。
+       * 使用传统方法。apktool（拆包，得到AndroidManifest和res等资源文件）、dex2jar（反编译dex文件，得到java源代码）、jd-gui（查看java源代码）
+    2. 自动化反编译工具
+       * 谷歌提供的工具：[android-classyshark](https://links.jianshu.com/go?to=http%3A%2F%2Fclassyshark.com%2F)
+       * Python实现的工具：[AndroidGuard](https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fandroguard%2Fandroguard)
+       * 手机上的反编译工具：[ApkParser](https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fjaredrummler%2FAPKParser)
+
+  * 重新打包
+
+    
+
+* **参考资料**
   
-
-* 参考资料
+  * [Android反编译技术总结](https://www.jianshu.com/p/8eb539b6180d)
   * [那些值得你试试的Android竞品分析工具](http://www.jianshu.com/p/ba2d9eca47a2)
   * [使用“aapt dump”查看APK内容](http://blog.sina.com.cn/s/blog_6294abe70101bkef.html)
   * [Android 反编译初探 应用是如何被注入广告的](https://blog.csdn.net/lmj623565791/article/details/53370414)
@@ -4748,7 +4769,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
               * by the ThreadLocal class. */
              ThreadLocal.ThreadLocalMap threadLocals = null;
   ```
-  
+
   ```
          
          //ThreadLocalMap构造方法
@@ -4763,7 +4784,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
                  setThreshold(INITIAL_CAPACITY);
          }
   ```
-  
+
 
   * 消息队列MessageQueue的工作原理
 
@@ -4926,6 +4947,14 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 
       
 
+  * Handler.sendMessageDelayed 发送延迟消息的源码
+
+    1. 在发送消息的时候，会调用`sendMessageAtTime` 加上一个具体的发送Message的时间，在插入MessageQueue的队列中的时候，会根据前面计算出来的uptimeMillis 插入到队列（链表）中，链表会按照时间顺序进行排序。
+
+    2. 在接收消息的时候，`MessageQueue::next()` 方法中会调用    `nativePollOnce(ptr,nextPollTimeoutMillis);` ，nativePollOnce 在没有消息或者消息执行时间（nextPollTimeoutMillis）还没到的时候会进行阻塞。当执行时间到了，会唤醒自己继续执行代码，此时会把msg返回出去。
+
+       
+
   * 主线程的消息循环
 
     * ActivityThread的主入口为main，会通过Looper.prepareMainLooper()创建主线程的Looper以及MessageQueue，并通过Looper.loop来开启主线程的循环。
@@ -4944,6 +4973,7 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
   * [Android消息机制2-Handler(Native层)](http://gityuan.com/2015/12/27/handler-message-native/)
   *  [Android基础进阶 - 消息机制 之Native层分析](https://juejin.cn/post/6973142800808280071#heading-0)
   * [面试官：“看你简历上写熟悉 Handler 机制，那聊聊 IdleHandler 吧？”](https://juejin.cn/post/6844904068129751047)
+  * [从Handler.postDelayed来看看Android怎么实现处理延时消息](https://zhuanlan.zhihu.com/p/260661053)
 
 
 
