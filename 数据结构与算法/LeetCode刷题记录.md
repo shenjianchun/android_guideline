@@ -89,9 +89,10 @@
 85.   152.乘积最大子数组 [数组] [解决方案：动态规划] [2021/8/17] [中等]  -  https://leetcode-cn.com/problems/maximum-product-subarray/
 86.  461.汉明距离 [二进制] [解决方案：异或，遍历最后一位] [2021/8/18] [简单]  -  https://leetcode-cn.com/problems/hamming-distance/ 
 87.   208.实现 Trie (前缀树)  [前缀树|字典树] [解决方案：字典树] [2021/8/24] [中等]  -  https://leetcode-cn.com/problems/implement-trie-prefix-tree/
-88.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
-89.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
-90.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
+88.  25.K 个一组翻转链表 [链表]  [2021/11/9] [困难]  -  https://leetcode-cn.com/problems/reverse-nodes-in-k-group/
+89.  297.二叉树的序列化与反序列化  [] [] [] [困难] -  https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
+90.  207.课程表 [图] [] [] [中等]  -  https://leetcode-cn.com/problems/course-schedule/  （暂时先放弃，需要把图知识总结一下）
+91.  72.编辑距离 [] [] [] [困难]   -   https://leetcode-cn.com/problems/edit-distance/
 
 
 
