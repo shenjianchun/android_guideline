@@ -32,10 +32,9 @@
 
 
 
-## 参考
+# Kotlin开源项目
 
-* [Kotlin 协程入门这一篇就够了](https://juejin.cn/post/6844903871655968781)
-* [一文快速入门 Kotlin 协程](https://juejin.cn/post/6908271959381901325)
+* [KotlinMvp](https://github.com/git-xuhao/KotlinMvp) ： 基于Kotlin+MVP+Retrofit+RxJava+Glide 等架构实现短视频类小项目，简约风格及详细注释
 
 
 
@@ -44,3 +43,5 @@
 # 参考（综合）
 
 * [两万六千字带你Kotlin入门](https://github.com/leavesC/AndroidGuide/blob/master/kotlin_core/%E4%B8%A4%E4%B8%87%E5%85%AD%E5%8D%83%E5%AD%97%E5%B8%A6%E4%BD%A0Kotlin%E5%85%A5%E9%97%A8.md)
+* [Kotlin 协程入门这一篇就够了](https://juejin.cn/post/6844903871655968781)
+* [一文快速入门 Kotlin 协程](https://juejin.cn/post/6908271959381901325)
