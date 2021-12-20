@@ -1,6 +1,7 @@
 # 快捷键
 
-
+- 官网快捷键：https://developer.android.com/studio/intro/keyboard-shortcuts.html
+- 快捷键总结：https://jaeger.itscoder.com/android/2016/02/14/android-studio-tips.html
 
 
 

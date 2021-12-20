@@ -78,6 +78,8 @@ with 的返回值为lamda中的最后一行
 
 apply的返回值是接受者对象（作为实参传递给它的对象）
 
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\apply函数.jpg)
+
 
 
 
