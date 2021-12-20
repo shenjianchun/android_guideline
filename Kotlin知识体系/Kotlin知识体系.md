@@ -201,9 +201,177 @@ Sealed 类（密封类）用于对类可能创建的子类进行限制，用 Sea
 
 * 调用父构造方法，使用 super()关键字
 
+  ```kotlin
+  class MyButton: View {
+      constructor(ctx: Context) 
+      	: super(ctx) {
+              //...
+          }
+      
+      constructor(ctx: Context, attr:AttributeSet) 
+      	: super(ctx, attr)  {
+              //...
+          }
+  }
+  ```
+
   
 
 * 调用自己的构造方法，使用this()关键字
+
+  ```kotlin
+  class MyButton: View {
+      constructor(ctx: Context) : this(ctx, MY_STYLE)
+      
+      constructor(ctx: Context, attr:AttributeSet) 
+      	: super(ctx, attr)  {
+              //...
+          }
+  }
+  ```
+
+  
+
+### 4.2.3 字段访问器：getter 或 setter 
+
+1. **自定义字段访问器**
+
+   ```kotlin
+   class Point(val x: Int, val y: Int) {
+   
+       val isEquals1: Boolean
+           get() {
+               return x == y
+           }
+   
+       val isEquals2
+           get() = x == y
+   
+       var isEquals3 = false
+           get() = x > y
+           set(value) {
+               field = !value
+           }
+   
+   }
+   ```
+
+2. **修改访问器的可见性**
+
+   ```kotlin
+   fun main() {
+       val point = Point(10, 10)
+       println(point.isEquals1)
+       //以下代码会报错
+       //point.isEquals1 = true
+   }
+   
+   class Point(val x: Int, val y: Int) {
+   
+       var isEquals1: Boolean = false
+           get() {
+               return x == y
+           }
+           private set
+       
+   }
+   ```
+
+   
+
+
+
+## 4.3 编译器生成的方法：数据类和类委托
+
+### 4.3.1 通用对象方法
+
+1. 字符串表示： toString()
+
+2. 对象相等性： equals()
+
+   > 在Kotlin 中，== 运算符是比较两个对象的默认方式：本质上说它就是调用 equals 来比较两个值的。因此，如果 equals 在你的类中被重写了，你能够很安全地使用 == 来比较实例。 要想进行引用比 ，可以使 === 算符，这与 Java 中的 ＝＝ 比较对象引用的效果一样
+
+3. Hash 容器： hashCode() 
+
+   > hashCode 方法通常与 equals 一起被重写。hashCode的契约：如果两个对象相等，它们必须有着相同的 hash p
+
+
+
+### 4.3.2 数据类（data修饰符）：自动生成通用方法的实现
+
+使用data修饰符的类，会自动覆写equals、 hashCode、toString。equals hashCode 方法会将所有在主构造方法中声明的属性纳入考虑。生成的 equals 法会检测所有的属性的值是否相等。 hashCode 方法会返回一个根据所有属性生成的哈希值。请注意没有在主构造方法中声明的属性将不会加入到相等性检查和哈希值计算中去。
+
+
+
+### 4.3.3 类委托： 使用 “by” 关键字
+
+类似于实现 装饰模式，下面是一个例子，编译器会生成并实现与Collection中相同的方法。需要通过复写这些方法来实现自己的逻辑。
+
+```kotlin
+class DelegatingCollection<T>( 
+	innerList: Collection<T> = ArrayList<T>() 
+) : Collection<T> by innerList {}
+```
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\使用类委托.jpg)
+
+
+
+## 4.4 object 关键字：将声明一个类与创建一个实例结合起来
+
+### 4.4.1 对象声明：创建单例
+
+kotlin 中的对象声明被编译成了通过静态字段来持有它的单一实例的类，这个字段名字始终都是 INSTANCE。一个对象声明可以包含属性、方法、初始化语句块等的声明。唯一不允许的就是构造方法（包括主构造方法和从构造方法）。
+
+```kotlin
+class Test {
+
+    object SingleClass {
+        val names = arrayListOf<String>()
+    }
+
+    object SingleClass2 {
+        val names = arrayListOf<String>()
+    }
+
+}
+
+// 在Java中访问
+public static void main(String[] args) {
+   Test.SingleClass.INSTANCE.getNames();
+   Test.SingleClass2.INSTANCE.getNames();
+}
+```
+
+
+
+### 4.4.2 伴生对象（companion object）：工厂方法和静态成员的地盘
+
+Kotlin 中的类不能拥有静态成员，Java static 关键字并不是 Kotlin语言的一部分。 作为替代， Kotlin 依赖包级别函数（在大多数情形下能够替代 Java 的静
+
+方法）和 对象声明（在其 情况下替 Java 的静态方法，同时还包括静态字段〉，在大多数情况下，还是推荐使用顶层函数。
+
+```kotlin
+class A { 
+	companion object { 
+		fun bar() { 
+			println (”Companion ob ject called")
+         }
+    }
+}     
+```
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\工厂方法.jpg)
+
+
+
+### 4.4.3 作为普通对象使用的伴生对象
+
+
+
+
+
+### 4.4.4 对象表达式：改变写法的匿名内部类
 
 
 
@@ -219,23 +387,7 @@ Sealed 类（密封类）用于对类可能创建的子类进行限制，用 Sea
 
 
 
-### 数据类：自动生成通用方法的实现 - data修饰符
 
-使用data修饰符的类，会自动覆写equals、 hashCode、toString。equals hashCode 方法会将所有在主构造方法中声明的属性纳入考虑。生成的 equals 法会检测所有的属性的值是否相等。 hashCode 方法会返回一个根据所有属性生成的哈希值。请注意没有在主构造方法中声明的属性将不会加入到相等性检查和哈希值计算中去。
-
-
-
-
-
-### object 关键字：将声明一个类与创建一个实例结合起来
-
-1. 创建单例
-
-2. 伴生对象：工厂方法和静态成员的地盘 
-
-   companion object
-
-3. 实现匿名类
 
 
 
