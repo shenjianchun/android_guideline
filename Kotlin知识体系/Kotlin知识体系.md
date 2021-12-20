@@ -16,17 +16,204 @@
 
 
 
-# 类、对象和接口
+# 4. 类、对象和接口
+
+## 4.1 定义类继承结构
+
+### 4.1.1 接口
+
+1. **申明和实现接口**
+
+   * Kotlin 在类名后面使用冒号来实现继承，一个类可以实现任意多个接口，但是只能继承一个类。
+
+   * override 修饰符用来标注被重写的父类或者接口的方法和属性，并且是强制要求的。
+
+     ```ko
+     interface Clickable {
+         fun click()
+     }
+     ```
+
+     ```ko
+     class Button: Clickable {
+         override fun click() = println("I was clicked")
+     }
+     ```
+
+     
+
+   * 接口的方法可以有一个默认实现，Kotlin没有特殊的注解：只需要提供一个方法体。而Java8 中需要在接口实现上标注 default 关键字。
+
+     ![image-20211220115836557](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\image-20211220115836557.png)
+
+   * 继承两个接口，并且接口中相同的方法，则使用需要把基类的名字放入到尖括号中进行调用 `super<Clickable> showOff （）`
+
+
+
+### 4.1.2 open final abstract 修饰符：默认为 final
+
+1. **open 与 final**
+
+   Kotlin中的类和方法默认是final的，如果需要创建父类，则需要使用open修饰符来标示这个类，需要给每一个可以被重写的属性或方法添加 open 修饰符。
+
+   
+
+2. **abstract**
+
+   abstract申明抽象类，抽象类必须包含一些没有实现但子类必须实现的抽象成员。抽象成员始终是open的，所以不需要显示地使用open修饰符
+
+   
+
+3. **类中访问修饰符的含义**（一图概括）
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\类中访问修饰符的意义.jpg)
+
+
+
+### 4.1.3 可见性修饰符：默认为public
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\可见性修饰符.jpg)
+
+
+
+### 4.1.4 内部类和嵌套类：默认是嵌套类
+
+1. Kotlin 中没有显式修饰符的嵌套类与 Java 中的 static 嵌套类是一样的，要变成一个内部类来持有一个外部类的引用的话需要使用 inner 修饰符。
+
+   | 类A在另一个类B中声明         | 在Java中       | 在Kotlin中    |
+   | ---------------------------- | -------------- | :------------ |
+   | 嵌套类（不存储外部类的引用） | static class A | class A       |
+   | 内部类（存储外部类的引用）   | class A        | inner class A |
+
+2. 在kotlin中内部类访问外部类的方式，需要使用 this@Outer从Inner 类去访问 Outer 类：
+
+   ```kotlin
+   class Outer{
+       inner class Inner {
+           fun getOuterReference(): Outer = this@Outer
+       }
+   }
+   ```
+
+   
+
+### 4.1.5 密封类（Sealed 类）：定义受限的类继承结构
+
+Sealed 类（密封类）用于对类可能创建的子类进行限制，用 Sealed 修饰的类的**直接子类**只允许被定义在 Sealed 类所在的文件中（密封类的间接继承者可以定义在其他文件中），这有助于帮助开发者掌握父类与子类之间的变动关系，避免由于代码更迭导致的潜在 bug。
+
+
+
+
+
+## 4.2 声明一个带非默认构造方法或属性的类
+
+### 4.2.1 初始化类：主构造方法和初始化语句块
+
+1. **主构造方法的申明与参数初始化**
+
+   * 原始方式
+
+     **constructor 关键字**用来开始一个主构造方法或从构造方法的声明。 **init 关键字**用来引入一个初始化语句块。这种语句块包含了在类被 建时执行的代码并会主构造方法一起使用。为主构造方法有语法限制，不能包含初始化代码，这就是为什么要使用初始化语句块的原因。
+
+     ```kotlin
+     class User constructor(_nickname: String) {  // 带一个参数的柱构造方法
+         val nickname:String
+         
+         init {  // 初始化语句块
+             nickname = _nickname
+         }
+     }
+     ```
+
+     
+
+   * 如果主构造方法没有注解或可见性修饰符，可以去掉constructor 关键字
+
+     ```kotlin
+     class User(_nickname: String) {
+         val nickname = _nickname
+     }
+     ```
+
+     
+
+   * 如果属性用相应的构造方法参数数来初始化，代码可以通过把 val 关键字加在参数前的方式来进行简化。
+
+     ```kotlin
+     class User(val nickname: String)
+     ```
+
+     
+
+2. **构造方法参数声明一个默认值：**
+
+   ```kotlin
+   class User (val nickname: String, val isSubscribed : Boolean = true)
+   ```
+
+   > 注意：如果所有的构造方法参数都有默认值，编译器会生成一个额外的不带参数的构造方法来使用所有的默认值 这可以让 Kotlin 使用库时变得更简单，因为可以通过无参构造方法来实例化类
+
+
+
+3. **子类构造函数调用父类构造函数方法**
+
+   ```kotlin
+   open class User (val nickname: String) { . . . } 
+   
+   class TwitterUser(nickname: String) : User(nickname) { . . . }
+   ```
+
+   
+
+4. **默认构造方法（未提供构造方法的时候）**
+
+   * 如果没有给一个类声明任何的构造方法，将会生成一个不做任何 情的默认造方法。
+
+     ```kotlin
+     open class Button
+     ```
+
+   * 如果子类没有提供任何构造方法，必须显式地调用父类的构造方法，即便没有任何的参数。 
+
+     ```kotlin
+     class RadioButton: Button()
+     ```
+
+     注意与接口的区别： 接口没有构造方法，所以在你实现一个接口的时候，不需要在父类型列表中它的名称面再加上括号。
+
+     
+
+5. **私有化构造方法（禁止实例化类）**
+
+   ```kotlin
+   class Secretive private constructor() {}
+   ```
+
+
+
+### 4.2.2 构造方法：用不同的方式来初始化父类
+
+> 不要声明多个从构造方法用来重载和提供参数 默认值 取而代之的是，应该直接标明默认值。
+
+* 从构造方法
+
+  从构造方法使用 constructor 关键字引出。只要需要，可以声明任意多个从构造方法。
+
+* 调用父构造方法，使用 super()关键字
+
+  
+
+* 调用自己的构造方法，使用this()关键字
+
+
+
+
 
 ### 继承
 
 在 kotlin 中所有类都有一个共同的超类 **Any** ，对于没有超类声明的类来说它就是默认超类。需要注意的是， Any 并不是 **java.lang.Object** ，它除了 **equals() 、 hashCode() 与 toString()** 外没有其他属性或者函数
 
 
-
-### open final abs ract 修饰符：默认为 final
-
->  Java 类和方法默认是 open 的，而 Kotlin 中默认都是 final 的。如果你想允许创建 个类的子类，需要使用 open 修饰符来标示这个类。此外，需要给每一个可以被重写的属性或方法添加 open 修饰符。
 
 
 
@@ -118,7 +305,7 @@ apply的返回值是接受者对象（作为实参传递给它的对象）
 
    Elvis 运算符（或者null 合并运算符）接收两个运算数，如果第一个运算数不为 null ，运算结果就是第一个运算数；如果第一个运算数为 null ，运算结果就是第二个运算数。
 
-   ![image-20211211151202946](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\elvis运算符)
+   ![image-20211211151202946](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\elvis运算符.jpg)
 
 
 
