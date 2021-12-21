@@ -12,7 +12,219 @@
 
 
 
-# 函数的定义和调用
+# 3. 函数的定义和调用
+
+## 3.1 在Kotlin中创建集合
+
+Kotlin 没有采用它自己的集合类，而是采用的标准的 Java 集合类，主要方法有`hashSetOf` 、`arrayListOf` 、`hashMapOf` 等
+
+
+
+## 3.2 让函数更好调用
+
+### 3.2.1 命名参数
+
+当调用一个 Kotlin 定义的函数时，可以显式地标明一些参数的名称。如果在调用一个函数时，指明了一个参数的名称，为了避免混淆，那它之后的所有参数都
+
+需要标明名称。
+
+```kotlin
+joinToString(collectio口， separator =””, prefix =””, postfix =”·”)
+```
+
+> 不幸的是，当调用 Java 的函数时，不能采用命名参数，不管是JDK 中的函数，或者是 Android 框架的函数，都不行
+
+
+
+### 3.2.2 默认参数值
+
+在Kotlin 中，可以在声明函数的时候，指定参数的默认值，这样就可以避免创建重载的函数。**参数的默认值是被编码到被调用的函数中，而不是调用的地方。**
+
+```kotlin
+fun <T> joinToString(
+    collection: Collection<T>, 
+    separator: String =”,”, 
+    prefix: String =””, 
+    postfix: String = ””
+): String
+```
+
+
+
+
+
+### 3.2.3 消除静态工具类：顶层函数和属性
+
+1. 在包目录下创建 kt文件，在kt文件中创建的函数和属性便是顶层函数和属性。编译出来的Java文件就是对应的 public static 开头的函数和属性。
+
+2. 使用 const属性可以 定义一个常量，编译成Java后便是 public static final 的属性。
+
+   ```kotlin
+   const val UNIX LINE SEPARATOR = "\"
+   
+   /* Java */ 
+   public static final String UNIX_LINE_SEPARATOR = "\";
+   ```
+
+   
+
+## 3.3 给别人的类添加方法：扩展函数和属性
+
+扩展函数非常简单，它就是一个类的成员函数，不过定义在类的外面。**扩展函数不能访问私有的或者是受保护的成员**。
+
+把要扩展的类或者接口的名称，放到即将添加的函数前面。这个类的名称被称为**接收者类型**；用来调用这个扩展函数的那个对象，叫作**接收者对象**
+
+```kotlin
+package strings 
+
+fun String.lastChar(): Char = this.get(this.length - 1)
+
+println("Kotlin".lastChar())
+//String 就是接收者类型，而 Kotlin就是接收者对象
+```
+
+
+
+### 3.3.1 导入和扩展函数
+
+```kotlin
+// 导入单个函数
+import strings.lastChar 
+val c =”Kotlin". lastChar ()
+
+// 用“*”导入
+import strings.* 
+val c =”Kotlin”. lastChar ()
+
+// 使用关键字出来修改导入的类或者函数名称
+import strings.lastChar as last 
+val c =”Kotlin".last()
+```
+
+
+
+### 3.3.2 从Java中调用扩展函数
+
+实质上，扩展函数是静态函数，它把调用对象作为了它的第一个参数。从 Java 中调用 Kotlin 的扩展函数变得非常简单：调用这个静态函数，然
+
+后把接收者对象作为第 个参数传进去即可。
+
+```kotlin
+/* Java */ 
+char c = StringUtilKt.lastChar (”Java");
+```
+
+
+
+
+
+### 3.3.3 作为扩展函数的工具函数
+
+扩展函数无非就是静态函数的 个高效的语法糖。
+
+
+
+### 3.3.4 不可重写的扩展函数
+
+1. 扩展函数并不存在重写，因为 Koti in 会把它们当作静态函数对待。
+
+2. 扩展函数并不是类的一部分，它是声明在类之外的。尽管可以给基类和子类都分别定义一个同名的扩展函数，但是具体调用哪一个，是由该变量的静态类型所决定的，而不是这个变量的运行时类型。
+
+   ```kotlin
+   fun View.showoff() = println("I'm a view!）
+   fun Button.showoff() = println （"I'm a button!")
+   
+   >> val view: View = But ton() 
+   >> view. showoff ()
+   I'm a view!
+   ```
+
+   
+
+### 3.3.5 扩展属性
+
+1. 扩展属性提供了一种方法，用来扩展类的 API ，可以用来访问属性。但是扩展属性是没有地方存储的，需要定义getter 或 setter方法（setter方法取决于接收者类型的对象内容是否可变）
+
+   ```kotlin
+   package ch03.ex3_5_ExtensionProperties
+   
+   val String.lastChar: Char
+       get() = get(length - 1)
+   var StringBuilder.lastChar: Char
+       get() = get(length - 1)
+       set(value: Char) {
+           this.setCharAt(length - 1, value)
+       }
+   
+   fun main(args: Array<String>) {
+       println("Kotlin".lastChar)
+       val sb = StringBuilder("Kotlin?")
+       sb.lastChar = '!'
+       println(sb)
+   }
+   ```
+
+   
+
+
+
+## 3.4 处理集合：可变参数、中缀调用和库的支持
+
+### 3.4.1 扩展Java集合的API
+
+Kotlin定义了许多集合类的扩展函数，在 Kotli 标准库中都有声明。
+
+
+
+### 3.4.2 可变参数：让函数支持任意数量的参数
+
+1. **申明**
+
+   Kotlin中的可变参数申明是在参数上使用 **vararg 修饰符**。
+
+   ```kotlin
+   fun listOf<T>(vararg values: T): St<T> { . . . }
+   
+   // 创建列表
+   val list= list0f(2, 3, 5, 7, 11)
+   ```
+
+2. 当需要传递的参数己经包装在数组中时，使用 **展开运算符**
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       val list = listOf("args: ", *args)
+       println(list)
+   }
+   ```
+
+   
+
+### 3.4.3 键值对的处理：中缀调用和解构声明 
+
+1. 使用 mapOf 函数来创建 map
+
+   ```kotlin
+   val map= mapOf(l to "one" , 7 to "seven" , 53 to "fifty-there")
+   ```
+
+2. `to` 是特殊的函数调用，称为： **中缀调用**
+
+   
+
+
+
+## 3.5 字符串和正则表达式的处理
+
+在Kotlin中使用正则表达式需要使用Regex 类型。
+
+
+
+## 3.6 让你的代码更简洁：局部函数和扩展
+
+
+
+
 
 
 
@@ -367,33 +579,25 @@ class A {
 
 ### 4.4.3 作为普通对象使用的伴生对象
 
-
+// TODO
 
 
 
 ### 4.4.4 对象表达式：改变写法的匿名内部类
 
-
-
-
-
-### 继承
-
-在 kotlin 中所有类都有一个共同的超类 **Any** ，对于没有超类声明的类来说它就是默认超类。需要注意的是， Any 并不是 **java.lang.Object** ，它除了 **equals() 、 hashCode() 与 toString()** 外没有其他属性或者函数
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 延迟初始化 by lazy
+```kotlin
+window.addMouseListener (
+    object : MouseAdapter() {
+        override fun mouseClicked(e: MouseEv ent ) {
+            //...
+        }
+        
+        override fun mouseEntered(e: MouseEvent) {
+            //...
+        }
+    }
+)
+```
 
 
 
@@ -433,35 +637,140 @@ apply的返回值是接受者对象（作为实参传递给它的对象）
 
 
 
-# Kotlin类型系统
+# 6. Kotlin类型系统
+
+## 6.1 可空性
+
+### 6.1.1 可空类型
+
+1. "?"表示对象可以为 null， 没有问号的类型表示这种类型的变量不能存储 null 引用 。
+
+
+
+### 6.1.2 类型的含义
+
+
+
+### 6.1.3 安全调用运算符："?."
+
+把null检查和一次方法调用合并成一个操作。
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\安全调用运算符.jpg)
 
 
 
 
 
-## 可空性
+### 6.1.4 Elvis 运算符：“? : " 
 
-1. let函数
+Elvis 运算符（或者叫null 合并运算符）接收两个运算数，如果第一个运算数不为 null ，运算结果就是第一个运算数；如果第一个运算数为 null ，运算结果就是第二个运算数。
 
-   let 函数让处理可空表达式变得更容易 和安全调用运算符一起，它允许你对表达式求值，检查求值结果是否为 null ，并把结果保存为一个变量。 所有这些
-
-   作都在同 个简洁的表达式中。
-   
-   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\let函数.jpg)
+![image-20211211151202946](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\elvis运算符.jpg)
 
 
 
+### 6.1.5 安全转换："as?"
+
+"as？" 运算符尝试把值转换成指定的类型， 如果值不是合适的类型就返回 null,
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\安全转换.jpg)
+
+### 6.1.6 非空断言："!!"
+
+非空断言使用双感叹号表示，可以把任何值转换成非空类型。如果对null 值做非空断言，则会抛出异常。
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\非空断言.jpg)
 
 
-2. Elvis 运算符：“? : " 
 
-   Elvis 运算符（或者null 合并运算符）接收两个运算数，如果第一个运算数不为 null ，运算结果就是第一个运算数；如果第一个运算数为 null ，运算结果就是第二个运算数。
+### 6.1.7 "let"函数
 
-   ![image-20211211151202946](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\elvis运算符.jpg)
+let 函数让处理可空表达式变得更容易。和安全调用运算符一起，它允许你对表达式求值，检查求值结果是否为 null ，并把结果保存为一个变量。 所有这些
+
+动作都在同一个简洁的表达式中。
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\let函数.jpg)
 
 
 
-3. "let"函数
+### 6.1.8 延迟初始化的属性，"lateinit" 修饰符
+
+延迟初始化的属性都是var ，因为需要在构造方法外修改它的值。而val 属性会被编译成必须在构造方法中初始化的 final 字段。
+
+>  lateinit 属性常见的一种用法是依赖注入。在这种情况下，lateinit 属性的值是被依赖注入框架从外部设置的。
+
+```kotlin
+package ch06.ex1_8_2_LateinitializedProperties1
+
+import org.junit.Before
+import org.junit.Test
+import org.junit.Assert
+
+class MyService {
+    fun performAction(): String = "foo"
+}
+
+class MyTest {
+    private lateinit var myService: MyService
+
+    @Before fun setUp() {
+        myService = MyService()
+    }
+
+    @Test fun testAction() {
+        Assert.assertEquals("foo",
+            myService.performAction())
+    }
+}
+
+```
+
+
+
+### 6.1.9 可空类型的扩展
+
+为可空类型定义扩展函数，可以允许接收者为 null 的（扩展函数）调用，并在该函数中处理 null ，而不是在确保变量不为null 之后再调用它的方法。
+
+
+
+### 6.1.10 类型参数的可空性
+
+1. Kotlin 中所有泛型类和泛型函数的类型参数默认都是可空的。任何类型，包括可空类型在内，都可以替换类型参数。
+
+2. 要使类型参数非空，必须要为它指定一个非空的上界，那样泛型会拒绝可空值作为实参。
+
+   ```kotlin
+   // 为类型参数声明非空上界
+   fun <T: Any> printHashCode(t: T) {
+       println(t.hashCode())
+   }
+   ```
+
+
+
+### 6.1.11 可空性和Java
+
+
+
+
+
+## 6.2 基本数据类型和其他基本类型
+
+### 6.2.1 基本数据类型：Int、Boolean及其他
+
+Katlin 不区分基本数据类型和它们的包装类
+
+### 6.2.2 可空的基本数据类型：Int？、Boolean？及其他
+
+Kotlin 中的可空类型不能用 Java 的基本数据类型表示，因为 null 只能被存储在Java 的引用类型的变量中。这意味着任何时候只要使用了基本数据类型的可空版
+
+本，它就会编译成对应的包装类型。
+
+
+
+### 6.2.3 数字转换
+
+
 
 
 
