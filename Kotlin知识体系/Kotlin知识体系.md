@@ -758,7 +758,12 @@ class MyTest {
 
 ### 6.2.1 基本数据类型：Int、Boolean及其他
 
-Katlin 不区分基本数据类型和它们的包装类
+Katlin 不区分基本数据类型和它们的包装类。对应到 Java 基本数据类型的类型完整列表如下：
+
+* 整数类型 ：Byte、Short、 Int、 Long 
+* 浮点数类型：Float、Double
+* 字符类型：Char
+* 布尔类型：Boolean
 
 ### 6.2.2 可空的基本数据类型：Int？、Boolean？及其他
 
@@ -770,15 +775,174 @@ Kotlin 中的可空类型不能用 Java 的基本数据类型表示，因为 nul
 
 ### 6.2.3 数字转换
 
+1. Kotlin必须显式的进行数字转换，Kotlin 不会自动地把数字从一种类型转换成另外一种。
+
+   ```kotlin
+   val i = 1
+   val l:Long =i  // 编译错误
+   
+   val i = 1
+   val l: Long ＝ i.toLong()
+   ```
+
+   
+
+2. 每一种基本数据类型（ Boolean 除外）都定义有转换函数： toByte()、to Short()、 toChar()等。这些函数支持双向转换：既可以把小范围的类型括展到大范围，比如Int.toLong()，也可以把大范围的类型截取到小范围，比如Long.toInt() 
+
+3. 基本数据类型字面值
+
+   * 使用后缀 L 表示 Long 类型（长整型）字面值： 123L
+   * 使用标准浮点数表示 Double （双精度浮点数）字面值： 0.12、2.0、1.2e10、1.2e-10
+   * 使用后缀 F 表示Float类型（浮点数）字面值： 123.4f、.456F、 1e3f
+   * 使用前缀 0x 或者0X 表示十六进制字面值： 0xCAFEBABE 或者 0xbcdL
+   * 使用前缀 0b 或者 0B 表示二进制字面值： 0b000000101
+
+
+
+### 6.2.4 "Any" 和 "Any?"：根类型
+
+1. Any 类型是 Kotlin所有非空类型的超类型（非空类型的根），包括像 Int 这样的基本数据类型。可空类型则需要使用 Any?
+
+2. 在底层，Any 类型对应 Java.lang.Object。Any 并不能使用其他Java.lang.Object 的方法（比如 wait、notify），但是可以通过手动把值转换成
+
+   java.lang.Object 来调用这些方法。
+
+
+
+### 6.2.5 Unit类型：Kotlin的“void”
+
+1. Unit 是一个完备的类型，可以作为类型参数，而 void 却不行。只存在一个值是 Unit 类型，这个值也叫作 Unit ，并且（在函数中）会被隐式地返回。在重写返回泛型参数的函数时这非常有用，只需要让方法返回 Unit 类型的值。
+
+   ```kotlin
+   interface Processor<T> { 
+   	fun process(): T
+   }
+   
+   class NoResultProcessor : Processor<Unit> {
+   	override fun process() {
+           // do stuff
+           // 这里不需要显示的返回
+       }
+   }
+   ```
+
+   
+
+### 6.2.6 Nothing类型：“这个函数永不返回”
+
+1. Nothing 类型没有任何值，只有被当作函数返回值使用，或者被当作泛型函数返回值的类型参数使用才会有意义。在其他所有情况下，声明一个不能存储任何
+
+   值的变量没有任何意义
+
+   ```kotlin
+   fun fail(message: String): Nothing { 
+   	throw IllegalStateException (rnessage) 
+   }
+   ```
+
+   
+
+
+
+## 6.3 集合与数组
+
+### 6.3.1 可空性和集合
+
+1. 集合类可以包含null。List<Int?>  可以持有 Int 或者null。
+
+   ```kotlin
+   fun readNumbers(reader: BufferedReader): List<Int?> {
+       val result = ArrayList<Int?>()
+       for (line in reader.lineSequence()) {
+           try {
+               val number = line.toInt()
+               result.add(number)
+           }
+           catch(e: NumberFormatException) {
+               result.add(null)
+           }
+       }
+       return result
+   }
+   ```
+
+2. 变量自己类型的可空性和用作类型参数的类型的可空性是有区别的。包含可空 Int 的列表和包含 Int 的可空列表之间的区别如图
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\列表可空性.jpg)
+
+3. filterNotNull 标准函数库，遍历一个包含可空值的集合并过滤掉 null。
+
+### 6.3.2 只读集合和可变集合
+
+1. kotlin .collections.Collection 只读集合  和 kotlin.collections MutableCollection 可变集合，继承自Collection。
+
+2. **只读集合不一定是不可变的**，因为它可能只是同一个集合的众多引用中的一个。因此，**解只读集合并不总是线程安全的**，在多线程环境下处理数据需要
+
+   保证代码正确地同步了对数据的访问，或者使用支持并发访问的数据结构。
+
+3. 
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\集合的两个不同引用.jpg)
 
 
 
 
-## 数组
 
-1. 创建对象数组的方式
-2. 基础类型的数组
-3. 操作数组（遍历、转换）
+### 6.3.3 Kotlin集合和Java
+
+1. **Java 并不会区分只读集合与可变集合，即Kotlin 中把集合声明成只读的， Java 代码也能够修改这个集合。**
+
+2. Kotlin中的集合创建函数
+
+   | 集合类型 | 只读   | 可变                                                |
+   | -------- | ------ | --------------------------------------------------- |
+   | List     | listOf | mutableListOf、 arrayListOf                         |
+   | Set      | setOf  | mutableSetOf、hashSetOf、linkedSetOf、sortedSetOf   |
+   | Map      | mapOf  | mutableMapOf、 hashMapOf、 linkedMapOf、sortedMapOf |
+
+
+
+### 6.3.4 作为平台类型的集合
+
+
+
+### 6.3.5 对象和基本数据类型的数组
+
+1. Kotilin 中的数组是一个带有类型参数的类，其元素类型被指定为相应的类型参数。
+
+2. Kotlin中创建数组的方式
+
+   * arrayOf 函数创建一个数组，它包含的元素是指定为该函数的实参
+
+   * arrayOfNulls 创建一个给定大小的数组，包含的是null元素。当然，它只能用来创建包含元素类型可空的数组。
+
+   * Array 构造方法接收数组的大小和一个 ambda 表达式，调用lambda表达式来创建每一个数组元素。这就是使用非空元素类型来初始化数组，但不用显
+
+     式地传递每个元素的方式。
+
+3. 数组类型的类型参数始终会变成Java的对象类型，申明Array<Int>会转换成装箱类型的数组。如果只想使用基础类型，Kotlin提供了基本数据类型的数组，例如IntArray、ByteArray、CharArray、BooleanArray等。创建方式有三种：
+
+   * 该类型的构造方法接收 size 参数并返回 个使用对应基本数据类型默认值（通常是 ）初始化好的数组。
+
+     ```kotlin
+     val fiveZeros = IntArray(S)
+     ```
+
+   * 工厂函数（ IntArray的intArrayOf ，以及其他数组类型的函数〉接收可变长参数的值并创建存储这些值的数组。
+
+     ```kotlin
+     val fiveZerosToo = intArrayOf(0, 0, 0, 0, 0）
+     ```
+
+   * 另一种构造方法，接收一个大小和一个用来初始化每个元素的 lambda
+
+     ```kotlin
+     val squares = IntArray(5) { i -> (i+1) * (i+1) }
+     ```
+
+4. 适用于集合的扩展函数，大部分都适用于数组。
+
+
 
 
 
