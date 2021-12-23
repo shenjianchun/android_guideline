@@ -1,14 +1,335 @@
-# Kotlin基础
+# 2. Kotlin基础
 
 
 
-### 表示和处理选择：枚举和“when“
+## 2.1 基本要素
 
-1. 在一个 when 分支上合并~个选项，使用 ","
+### 2.1.2 函数
+
+1. 函数声明
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\函数声明.jpg)
+
+2. 表达式函数体
+
+   如果函数体写在花括号中，我们说这个函数有代码块体。如果它直接返回了一个表达式，它就有表达式体。
+
+   ```kotlin
+   fun max(a : Int , b: Int) : Int = if (a > b) a else b
+   ```
+
+   
+
+3. 注意，只有表达式体函数的返回类型可以省略。对于有返回值的代码块体函数，必须显式地写出返回类型和 return 语句。
+
+
+
+### 2.1.3 变量
+
+1. 可变变量和不可变变量
+
+   * val（来自 value）一一 不可变引用。使用 val 声明的变量不能在初始化之后再次赋值。它对应的是 Java final 量。
+   * var（来自variable）一一 可变引用。这种变量的值可以被改变。这种声明对应的是普通（非 final ）的 Java 量。
+
+   >  默认情况下，应该尽可能地使用 val 关键字来声明所有的 Kotlin ，仅在必要的时候换成 var 。
+
+
+
+### 2.1.4 字符串模板
+
+1. "$" 字符
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       val name = if (args.size > 0) args[0] else "Kotlin"
+       println("Hello, $name!")
+   }
+   ```
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       println("Hello, ${if (args.size > 0) args[0] else "someone"}!")
+   }
+   ```
+
+
+
+## 2.2 类和属性
+
+
+
+### 2.2.1 属性
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\在类中申明可变属性.jpg)
+
+1. 声明属性的时候，你就声明了对应的**访问器** （只读属性有一个getter，而可写属性既有getter也有setter）。 访问器的默认实现非常简单：创建
+
+   一个存储值的宇段，以及返回值的getter和更新值的setter。
+
+
+
+### 2.2.2 自定义访问器
+
+```kotlin
+class Rectangle(val height: Int, val width: Int) {
+    val isSquare: Boolean
+        get() {
+            return height == width
+        }
+}
+
+fun main(args: Array<String>) {
+    val rectangle = Rectangle(41, 43)
+    println(rectangle.isSquare)
+}
+
+```
 
 
 
 
+
+## 2.3 表示和处理选择：枚举和“when“
+
+### 2.3.1 声明枚举类
+
+1. 申明一个枚举类
+
+   ```kotlin
+   enum class Color { 
+   	RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
+   }
+   ```
+
+   
+
+### 2.3.2 使用 "when" 处理枚举类
+
+1. when 是一个有返回值的表达式，因此可以写一个直接返回 when 表示式的表达式体函数。
+
+2. when每个分支不用写 break，如果匹配成功，只有对应的分支会执行
+
+   ```kotlin
+   enum class Color {
+       RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
+   }
+   
+   fun getMnemonic(color: Color) =
+       when (color) {
+           Color.RED -> "Richard"
+           Color.ORANGE -> "Of"
+           Color.YELLOW -> "York"
+           Color.GREEN -> "Gave"
+           Color.BLUE -> "Battle"
+           Color.INDIGO -> "In"
+           Color.VIOLET -> "Vain"
+       }
+   
+   fun main(args: Array<String>) {
+       println(getMnemonic(Color.BLUE))
+   }
+   
+   ```
+
+
+
+### 2.3.3 在"when"结构中使用任意对象
+
+1. 和Java中的swith不一样， "when"允许使用任何对象。
+
+2. 在一个 when 分支上合并多个选项，使用 ","
+
+   ```kotlin
+   fun mix(c1: Color, c2: Color) =
+           when (setOf(c1, c2)) {
+               setOf(RED, YELLOW) -> ORANGE
+               setOf(YELLOW, BLUE) -> GREEN
+               setOf(BLUE, VIOLET) -> INDIGO
+               else -> throw Exception("Dirty color")
+           }
+   
+   fun main(args: Array<String>) {
+       println(mix(BLUE, YELLOW))
+   }
+   ```
+
+   
+
+
+
+### 2.3.4 使用不带参数的"when"
+
+```kotlin
+fun mixOptimized(c1: Color, c2: Color) =
+    when {
+        (c1 == RED && c2 == YELLOW) ||
+        (c1 == YELLOW && c2 == RED) ->
+            ORANGE
+
+        (c1 == YELLOW && c2 == BLUE) ||
+        (c1 == BLUE && c2 == YELLOW) ->
+            GREEN
+
+        (c1 == BLUE && c2 == VIOLET) ||
+        (c1 == VIOLET && c2 == BLUE) ->
+            INDIGO
+
+        else -> throw Exception("Dirty color")
+    }
+
+fun main(args: Array<String>) {
+    println(mixOptimized(BLUE, YELLOW))
+}
+```
+
+
+
+### 2.3.5 智能转换：合并类型检查和转换
+
+1. 当检查过一个变量是某种类型，后面就不再需要转换它，可以就把它当作你检查过的类型使用。事实上编译器为你执行了类型转换，我们把这种行为称为智能转换。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\智能转换.jpg)
+
+### 2.3.6 重构：用"when" 代替 "if"
+
+```kotlin
+fun eval(e: Expr): Int =
+    when (e) {
+        is Num ->
+            e.value
+        is Sum ->
+            eval(e.right) + eval(e.left)
+        else ->
+            throw IllegalArgumentException("Unknown expression")
+    }
+
+fun main(args: Array<String>) {
+    println(eval(Sum(Num(1), Num(2))))
+}
+```
+
+
+
+### 2.3.7 代码块作为 "if" 和 "when" 分支
+
+1. if 和 when 都可以使用代码块作为分支体。这种情况下，代码块中的最后一个表达式就是结果。
+
+   ```kotlin
+   fun evalWithLogging(e: Expr): Int =
+       when (e) {
+           is Num -> {
+               println("num: ${e.value}")
+               e.value
+           }
+           is Sum -> {
+               val left = evalWithLogging(e.left)
+               val right = evalWithLogging(e.right)
+               println("sum: $left + $right")
+               left + right
+           }
+           else -> throw IllegalArgumentException("Unknown expression")
+       }
+   
+   fun main(args: Array<String>) {
+       println(evalWithLogging(Sum(Sum(Num(1), Num(2)), Num(4))))
+   }
+   ```
+
+
+
+## 2. 4 迭代事物："while" 循环 和 "for" 循环
+
+### 2.4.1 "while" 循环
+
+### 2.4.2 迭代数字：区间和数列
+
+1. 区间， 区间本质上就是两个值之间的问隔，这两个值通常是数字一个起始值，一个结束值，使用" .. " 运算符。
+
+   Kotlin 的区间是包含的或者闭合的，意味着第 个值始终是区间的 部分
+
+   ```kotlin
+   val oneToTen =  1 .. 10
+   ```
+
+2. 带步长的数列，使用 " step " 关键字
+
+   ```kotlin
+   for (i in 100 downTo 1 step 2)
+   ```
+
+3. until函数，创建半闭区间，不包含左区间
+
+   ```kotlin
+   for (x in 0 until size ）
+   ```
+
+   
+
+### 2.4.3 迭代map
+
+```kotlin
+fun main(args: Array<String>) {
+    val binaryReps = TreeMap<Char, String>()
+
+    for (c in 'A'..'F') {
+        val binary = Integer.toBinaryString(c.toInt())
+        binaryReps[c] = binary
+    }
+
+    for ((letter, binary) in binaryReps) {
+        println("$letter = $binary")
+    }
+}
+```
+
+
+
+
+
+### 2.4.4 使用"in"检查集合和区间的成员
+
+1. 使用 in 运算符来检查一个值是否在区间中，或者它的逆运算 !n 来检查这个值是否不在区间中。
+
+   ```kotlin
+   fun recognize(c: Char) = when (c) {
+       in '0'..'9' -> "It's a digit!"
+       in 'a'..'z', in 'A'..'Z' -> "It's a letter!"
+       else -> "I don't know…"
+   }
+   
+   fun main(args: Array<String>) {
+       println(recognize('8'))
+   }
+   ```
+
+   
+
+## 2.5 Kotlin中的异常
+
+1. Kotlin throw 结构是一个表达式，能作为另一个表达式的一部分使用
+
+2. "try" "catch" "finally"  , Kotlin中不需要throws语句，因为Kotlin 并不区分受检异常和未受检异常。
+
+3. "try" 作为 表达式
+
+   ```kotlin
+   fun readNumber(reader: BufferedReader) {
+       val number = try {
+           Integer.parseInt(reader.readLine())
+       } catch (e: NumberFormatException) {
+           null
+       }
+   
+       println(number)
+   }
+   
+   fun main(args: Array<String>) {
+       val reader = BufferedReader(StringReader("not a number"))
+       readNumber(reader)
+   }
+   ```
+
+   
 
 
 
@@ -601,7 +922,13 @@ window.addMouseListener (
 
 
 
-# Lambda编程
+# 5. Lambda编程
+
+## 5.1 Lambda表达式和成员引用
+
+
+
+
 
 
 
@@ -943,18 +1270,6 @@ Kotlin 中的可空类型不能用 Java 的基本数据类型表示，因为 nul
 4. 适用于集合的扩展函数，大部分都适用于数组。
 
 
-
-
-
-
-
-## 基本数据类型和其他基本类型
-
-###  Unit 类型： Kotlin 的“void ”
-
-
-
-### Nothing 类型：“这个函数永不返回”
 
 
 
