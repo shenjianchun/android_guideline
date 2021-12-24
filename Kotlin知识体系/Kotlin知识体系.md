@@ -926,13 +926,142 @@ window.addMouseListener (
 
 ## 5.1 Lambda表达式和成员引用
 
+### 5.1.1 Lambda 简介：作为函数参数的代码块
+
+
+
+### 5.1.2 Lambda和集合
+
+### 5.1.3 Lambda表达式的语法
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\Lambda表达式语法.jpg)
+
+1. Kotlin中的Lambda表达式始终在花括号包围。注意实参并没有用括号括起来。
+
+2. 可以把 Lambda 表达式存储在一个变量中，把这个变量当作普通函数对待。
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       val sum = { x: Int, y: Int -> x + y }
+       println(sum(1, 2))
+   }
+   ```
+
+   
+
+3. Kotlin 有这样一种语法约定，如果Lambda 表达式是函数调用的最后一个实参，它可以放到括号的外边。当Lambda 是函数唯一的实参时，还可以去掉调用代码中的空括号对。
+
+   ```kotlin
+   person.maxBy({p:Persion -> p.age})
+   
+   // 如果Lambda 表达式是函数调用的最后一个实参，它可以放到括号的外边
+   person.maxBy(){p:Persion -> p.age}
+   
+   // 当Lambda 是函数唯一的实参时，还可以去掉调用代码中的空括号对。
+   person.maxBy{p:Persion -> p.age}
+   ```
+
+4. 和局部变量一样，如果 Lambda 参数的类型可以被推导出来，就不需要显式地指定它。可以遵循这样一条简单的规则：**先不声明类型，等编译器报错后再指定它们**。
+
+5. **默认参数名称 it**，如果当前上下文期望的是只有一个参数 lambda 且这个参数的类型可以推断出来，就会生成这个名称。仅在实参名称没有显式地指定时这个默认的名称才会生成。
+
+   > 注意it 约定能大大缩短你的代码，但你不应该滥用它 尤其是在嵌套lambda 情况下，最好显式地声明每个 lambd 的参数。 否则，很难搞清楚it 引用的到底是哪个值。如果上下文中参数的类型或意义都不是很明朗，显式声明参数的方法也很有效。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\默认参数it.jpg)
+
+
+
+
+
+### 5.1.4 在作用域中访问变量
+
+1. lambda可以访问函数中的参数以及在lambda之前定义的局部变量。
+2. 在 Kotlin 中不会仅限于访问 final 变量，lambda 内部也可以修改这些变量。
+3. 默认情况下，局部变量的生命期被限制在声明这个变量的函数中 但是如果它被 lambda 捕捉了，使用这个变量的代码可以被存储并稍后再执行。
+
+
+
+### 5.1.5 成员引用
+
+1. 成员引用表达式使用 "::" 运算符来转换。
+
+   ```kotlin
+   val getAge = Person::age
+   
+   // 引用类函数或属性
+   people.maxBy(Persion::age)
+   
+   // 引用顶层函数（不是类的成员），直接以 :: 开头
+   fun salute() = println (” Salute ! ”)
+   run(::salute)
+   ```
+
+
+
+## 5.2 集合的函数式API
+
+### 5.2.1 基础：filter和map
+
+1. filter 和 map 函数形成了集合操作的基础，很多集合操作都是借助它们来表达的。filter 函数遍历集合并选出应用给定 lambda 后会返回 true 的那些元素。
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       val list = listOf(1, 2, 3, 4)
+       println(list.filter { it % 2 == 0 })
+   }
+   
+   fun main(args: Array<String>) {
+       val list = listOf(1, 2, 3, 4)
+       println(list.map { it * it })
+   }
+   ```
+
+2. 对map应用过滤和变换函数，filterKeys 和 mapKeys 过滤和变换 map的键，而另外的 filterValues mapValues 过滤和变换对 的值
+
+
+
+### 5.2.2 "all"、"any"、"count"、"find"：对合集应用判断式
+
+1. all 函数：是否集合中的所有元素都满足条件
+2. any函数：集合中是否至少存在一个匹配的元素
+3. count函数：集合中有多少个元素满足了判断式
+4. find函数：在集合中找到第一个满足判断式的；没找到则返回null。find函数还有一个同义方法 firstOrNull 。
+
+
+
+### 5.2.3 groupBy：把列表转换成分组的map
+
+
+
+### 5.2.4 flatMap 和 flatten：处理嵌套集合中的元素
+
+1. flatMap 函数做了两件事情：首先根据作为实参给定的函数对集合中的每个元素做变换（或者说映射），然后把多个列表合并（或者说平铺）成一个列表。
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       val books = listOf(Book("Thursday Next", listOf("Jasper Fforde")),
+                          Book("Mort", listOf("Terry Pratchett")),
+                          Book("Good Omens", listOf("Terry Pratchett",
+                                                    "Neil Gaiman")))
+       println(books.flatMap { it.authors }.toSet())
+   }
+   ```
+
+   
+
+2. flatten函数 ，你不需要做任何变换，只是需要平铺一个集合
+
+
+
+## 5.3 惰性集合操作：序列
 
 
 
 
 
 
-### 带接收者的lambda: with ”与“apply“
+
+## 5.5 带接收者的lambda: with ”与“apply“
 
 with 结构看起来像是 种特殊的语法结构，但它实际上是一个接收两个参数的函数：这个例子中两个参数分别是 stringBuilder lambda 这里利用了把 lambda 在括号外的约定，这样整个调用看起来就像是内建的语 功能 。当然你可以选择把它写成 with ( s tringBuilder, { . . . } ），但可读性就会差很多。
 
