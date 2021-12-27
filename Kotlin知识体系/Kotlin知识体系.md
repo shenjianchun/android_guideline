@@ -1513,33 +1513,203 @@ Kotlin 中的可空类型不能用 Java 的基本数据类型表示，因为 nul
 
 ## 7.3 集合与区间的约定
 
+### 7.3.1 通过下标来访问元素："get" 和 "set"
 
+1. 下标运算符。Kotlin中可以通过下标运算符a[b]来获取或者设置元素。使用下标运算符读取元素会被转换为 get 运算符方法的调用 ，井且写入元素将调用 set。
+
+   ```kotlin
+   val value = map[key]
+   
+   mutableMap[key] = newValue
+   ```
+
+   
+
+2. 给自定义的类添加可以通过下标运算符来访问元素的功能。只需要定义一个名为 get 或 set 的函数，并标记 operator 之后，get 的参数可以是任何类型，而不只是 Int。
+
+   ```kotlin
+   data class Point(val x: Int, val y: Int)
+   
+   operator fun Point.get(index: Int): Int {
+       return when(index) {
+           0 -> x
+           1 -> y
+           else ->
+               throw IndexOutOfBoundsException("Invalid coordinate $index")
+       }
+   }
+   
+   fun main(args: Array<String>) {
+       val p = Point(10, 20)
+       println(p[1])
+   }
+   ```
+
+   ```kotlin
+   data class MutablePoint(var x: Int, var y: Int)
+   
+   operator fun MutablePoint.set(index: Int, value: Int) {
+       when(index) {
+           0 -> x = value
+           1 -> y = value
+           else ->
+               throw IndexOutOfBoundsException("Invalid coordinate $index")
+       }
+   }
+   
+   fun main(args: Array<String>) {
+       val p = MutablePoint(10, 20)
+       p[1] = 42
+       println(p)
+   }
+   ```
+
+   
+
+### 7.3.2 "in" 的约定
+
+1. "in" 运算符，相应的函数为contains。in 右边的对象将会调用 contains 函数， in 左边的对象将会作为函数入参。
+
+   ```kotlin
+   data class Point(val x: Int, val y: Int)
+   
+   data class Rectangle(val upperLeft: Point, val lowerRight: Point)
+   
+   operator fun Rectangle.contains(p: Point): Boolean {
+       return p.x in upperLeft.x until lowerRight.x &&
+              p.y in upperLeft.y until lowerRight.y
+   }
+   
+   fun main(args: Array<String>) {
+       val rect = Rectangle(Point(10, 20), Point(50, 50))
+       println(Point(20, 30) in rect)
+       println(Point(5, 5) in rect)
+   }
+   ```
+
+
+
+### 7.3.3 rangeTo 的约定
+
+1.  ".." 运算符是调用 rangeTo 函数的一个简洁方法。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\..运算符转换为rangeTo.jpg)
+
+
+
+### 7.3.4 在“for”循环中使用“iterator”的约定
+
+1.  iterator 方法可以被定义为扩展函数，来实现自定义类的迭代。例如：`for(x in list) ｛．．．｝`将被转换成 `list.iterator()`
+
+   ```kotlin
+   operator fun ClosedRange<LocalDate>.iterator(): Iterator<LocalDate> =
+           object : Iterator<LocalDate> {
+               var current = start
+   
+               override fun hasNext() =
+                   current <= endInclusive
+   
+               override fun next() = current.apply {
+                   current = plusDays(1)
+               }
+           }
+   
+   fun main(args: Array<String>) {
+       val newYear = LocalDate.ofYearDay(2017, 1)
+       val daysOff = newYear.minusDays(1)..newYear
+       for (dayOff in daysOff) { println(dayOff) }
+   }
+   
+   ```
+
+   
+
+## 7.4 解构申明和组件函数
+
+> 解构声明主要使用场景之一，是从一个函数返回多个值，这个非常有用。如果要这样做，可以定义一个数据类来保存返回所需的值，并将它作为函数的返回类型。
+
+
+
+1. 解构申明也是一个约定。在解构声明中初始化每个变量，将调用名为 componentN 的函数，其中N是声明中变量的位置。
+
+   ```kotlin
+   data class NameComponents(val name: String,
+                             val extension: String)
+   
+   fun splitFilename(fullName: String): NameComponents {
+       val result = fullName.split('.', limit = 2)
+       return NameComponents(result[0], result[1])
+   }
+   
+   fun main(args: Array<String>) {
+       val (name, ext) = splitFilename("example.kt")
+       println(name)
+       println(ext)
+   }
+   
+   ```
+
+   
+
+2. 解构声明不仅可以用作函数中的顶层语句，还可以用在其他可以声明变量的地方，例如 in 循环。一个很好的例子，是枚举 map 中的条目。
+
+   ```kotlin
+   for ((key, value) in map) 
+   ```
+
+   
 
 
 
 ## 7.5 重用属性访问的逻辑：委托属性
 
+### 7.5.1 委托属性的基本操作
+
+1. 通过关键宇 by 对其后的表达式求值来获取这个对象，关键 by 以用任何符合属性委托约定规则的对象。编译器创建一个隐藏的辅助属性，并使用委托对象的实例进行初始化，初始属性p会委托给该实例。
+
+   ```kotlin
+   class Foo { 
+   	var p: Type by Delegate ()
+   }
+   ```
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\委托类.jpg)
 
 
 
-
-
-
-### 使用委托属性：惰性初始化和 by lazy()
+### 7.5.2 使用委托属性：惰性初始化和 by lazy()
 
 lazy 函数返回一个对象，该对象具有一个名为 getValue 且签名正确的方法，因此可以把它与 by 关键字一起使用来创建一个委托属性。 lazy 的参数是一个lambda ，可以调用它来初始化这个值。默认情况下， lazy函数是线程安全的，如果需要，可以设置其他选项来告诉它要使用哪个锁，或者完全避开同步，如果该类永远不会在多线程环境中使用。
 
+```kotlin
+class Person(val name: String) {
+    val emails by lazy { loadEmails(this) }
+}
+```
+
+
+
+### 7.5.3 实现委托属性
+
+### 7.5.4 委托属性的变换规则
+
+### 7.5.5 在map中保存属性值
+
+### 7.5.6 框架中的委托属性
 
 
 
 
-# 8. 阶函数： Lambda作为形参和返回僵
 
-## 声明高阶函数
+# 8. 高阶函数： Lambda作为形参和返回值
 
-### 函数类型
+## 8.1 声明高阶函数
 
-声明函数类型，需要将函数参数类型放在括号中，紧接着是 个箭头和函数的返回类型
+
+
+### 8.1.1 函数类型
+
+声明函数类型，需要将函数参数类型放在括号中，紧接着是一个箭头和函数的返回类型
 
 
 
