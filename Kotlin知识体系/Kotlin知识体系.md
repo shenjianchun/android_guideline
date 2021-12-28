@@ -1705,11 +1705,227 @@ class Person(val name: String) {
 
 ## 8.1 声明高阶函数
 
+高阶函数就是以另一个函数作为参数或者返回值的函数。任何以 lambda 或者函数引用作为参数的函数，或者返回值为 lambda 或函数引用的函数，或者两者都满足的函数都是高阶函数。
+
 
 
 ### 8.1.1 函数类型
 
-声明函数类型，需要将函数参数类型放在括号中，紧接着是一个箭头和函数的返回类型
+1. 声明函数类型，需要将函数参数类型放在括号中，紧接着是一个箭头和函数的返回类型。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\函数类型语法.jpg)
+
+   ```kotlin
+   val sum =  { x: Int, y: Int - > x + y }
+   val action = { println(42) }
+   
+   // 函数类型显式申明
+   val sum:(Int, Int) -> Int = {x, y -> x + y}
+   val action:() -> Unit = {prin}
+   ```
+
+   
+
+2. 函数类型的返回值也可以标记为可空类型
+
+   ```kotlin
+   var caneturnNull: (Int , Int) -> Int? = { null }
+   ```
+
+3. 也可以定义一个函数类型的可空变量
+
+   ```kotlin
+   var funOrNul 1 : ((Int, Int) -> Int)? = null
+   ```
+
+4. 函数类型的参数名，可以为函数类型声明中的参数指定名字
+
+   ```kotlin
+   fun performRequest(
+          url: String,
+          callback: (code: Int, content: String) -> Unit
+   ) {
+       /*...*/
+   }
+   
+   fun main(args: Array<String>) {
+       val url = "http://kotl.in"
+       performRequest(url) { code, content -> /*...*/ }
+       performRequest(url) { code, page -> /*...*/ }
+   }
+   ```
+
+
+
+### 8.1.2 调用作为参数的函数
+
+1. filter 函数以一个判断式作为参数。判断式的类型是一个函数，以 符作为参数并返回 boolean 类型的值。
+
+   ```kotlin
+   fun String.filter(predicate: (Char) -> Boolean): String {
+       val sb = StringBuilder()
+       for (index in 0 until length) {
+           val element = get(index)
+           if (predicate(element)) sb.append(element)
+       }
+       return sb.toString()
+   }
+   
+   fun main(args: Array<String>) {
+       println("ab1c".filter { it in 'a'..'z' })
+   }
+   ```
+
+   
+
+### 8.1.3 在Java中使用函数类
+
+1. 其背后的原理是，函数类型被声明为普通的接口：一个函数类型的变量是Functio nN 接口的一个实现。Kotlin 标准库定义了一系列的接口，这些接口对应于
+
+   不同参数数量的函数： Function0<R> （没有参数的函数）、 Function1<P1,R>（一个参数的函数），等等 。每个接口定义了 invoke 方法，调用这个方法就会执行函数。一个函数类型的变量就是实现了对应的 FunctionN 接口的实现类的实例，实现类 invoke 方法包含了 lambda 函数体。
+
+
+
+### 8.1.4 函数类型的参数默认值和null值
+
+1. 声明函数类型的参数的时候可以指定参数的默认值。只需要把 lambda 作为值放在＝号后面。
+
+   ```kotlin
+   fun <T> Collection<T>.joinToString(
+           separator: String = ", ",
+           prefix: String = "",
+           postfix: String = "",
+           transform: (T) -> String = { it.toString() }
+   ): String {
+       val result = StringBuilder(prefix)
+   
+       for ((index, element) in this.withIndex()) {
+           if (index > 0) result.append(separator)
+           result.append(transform(element))
+       }
+   
+       result.append(postfix)
+       return result.toString()
+   }
+   
+   fun main(args: Array<String>) {
+       val letters = listOf("Alpha", "Beta")
+       println(letters.joinToString())
+       println(letters.joinToString { it.toLowerCase() })
+       println(letters.joinToString(separator = "! ", postfix = "! ",
+              transform = { it.toUpperCase() }))
+   }
+   ```
+
+2. 函数类型的参数可空的情况
+
+   ```kotlin
+   fun <T> Collection<T>.joinToString(
+           separator: String = ", ",
+           prefix: String = "",
+           postfix: String = "",
+           transform: ((T) -> String)? = null
+   ): String {
+       val result = StringBuilder(prefix)
+   
+       for ((index, element) in this.withIndex()) {
+           if (index > 0) result.append(separator)
+           val str = transform?.invoke(element)
+               ?: element.toString()
+           result.append(str)
+       }
+   
+       result.append(postfix)
+       return result.toString()
+   }
+   
+   fun main(args: Array<String>) {
+       val letters = listOf("Alpha", "Beta")
+       println(letters.joinToString())
+       println(letters.joinToString { it.toLowerCase() })
+       println(letters.joinToString(separator = "! ", postfix = "! ",
+              transform = { it.toUpperCase() }))
+   }
+   ```
+
+   
+
+### 8.1.5 返回函数的函数
+
+1. 定义一个返回函数的函数
+
+   ```kotlin
+   enum class Delivery { STANDARD, EXPEDITED }
+   
+   class Order(val itemCount: Int)
+   
+   fun getShippingCostCalculator(
+           delivery: Delivery): (Order) -> Double {
+       if (delivery == Delivery.EXPEDITED) {
+           return { order -> 6 + 2.1 * order.itemCount }
+       }
+   
+       return { order -> 1.2 * order.itemCount }
+   }
+   
+   fun main(args: Array<String>) {
+       val calculator =
+           getShippingCostCalculator(Delivery.EXPEDITED)
+       println("Shipping costs ${calculator(Order(3))}")
+   }
+   ```
+
+   
+
+### 8.1.6 通过lamdba去除重复代码
+
+1. 函数类型和 lambda 表达式一起组成了一个创建可重用代码的好工具。
+
+
+
+
+
+## 8.2 内联函数
+
+问题：lambda 表达式会被正常地编译成匿名类，这表示每调用一次lambda 表达式，一个额外的类就会被创建。并且如果 lambda 捕捉了某个变量，那么每次调用的时候都会创建一个新的对象。 这会带来运行时的额外开销，导致使用lambda 比使用一个直接执行相同代码的函数效率更低。可以使用内联函数来解决，在函数被使用的时候编译器并不会生成函数调用的代码，而是使用函数实现的真实代码替换每一次的函数调用。
+
+
+
+### 8.2.1 内联函数如何运作
+
+1. 当一个函数被声明为 inline 时，它的函数体是内联的一一换句话说，函数体会被直接替换到函数被调用的地方，而不是被正常调用。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\内联函数编译.jpg)
+
+   
+
+### 8.2.2 内联函数的限制
+
+1. 鉴于内联的运作方式，不是所有使用 lambda的函数都可以被内联。当函数被内联的时候，作为参数的 lambd 表达式的函数体会被直接替换到最终生成的代码中。这将限制函数体中的对应 （lambda ）参数的使用。 如果（ lambda ）参数被调用，这样的代码能被容易地内联。但如果（ lambda ）参数在某个 方被保存起来，以便后面可以继续使用， lambda 表达式的代码将不能被内联，因为必须要有一个包含这些代码的对象存在。
+
+
+
+### 8.2.3 内联集合操作
+
+1. asSequence ，这只在处理大量数据的集合时有用，小的集合可以用普通的集合操作处理。
+
+
+
+### 8.2.4 决定何时将函数声明成内联
+
+1. 使用inline 关键字只能提高带有 lambda 参数的函数的性能，其他的情况需要额外的度量和研究。
+
+### 8.2.5 使用内联lambda管理资源
+
+
+
+
+
+## 8.3 高阶函数中的控制流
+
+
+
+
 
 
 
