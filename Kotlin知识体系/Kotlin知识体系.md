@@ -1923,7 +1923,74 @@ class Person(val name: String) {
 
 ## 8.3 高阶函数中的控制流
 
+### 8.3.1 lambda 中的返回语句：从一个封闭的函数返回
 
+1. 如果在 lambda 中使用 return 关键字，它会从调用 lambda 的函数中返回，并不只是从 lambda 中返回 。这样的 return 语句叫作非局部返回，因为它从
+
+   比包含 return 的代码块更大的代码块中返回了。
+
+   ```kotlin
+   data class Person(val name: String, val age: Int)
+   
+   val people = listOf(Person("Alice", 29), Person("Bob", 31))
+   
+   fun lookForAlice(people: List<Person>) {
+       people.forEach {
+           if (it.name == "Alice") {
+               println("Found!")
+               return
+           }
+       }
+       println("Alice is not found")
+   }
+   ```
+
+
+
+> 只有在以 lambda 作为 参数的函数是内联函数的时候才能从更外层的函数返回。在一个非内联函数的 lambda 中使用 return 表达式是不允许的。一个非内联函数可以把传给lambda 保存在变量中，以便在函数返回以后可以继续使用，这个时候 lambda 要去影响函数的返回己经太晚了。
+
+
+
+### 8.3.2 从lambda返回：使用标签返回
+
+1. 局部返回。 lambda 中的局部返回跟 循环break 表达式相似。要区分局部返回和非局部返回 要用到 **标签**。
+
+2. 要标记一个 lambda 表达式，在 lambda 的花括号之前放一个标签名（可以是任何标识符），接着放一个@符号。要从一个 lambda 返回，在 return 关键字后放一个＠符号，接着放标签名。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\使用@符号标记lambda返回.jpg)
+
+3. 使用 lambda 作为参数的函数的函数名可以作为标签。
+
+   >如果你显式地指定了 lambda 表达式的标 ，再使用函数名作为标签没有任何效果。一个 lambda 表达式的标签数量不能多于一个。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\使用函数名标记lambda返回.jpg)
+
+
+
+### 8.3.3 匿名函数：默认使用局部返回
+
+1. 在匿名函数中，不带标签的 return 表达式会从匿名函数返回 ，而不是从包含匿名函数的函数返回 。这条规则很简单： return 从最近的使用 fun 关键字声明
+
+   的函数返回。 
+
+   ```kotlin
+   data class Person(val name: String, val age: Int)
+   
+   val people = listOf(Person("Alice", 29), Person("Bob", 31))
+   
+   fun lookForAlice(people: List<Person>) {
+       people.forEach(fun (person) {
+           if (person.name == "Alice") return
+           println("${person.name} is not Alice")
+       })
+   }
+   
+   fun main(args: Array<String>) {
+       lookForAlice(people)
+   }
+   ```
+
+   
 
 
 
@@ -1932,6 +1999,18 @@ class Person(val name: String) {
 
 
 # 9. 泛型
+
+## 9.1 泛型类型参数
+
+
+
+
+
+## 9.2 运行时的泛型：擦除和实化类型参数
+
+
+
+
 
 
 
