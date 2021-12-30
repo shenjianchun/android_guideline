@@ -2000,15 +2000,192 @@ class Person(val name: String) {
 
 # 9. 泛型
 
+核心内容：
+
+1. 如何声明泛型类/接口、方法、属性等
+2. 如何调用泛型类、方法、属性等
+3. 如何判断和转换泛型
+4. 泛型的上限界和下限界（与Java相比）
+
+
+
 ## 9.1 泛型类型参数
 
+### 9.1.1 泛型函数和属性
+
+1. 泛型函数申明
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\泛型函数申明.jpg)
+
+2. 调用泛型函数。可以显式地指定类型实参；也可以不指定，因为编译器会推导类型。如下所示：
+
+   ```kotlin
+   fun main(args: Array<String>) {
+       val letters = ('a'..'z').toList()
+       println(letters.slice<Char>(0..2))
+       println(letters.slice(10..13))
+   }
+   ```
+
+
+
+### 9.1.2 申明泛型类
+
+1. 申明一个泛型类
+
+   ```kotlin
+   interface List<T> {
+       operator fun get(index: Int): T
+       //... 
+   }
+   ```
+
+2. 如果你的类继承了泛型类（或者实现了泛型接口），你就得为基础类型的泛型形参提供一个类型实参。它可以是具体类型或者另一个类型形参。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\复写泛型类.jpg)
+
+### 9.1.3 类型参数约束
+
+1. 上界约束
+
+   在泛型类型具体的初始中，其对应的类型实参就必须是**这个具体类型或者它的子类型**。一个类型参数上指定多个约束。
+
+   ```kotlin
+   fun <T : Number> oneHalf(value: T): Double {
+       return value.toDouble() / 2.0
+   }
+   
+   fun main(args: Array<String>) {
+       println(oneHalf(3))
+   }
+   ```
+
+
+
+### 9.1.4 让类型形参非空
+
+1. 如果声明的是泛型类或者泛型函数，任何类型实参，包括那些可空的类型实参，都可以替换它的类型形参。事实上，没有指定上界的类型形参将会使用 Any?
+
+   这个默认的上界。
+
+2. 如果想保证替换类型形参的始终是非空类型，可以通过指定一个约束来实现。如果除了可空性之外没有任何限制，可以使用 Any代替默认的 Any? 作为上界。
+
+   ```kotlin
+   class Processor<T : Any> {
+   	fun process(value: T) {
+           value.hashCode()
+       }
+   }
+   ```
+
+   
+
+
+
+## 9.2 运行时的泛型：擦除和实化类型参数 - todo
+
+### 9.2.1 运行时的泛型：类型检查和转换
+
+1. Kotlin 的泛型在运行时会被擦除，和Java一样。这意味着泛型类实例不会携带用于创建它的类型实参的信息
+
+
+
+### 9.2.2 声明带实化类型参数的函数
+
+1. 在inline声明的函数中用reified标记类型参数，就能够实化类型参数。
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\声明带实话类型参数的函数.jpg)
+
+
+
+## 9.3 变型：泛型和子类型化
+
+### 9.3.1 为什么存在变型：给函数传递实参
+
+
+
+### 9.3.2 类、类型和子类型
+
+
+
+### 9.3.3 协变：保留子类型化关系
+
+1. 一个协变类是一个泛型类（我们以 Producer<T>为 例），对这种类来说，下面的描述是成立的：如果A是B的子类型，那么 Producer<A>就是Producer<B>的子类型。我们说**子类型化被保留了** 。例如 Producer<Cat> 是Producer<Animal>的子类型，因为 Cat是Animal的子类型。
+
+2. 在Kotlin中，要声明类在某个类型参数上是可以协变的，在该类型参数的名称前加上 out 关键字即可：
+
+   ```kotlin
+   interface Producer<out T> {
+       fun produce():T
+   }
+   ```
+
+
+
+### 9.3.4 逆变：反转子类型化关系
+
+
+
+![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\协变的、逆变的和不变型的类.jpg)
+
+
+
+### 9.3.5 使用点变型：在类型出现的地方制定变型
+
+1. Kotlin 的使用点变型直接对应 Java 的限界通配符。Kotlin 中的MutableList<out T> 和 Java 中的 MutableList <? extends T>是一个意思。 in 投影的 MutableList<in T> 对应到 Java的 MutableList< ? super T> 
+
+   ```kotlin
+   // out
+   fun <T> copyData(source: MutableList<out T>,
+                    destination: MutableList<T>) {
+       for (item in source) {
+           destination.add(item)
+       }
+   }
+   
+   fun main(args: Array<String>) {
+       val ints = mutableListOf(1, 2, 3)
+       val anyItems = mutableListOf<Any>()
+       copyData(ints, anyItems)
+       println(anyItems)
+   }
+   
+   // in
+   fun <T> copyData(source: MutableList<T>,
+                    destination: MutableList<in T>) {
+       for (item in source) {
+           destination.add(item)
+       }
+   }
+   
+   fun main(args: Array<String>) {
+       val ints = mutableListOf(1, 2, 3)
+       val anyItems = mutableListOf<Any>()
+       copyData(ints, anyItems)
+       println(anyItems)
+   }
+   
+   ```
+
+   
+
+### 9.3.6 星号投影：使用*代替类型参数
+
+1. 当确切的类型实参是未知的或者不重要的时候，可以使用星号投影语法。
 
 
 
 
-## 9.2 运行时的泛型：擦除和实化类型参数
+
+# 10 注解与反射
+
+## 10.1 声明并应用注解
 
 
+
+
+
+# 11. DSL构建
 
 
 
