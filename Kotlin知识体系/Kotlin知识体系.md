@@ -2181,6 +2181,164 @@ class Person(val name: String) {
 
 ## 10.1 声明并应用注解
 
+### 10.1.1 应用注解
+
+1. 要应用一个注解，以＠字符作为（注解）名字的前缀，并放在要注解的声明最前面。
+
+   ```kotlin
+   @Deprecated ("Use removeAt(index) instead.", ReplaceWith ("removeAt(index ))) 
+   fun remove (index: Int) {...}
+   ```
+
+2. 注解只能拥有如下类型的参数：基本数据类型、字符串、枚举、类引用、其他的注解类，以及前面这些类型的数组。指定注解实参的语法与 Java 有些微小的差别：
+
+   * 要把一 个类指定为注解实参，在类名后加上 ::class，例如：@MyAnnotation(MyClass: :class)。
+
+   * 要把另 一个 注解指定为一个实参 去掉注解名称前面的＠。 例如，前面例子中的 ReplaceWith 是一个注解，但是你把它指定为 Deprecated 注解的
+
+     实参时没有用@。
+
+   * 要把一个数纽指定为一个实参，使用 arrayOf 函数：＠ RequestMapping(pa th = arrayOf ("foo", "bar ”））
+
+3. 注解实参需要在编译期就是己知的，所以你不能引用任意的属性作为实参。要把属性当作注解实参使用，你需要用 const 修饰符标记它，来告知编译器这个属
+
+   性是编译期常量。
+
+
+
+### 10.1.2 注解目标
+
+1. 使用点目标声明被用来说明要注解的元素。
+
+   ```kotlin
+   @get:Rule
+   ```
+
+   ![](C:\Users\shenj\Documents\GitHub\android_guideline\Kotlin知识体系\img\注解getter.jpg)
+
+2. Kotlin 支持的使用点目标的完整列表如下：
+
+   * property 一 Java 的注解不能应用这种使用点目标
+
+   * field 一 为属性生成的字段
+
+   * get 一 属性的 getter
+
+   * set 一 属性的 setter
+
+   * receiver 一 扩展函数或者扩展属性的接收者参数。
+
+   * param 一 构造方法的参数。
+
+   * setparam 一 属性 setter 的参数
+
+   * delegate 一 为委托属性存储委托实例的字段
+
+   * file 一 包含在文件中声明的顶层函数和属性的类。
+
+     任何应用到 file 目标的注解都必须放在文件的顶 ，放在 packag 指令之前。@JvmName 是常见的应用到文件的注解之 ，它改变了对应类的名称。
+
+
+
+### 10.1.3 使用注解定制JSON序列化
+
+1. JKid 的纯 Kotiln 库
+
+
+
+### 10.1.4 声明注解
+
+1. annotation class 来声明注解
+
+   ```kotlin
+   annotation class JsonName(val name: String)
+   ```
+
+   
+
+### 10.1.5 元注解：控制如何处理一个注解
+
+1. **元注解**，可以应用到注解类上的注解
+
+2. @Target 元注解说明了注解可以被应用的元素类型
+
+3. 要声明你自己的元注解，使用 ANNOTATION CLASS 作为目标就好了
+
+   ```kotlin
+   @Target(AnnotationTarget.ANNOTATION_CLASS) 
+   annotation class BindingAnnotation 
+   
+   @BindingAnnotation 
+   annotation class MyBinding
+   ```
+
+
+
+### 10.1.6 使用类做注解参数
+
+### 10.1.7 使用泛型类做注解参数
+
+
+
+## 10.2 反射：在运行时对Kotlin对象进行自省
+
+### 10.2.1 Kotlin反射API：KClass、KCallable、KFunction和KProperty
+
+1. Kotlin 反射 API 的主要入口就是 KClass ，它代表了一个类
+
+   ```kotlin
+   class Person(val name: String, val age: Int)
+   
+   fun main(args: Array<String>) {
+       val person = Person("Alice", 29)
+       val kClass = person.javaClass.kotlin
+       println(kClass.simpleName)
+       kClass.memberProperties.forEach { println(it.name) }
+   }
+   ```
+
+2. KCallable类 是函数和属性的超接口。它声明了 call 方法 允许你调用对应的函数或者对应属性的 getter
+
+3. KFunction 类
+
+   ```kotlin
+   fun foo(x: Int) = println(x)
+   
+   fun main(args: Array<String>) {
+       val kFunction = ::foo
+       kFunction.call(42)
+   }
+   
+   ```
+
+4. KProperty类
+
+   ```kotlin
+   var counter = 0
+   
+   fun main(args: Array<String>) {
+       val kProperty = ::counter
+       kProperty.setter.call(21)
+       println(kProperty.get())
+   }
+   ```
+
+   
+
+### 10.2.2 用反射实现对象序列化
+
+
+
+### 10.2.3 用注解定制序列化
+
+
+
+### 10.2.4 Json解析和对象反序列化
+
+
+
+### 10.2.5 反序列化的最后一步：callBy()和使用反射创建对象
+
 
 
 
