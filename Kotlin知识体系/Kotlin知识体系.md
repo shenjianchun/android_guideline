@@ -2343,13 +2343,82 @@ class Person(val name: String) {
 
 
 
-# 11. DSL构建
+# 11. DSL（领域特定语言）构建
+
+## 11.1 从API到SDL
+
+### 11.1.1 领域特定语言的概念
 
 
+
+### 11.1.2 内部SDL
+
+1. 内部 DSL 是用通用编程语言编写的程序的一部分，使用了和通用编程语言完全一致的语法。实际上，内部 DSL 不是完全独立的语言，而是使用主要语言的特定方式，同时保留具有独立语法的 DSL 的主要优点。
+
+
+
+### 11.1.3 DSL的结构
+
+1. DSL 结构的一个好处就是允许你在多个函数调用之 间重用 一个上下文，而不是在每次调用时都去重复它。
+2. 链式方法调用是另一种在 DSL 中创建结构的方法。
+
+
+
+### 11.1.4 使用内部SDL构建HTML
+
+
+
+
+
+## 11.2 构建结构化的API：DSL中带接受者的lambda
+
+
+
+## 11 .3 使用“invoke ”约定构建更灵活的代码块嵌套
+
+
+
+## 11.4 实践中的Katlin DSL
 
 
 
 # 协程
+
+* suspend function
+
+  即挂起函数，delay() 就是协程库提供的一个用于实现非阻塞式延时的挂起函数
+
+* CoroutineScope
+
+  即协程作用域，GlobalScope 是 CoroutineScope 的一个实现类，用于指定协程的作用范围，可用于管理多个协程的生命周期，所有协程都需要通过 CoroutineScope 来启动
+
+* CoroutineContext
+
+  即协程上下文，包含多种类型的配置参数。`Dispatchers.IO` 就是 CoroutineContext 这个抽象概念的一种实现，用于指定协程的运行载体，即用于指定协程要运行在哪类线程上
+
+* CoroutineBuilder。
+
+  即协程构建器，协程在 CoroutineScope 的上下文中通过 launch、async 等协程构建器来进行声明并启动。launch、async 均被声明为 CoroutineScope 的扩展方法
+
+
+
+### CoroutineScope 协程作用域
+
+用于对协程进行追踪，Kotlin 不允许在没有 CoroutineScope 的情况下启动协程。CoroutineScope 本身并不运行协程，它只是确保你不会失去对协程的追踪，即使协程被挂起也是如此。
+
+CoroutineScope 大体上可以分为三种：
+
+* GlobalScope。即全局协程作用域，在这个范围内启动的协程可以一直运行直到应用停止运行。GlobalScope 本身不会阻塞当前线程，且启动的协程相当于守护线程，不会阻止 JVM 结束运行
+
+* runBlocking。一个顶层函数，和 GlobalScope 不一样，它会阻塞当前线程直到其内部所有相同作用域的协程执行结束
+
+* 自定义 CoroutineScope。可用于实现主动控制协程的生命周期范围，对于 Android 开发来说最大意义之一就是可以在 Activity、Fragment、ViewModel 等具有生命周期的对象中按需取消所有协程任务，从而确保生命周期安全，避免内存泄露
+
+
+
+
+
+
 
 
 
