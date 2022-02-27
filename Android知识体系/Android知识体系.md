@@ -3229,6 +3229,12 @@ MMKV——基于 mmap 的高性能通用 key-value 组件。
 4. 在新创建的AppCompatActivity的onCreate方法中可以获取到恢复了的`ViewModelStore`对象。从而可以获取对应的ViewModel对象。
 
 
+**LiveData的作用**
+
+1. 监听LifeCycle的生命周期，在Destroy的时候会释放LiveData，
+2. LiveData只有在STARTED或者RESUMED状态通知Observer，当LifeCycle是pause或stop的时候，则不调用LiveData去通知Observer
+3. LiveData提供两个方法setValue和postValue，setValue在主线程调用并且立即通知Observer，postValue在子线程调用并且转到主线程在通知Observer
+
 
 #### Room
 
